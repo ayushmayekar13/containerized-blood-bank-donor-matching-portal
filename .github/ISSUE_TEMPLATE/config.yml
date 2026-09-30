@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project documentation
+    url: https://github.com/ayushmayekar/devops-bloodbank-portal/tree/main/docs
+    about: Problem definition, SRS, architecture, API, runbook and viva guide
+  - name: Definition of Done
+    url: https://github.com/ayushmayekar/devops-bloodbank-portal/blob/main/docs/definition-of-done.md
+    about: Read this before opening a task or story
