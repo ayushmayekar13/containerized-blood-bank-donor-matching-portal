@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title th:text="${title}">Blood Bank Donor Matching Portal</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}"/>
+</head>
+<body>
+<main class="shell">
+  <header class="card">
+    <p class="eyebrow">DevOps Project &middot; Academic Year 2026-27, ODD Semester</p>
+    <h1 th:text="${title}">Blood Bank Donor Matching Portal</h1>
+    <p class="lede">
+      Containerized portal that maintains a donor registry, records blood requests and ranks
+      compatible, eligible and available donors for each request.
+    </p>
+    <dl class="meta">
+      <div><dt>Student</dt><dd th:text="${student}">Ayush Mayekar</dd></div>
+      <div><dt>Roll number</dt><dd th:text="${roll}">23102A0018</dd></div>
+      <div><dt>Class</dt><dd>BE Computer Engineering &middot; Division A</dd></div>
+      <div><dt>Version</dt><dd th:text="${version}">1.0.0</dd></div>
+    </dl>
+  </header>
+
+  <section class="card">
+    <h2>Application skeleton</h2>
+    <p>
+      This page exists to prove that the single <code>bloodbank.war</code> artefact builds and
+      serves traffic identically in all three run modes before any domain logic is added:
+      <code>mvn spring-boot:run</code>, <code>java -jar target/bloodbank.war</code>, and deployed
+      as <code>ROOT.war</code> inside the Tomcat container.
+    </p>
+    <p class="status" data-testid="skeleton-status">Skeleton is up.</p>
+    <p><a th:href="@{/actuator/health}" data-testid="health-link">Health endpoint</a></p>
+  </section>
+</main>
+</body>
+</html>

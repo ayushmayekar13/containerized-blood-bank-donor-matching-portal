@@ -1,0 +1,92 @@
+# ---------------------------------------------------------------------------
+# Blood Bank Donor Matching Portal - application configuration
+#
+# Every value that differs between a laptop, a container and CI is overridable
+# by an environment variable, so the SAME bloodbank.war runs everywhere with no
+# rebuild. Nothing environment-specific is hard-coded in Java.
+# ---------------------------------------------------------------------------
+spring:
+  application:
+    name: bloodbank-portal
+
+  datasource:
+    # BLOODBANK_DB_PATH points at a Docker named volume in the deployed
+    # environment (/opt/bloodbank/data) and at ./data on a developer machine,
+    # which is why the H2 database file is never inside target/.
+    url: jdbc:h2:file:${BLOODBANK_DB_PATH:./data/bloodbank};AUTO_SERVER=FALSE;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: ${BLOODBANK_DB_USER:sa}
+    password: ${BLOODBANK_DB_PASSWORD:}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  h2:
+    console:
+      # Only enabled in the local profile; never exposed from the container.
+      enabled: ${BLOODBANK_H2_CONSOLE:false}
+      path: /h2-console
+
+  thymeleaf:
+    cache: ${BLOODBANK_TEMPLATE_CACHE:true}
+
+server:
+  port: ${SERVER_PORT:9090}
+  servlet:
+    # Deployed as ROOT.war inside the Tomcat image, so the context path is "/"
+    # in every environment and the Selenium journeys need no URL rewriting.
+    context-path: /
+  error:
+    whitelabel:
+      enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # /actuator/health is consumed by the container HEALTHCHECK, the
+        # Ansible uri assertion, the Jenkins post-deploy check and the viva demo.
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: Blood Bank Donor Matching Portal
+    student: Ayush Mayekar
+    roll: 23102A0018
+    subject: DevOps
+    version: ${BLOODBANK_VERSION:1.0.0}
+
+logging:
+  level:
+    root: INFO
+    com.bloodbank: ${BLOODBANK_LOG_LEVEL:INFO}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
+
+---
+# Local development profile: mvn spring-boot:run -Dspring-boot.run.profiles=local
+spring:
+  config:
+    activate:
+      on-profile: local
+  thymeleaf:
+    cache: false
+  h2:
+    console:
+      enabled: true
+logging:
+  level:
+    com.bloodbank: DEBUG
