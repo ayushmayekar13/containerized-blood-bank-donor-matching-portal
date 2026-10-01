@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Find donors')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('match')}"></nav>
+
+<main class="container my-4">
+  <h1 class="h3 mb-1" data-testid="page-title">Find matching donors</h1>
+  <p class="text-muted">
+    Applies the red-cell compatibility matrix, the 90-day donation interval and the availability
+    flag, then ranks by exact group, then same city, then longest rested.
+  </p>
+
+  <form class="card card-body bb-card mb-4" method="get" th:action="@{/match}" data-testid="match-form">
+    <div class="row g-3 align-items-end">
+      <div class="col-sm-3">
+        <label class="form-label" for="group">Patient blood group</label>
+        <select class="form-select" id="group" name="group" data-testid="match-group" required>
+          <option value="">Select…</option>
+          <option th:each="g : ${groups}" th:value="${g.label}" th:text="${g.label}"
+                  th:selected="${group != null and group == g.label}">O-</option>
+        </select>
+      </div>
+      <div class="col-sm-4">
+        <label class="form-label" for="city">Preferred city</label>
+        <input class="form-control" id="city" name="city" type="text" th:value="${city}"
+               placeholder="Any city" data-testid="match-city"/>
+      </div>
+      <div class="col-sm-3">
+        <button class="btn bb-btn-primary w-100" type="submit" data-testid="match-submit">Find donors</button>
+      </div>
+    </div>
+  </form>
+
+  <div th:if="${recipient != null}">
+    <div class="alert alert-info d-flex flex-wrap align-items-center gap-2" data-testid="compatible-groups">
+      <span>A
+        <strong th:text="${recipient.label}">B+</strong>
+        patient can receive from
+        <strong th:text="${#lists.size(compatibleGroups)}">4</strong> of the eight groups:
+      </span>
+      <!-- th:each must sit on an outer element: th:replace has higher precedence
+           and would otherwise run before the iteration variable exists. -->
+      <span th:each="g : ${compatibleGroups}">
+        <span th:replace="~{fragments/layout :: groupBadge(${g})}"></span>
+      </span>
+    </div>
+
+    <div th:if="${#lists.isEmpty(matches)}" class="alert alert-danger" data-testid="no-matches">
+      <strong>No callable donor found.</strong>
+      Every compatible donor is either unavailable or still inside the 90-day interval.
+      This is the shortage case the dashboard flags.
+    </div>
+
+    <div th:unless="${#lists.isEmpty(matches)}" class="card bb-card">
+      <table class="table table-hover align-middle mb-0" data-testid="match-table">
+        <thead>
+          <tr>
+            <th style="width:4rem">Rank</th><th>Donor</th><th>Group</th><th>City</th>
+            <th>Rested</th><th>Why ranked here</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="m : ${matches}" th:attr="data-testid='match-row-' + ${m.rank}">
+            <td><span class="badge bb-rank" th:text="${m.rank}">1</span></td>
+            <td>
+              <a class="bb-link" th:href="@{/donors/{id}(id=${m.donorId})}"
+                 th:text="${m.fullName}" data-testid="match-name">Name</a>
+            </td>
+            <td><span th:replace="~{fragments/layout :: groupBadge(${m.donor.bloodGroup})}"></span></td>
+            <td th:text="${m.city}">City</td>
+            <td>
+              <span th:if="${m.neverDonated}" class="text-muted">Never donated</span>
+              <span th:unless="${m.neverDonated}" th:text="|${m.daysSinceLastDonation} days|">0 days</span>
+            </td>
+            <td>
+              <span th:if="${m.exactGroupMatch}" class="badge bb-pill bb-pill-ok">Exact group</span>
+              <span th:if="${m.sameCity}" class="badge bb-pill bb-pill-city">Same city</span>
+              <span th:if="${!m.exactGroupMatch and !m.sameCity}" class="text-muted">Compatible</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

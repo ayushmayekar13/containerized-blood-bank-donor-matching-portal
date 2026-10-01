@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Donor registry')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('donors')}"></nav>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h1 class="h3 mb-1" data-testid="page-title">Donor registry</h1>
+      <p class="text-muted mb-0">
+        <span data-testid="donor-count" th:text="${#lists.size(donors)}">0</span> donor(s) shown
+      </p>
+    </div>
+    <a class="btn bb-btn-primary" th:href="@{/donors/new}" data-testid="register-donor">Register donor</a>
+  </div>
+
+  <!-- FR-04: filters combine with logical AND -->
+  <form class="card card-body bb-card mb-4" method="get" th:action="@{/donors}" data-testid="search-form">
+    <div class="row g-3 align-items-end">
+      <div class="col-sm-3">
+        <label class="form-label" for="group">Blood group</label>
+        <select class="form-select" id="group" name="group" data-testid="filter-group">
+          <option value="">Any group</option>
+          <option th:each="g : ${groups}" th:value="${g.label}" th:text="${g.label}"
+                  th:selected="${group != null and group == g.label}">O-</option>
+        </select>
+      </div>
+      <div class="col-sm-4">
+        <label class="form-label" for="city">City</label>
+        <input class="form-control" id="city" name="city" type="text" th:value="${city}"
+               placeholder="Any city" data-testid="filter-city"/>
+      </div>
+      <div class="col-sm-3">
+        <div class="form-check mt-4">
+          <input class="form-check-input" type="checkbox" id="availableOnly" name="availableOnly"
+                 value="true" th:checked="${availableOnly}" data-testid="filter-available"/>
+          <label class="form-check-label" for="availableOnly">Available only</label>
+        </div>
+      </div>
+      <div class="col-sm-2 d-flex gap-2">
+        <button class="btn bb-btn-primary w-100" type="submit" data-testid="search-submit">Search</button>
+        <a class="btn btn-outline-secondary" th:href="@{/donors}" data-testid="search-reset">Reset</a>
+      </div>
+    </div>
+  </form>
+
+  <!-- AC-02.4: an empty result must say so explicitly, not render an empty page -->
+  <div th:if="${#lists.isEmpty(donors)}" class="alert alert-warning" data-testid="no-donors">
+    No donors found for the selected filters.
+  </div>
+
+  <div th:unless="${#lists.isEmpty(donors)}" class="card bb-card">
+    <table class="table table-hover mb-0 align-middle" data-testid="donor-table">
+      <thead>
+        <tr>
+          <th>Name</th><th>Group</th><th>City</th><th>Phone</th>
+          <th>Last donation</th><th>Status</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="d : ${donors}" th:attr="data-testid='donor-row-' + ${d.id}">
+          <td>
+            <a th:href="@{/donors/{id}(id=${d.id})}" th:text="${d.fullName}" class="bb-link"
+               data-testid="donor-name">Name</a>
+          </td>
+          <td><span th:replace="~{fragments/layout :: groupBadge(${d.bloodGroup})}"></span></td>
+          <td th:text="${d.city}" data-testid="donor-city">City</td>
+          <td th:text="${d.phone}">0000000000</td>
+          <td>
+            <span th:if="${d.lastDonationDate == null}" class="text-muted">Never donated</span>
+            <span th:unless="${d.lastDonationDate == null}"
+                  th:text="${#temporals.format(d.lastDonationDate, 'dd MMM yyyy')}">date</span>
+          </td>
+          <td><span th:replace="~{fragments/layout :: eligibility(${d}, ${today})}"></span></td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-secondary" th:href="@{/donors/{id}/edit(id=${d.id})}"
+               data-testid="edit-donor">Edit</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
