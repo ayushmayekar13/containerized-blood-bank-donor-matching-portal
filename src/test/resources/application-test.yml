@@ -11,3 +11,19 @@ spring:
       ddl-auto: create-drop
   thymeleaf:
     cache: false
+
+# Accounts for the test profile. Separate from the demonstration accounts so a
+# change to one cannot silently break the other.
+bloodbank:
+  security:
+    users:
+      - username: admin
+        password: test-admin
+        role: ADMIN
+      - username: staff
+        password: test-staff
+        role: STAFF
+      - username: donor
+        password: test-donor
+        role: DONOR
+        donor-id: 1

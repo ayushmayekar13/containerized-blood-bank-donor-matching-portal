@@ -36,9 +36,20 @@ class BloodBankApplicationTest {
     }
 
     @Test
-    @DisplayName("Landing page is served and identifies the project")
-    void landingPageIsServed() throws Exception {
+    @DisplayName("FR-24: an unauthenticated request for a portal page is redirected to login")
+    void portalPagesRequireAuthentication() throws Exception {
+        // The skeleton's open landing page was replaced by the dashboard in
+        // Task 6, so "/" is now a protected screen.
         mvc.perform(get("/"))
+           .andExpect(status().is3xxRedirection())
+           .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                   .redirectedUrlPattern("**/login"));
+    }
+
+    @Test
+    @DisplayName("The login page is served without authentication and identifies the project")
+    void loginPageIsOpen() throws Exception {
+        mvc.perform(get("/login"))
            .andExpect(status().isOk())
            .andExpect(content().string(org.hamcrest.Matchers.containsString("Blood Bank Donor Matching Portal")))
            .andExpect(content().string(org.hamcrest.Matchers.containsString("23102A0018")));

@@ -21,14 +21,19 @@ public interface BloodRequestRepository extends JpaRepository<BloodRequest, Long
 
     /**
      * Searches requests by status and blood group, either filter optional and
-     * combined with AND. Ordered most urgent first, then oldest first, which is
-     * the order a transfusion desk would work through them.
+     * combined with AND, oldest first.
+     *
+     * <p>Ordering by urgency is deliberately <em>not</em> done here. The column is
+     * {@code @Enumerated(STRING)}, so {@code order by r.urgency desc} sorts the
+     * stored text and yields MEDIUM, HIGH, CRITICAL - alphabetical, and exactly
+     * backwards for the two that matter (defect BUG-05). The semantic ordering
+     * uses {@code Urgency.getWeight()} and is applied in {@code RequestService}.
      */
     @Query("""
            select r from BloodRequest r
            where (:status is null or r.status = :status)
              and (:bloodGroup is null or r.bloodGroup = :bloodGroup)
-           order by r.urgency desc, r.createdAt asc
+           order by r.createdAt asc
            """)
     List<BloodRequest> search(@Param("status") RequestStatus status,
                               @Param("bloodGroup") BloodGroup bloodGroup);

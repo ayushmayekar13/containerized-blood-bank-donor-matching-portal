@@ -421,6 +421,27 @@ class RequestWorkflowTest {
         }
 
         @Test
+        @DisplayName("BUG-05: the worklist is ordered by urgency severity, not by the alphabet")
+        void worklistIsOrderedBySeverity() {
+            // The urgency column is stored as text, so ordering it in SQL gives
+            // MEDIUM, HIGH, CRITICAL - alphabetical, and backwards for the two
+            // that matter. The ordering must come from Urgency.getWeight().
+            service.create(new BloodRequest("Medium Patient", BloodGroup.B_POS, 1,
+                    "Hospital", "Thane", com.bloodbank.domain.Urgency.MEDIUM), STAFF);
+            service.create(new BloodRequest("Critical Patient", BloodGroup.B_POS, 1,
+                    "Hospital", "Thane", com.bloodbank.domain.Urgency.CRITICAL), STAFF);
+            service.create(new BloodRequest("Low Patient", BloodGroup.B_POS, 1,
+                    "Hospital", "Thane", com.bloodbank.domain.Urgency.LOW), STAFF);
+            service.create(new BloodRequest("High Patient", BloodGroup.B_POS, 1,
+                    "Hospital", "Thane", com.bloodbank.domain.Urgency.HIGH), STAFF);
+
+            assertThat(service.findAll())
+                    .extracting(BloodRequest::getPatientName)
+                    .containsExactly("Critical Patient", "High Patient",
+                                     "Medium Patient", "Low Patient");
+        }
+
+        @Test
         @DisplayName("the shortlist for a request uses the request's own group and city")
         void matchesForRequest() {
             BloodRequest request = newRequest();   // B+ in Thane

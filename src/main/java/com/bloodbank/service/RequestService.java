@@ -80,8 +80,25 @@ public class RequestService {
 
     @Transactional(readOnly = true)
     public List<BloodRequest> findAll() {
-        return requests.search(null, null);
+        return search(null, null);
     }
+
+    /**
+     * Most urgent first, then oldest first - the order a transfusion desk works
+     * through a queue.
+     *
+     * <p>Applied in Java rather than in the query because the urgency column is
+     * stored as text, so SQL would sort it alphabetically (CRITICAL, HIGH, LOW,
+     * MEDIUM) instead of by severity. See BUG-05 and the note on
+     * {@code BloodRequestRepository.search}.
+     */
+    private static final java.util.Comparator<BloodRequest> WORKLIST_ORDER =
+            java.util.Comparator.comparingInt((BloodRequest r) -> r.getUrgency().getWeight())
+                    .reversed()
+                    .thenComparing(BloodRequest::getCreatedAt,
+                                   java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder()))
+                    .thenComparing(BloodRequest::getId,
+                                   java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder()));
 
     @Transactional(readOnly = true)
     public BloodRequest findById(Long id) {
@@ -95,7 +112,9 @@ public class RequestService {
                 ? null : RequestStatus.fromText(status);
         BloodGroup groupFilter = (group == null || group.isBlank())
                 ? null : BloodGroup.fromText(group);
-        return requests.search(statusFilter, groupFilter);
+        return requests.search(statusFilter, groupFilter).stream()
+                       .sorted(WORKLIST_ORDER)
+                       .toList();
     }
 
     /** The ranked shortlist for a request — the same engine used by the match preview screen. */
