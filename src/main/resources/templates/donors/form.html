@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${mode == 'new'} ? 'Register donor' : 'Edit donor')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('donors')}"></nav>
+
+<main class="container my-4" style="max-width: 760px;">
+  <h1 class="h3 mb-3" data-testid="page-title"
+      th:text="${mode == 'new'} ? 'Register donor' : 'Edit donor'">Register donor</h1>
+
+  <form class="card card-body bb-card" method="post" data-testid="donor-form"
+        th:action="${mode == 'new'} ? @{/donors} : @{/donors/{id}(id=${donorId})}"
+        th:object="${donor}">
+
+    <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" data-testid="form-errors">
+      <strong>Please correct the following:</strong>
+      <ul class="mb-0">
+        <li th:each="err : ${#fields.allErrors()}" th:text="${err}">error</li>
+      </ul>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-8">
+        <label class="form-label" for="fullName">Full name</label>
+        <input class="form-control" id="fullName" type="text" th:field="*{fullName}"
+               th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid'" data-testid="field-fullName"/>
+        <div class="invalid-feedback" th:errors="*{fullName}">error</div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label" for="bloodGroup">Blood group</label>
+        <select class="form-select" id="bloodGroup" th:field="*{bloodGroup}"
+                th:classappend="${#fields.hasErrors('bloodGroup')} ? 'is-invalid'" data-testid="field-bloodGroup">
+          <option value="">Select…</option>
+          <option th:each="g : ${groups}" th:value="${g}" th:text="${g.label}">O-</option>
+        </select>
+        <div class="invalid-feedback" th:errors="*{bloodGroup}">error</div>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label" for="phone">Phone (10 digits)</label>
+        <input class="form-control" id="phone" type="text" th:field="*{phone}" maxlength="10"
+               th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'" data-testid="field-phone"/>
+        <div class="invalid-feedback" th:errors="*{phone}">error</div>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label" for="email">Email</label>
+        <input class="form-control" id="email" type="text" th:field="*{email}"
+               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'" data-testid="field-email"/>
+        <div class="invalid-feedback" th:errors="*{email}">error</div>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label" for="city">City</label>
+        <input class="form-control" id="city" type="text" th:field="*{city}"
+               th:classappend="${#fields.hasErrors('city')} ? 'is-invalid'" data-testid="field-city"/>
+        <div class="invalid-feedback" th:errors="*{city}">error</div>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label" for="lastDonationDate">Last donation date</label>
+        <input class="form-control" id="lastDonationDate" type="date" th:field="*{lastDonationDate}"
+               data-testid="field-lastDonationDate"/>
+        <div class="form-text">Leave blank if the donor has never donated. The portal enforces a
+          90-day interval from this date.</div>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label" for="notes">Notes</label>
+        <textarea class="form-control" id="notes" rows="2" th:field="*{notes}"
+                  data-testid="field-notes"></textarea>
+      </div>
+
+      <div class="col-12">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="available" th:field="*{available}"
+                 data-testid="field-available"/>
+          <label class="form-check-label" for="available">Available to be contacted</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+      <button class="btn bb-btn-primary" type="submit" data-testid="save-donor">Save donor</button>
+      <a class="btn btn-outline-secondary" th:href="@{/donors}" data-testid="cancel">Cancel</a>
+    </div>
+  </form>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

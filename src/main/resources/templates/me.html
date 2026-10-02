@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My profile')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('me')}"></nav>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container my-4" style="max-width: 680px;">
+  <h1 class="h3 mb-1" data-testid="page-title">My donor profile</h1>
+  <p class="text-muted">You can see your own record and control whether the blood bank may
+    contact you. You cannot see or change anyone else's record.</p>
+
+  <div th:if="${donor == null}" class="alert alert-warning" data-testid="profile-unlinked">
+    No donor record is linked to this account.
+  </div>
+
+  <div th:if="${donor != null}" class="card bb-card card-body mb-4">
+    <h2 class="h5 mb-2" th:text="${donor.fullName}" data-testid="my-name">Name</h2>
+    <p class="mb-3">
+      <span th:replace="~{fragments/layout :: groupBadge(${donor.bloodGroup})}"></span>
+      <span th:replace="~{fragments/layout :: eligibility(${donor}, ${today})}"></span>
+    </p>
+    <dl class="row mb-0">
+      <dt class="col-5">City</dt><dd class="col-7" th:text="${donor.city}">-</dd>
+      <dt class="col-5">Phone</dt><dd class="col-7" th:text="${donor.phone}">-</dd>
+      <dt class="col-5">Last donation</dt>
+      <dd class="col-7" data-testid="my-last-donation">
+        <span th:if="${donor.lastDonationDate == null}" class="text-muted">Never donated</span>
+        <span th:unless="${donor.lastDonationDate == null}"
+              th:text="${#temporals.format(donor.lastDonationDate, 'dd MMMM yyyy')}">date</span>
+      </dd>
+      <dt class="col-5">Next eligible</dt>
+      <dd class="col-7" data-testid="my-next-eligible"
+          th:text="${#temporals.format(donor.nextEligibleDate(today), 'dd MMMM yyyy')}">date</dd>
+    </dl>
+  </div>
+
+  <div th:if="${donor != null}" class="card bb-card card-body">
+    <h2 class="h6 text-uppercase text-muted mb-2">Availability</h2>
+    <p th:if="${donor.available}" data-testid="availability-state">
+      You are currently <strong>available</strong>. You may appear in shortlists once you are past
+      the 90-day interval.
+    </p>
+    <p th:unless="${donor.available}" data-testid="availability-state">
+      You are currently <strong>unavailable</strong> and will not appear in any shortlist.
+    </p>
+    <form th:action="@{/me/availability}" method="post">
+      <input type="hidden" name="available" th:value="${!donor.available}"/>
+      <button class="btn" th:classappend="${donor.available} ? 'btn-outline-danger' : 'bb-btn-primary'"
+              type="submit" data-testid="toggle-availability"
+              th:text="${donor.available} ? 'Mark me unavailable' : 'Mark me available'">Toggle</button>
+    </form>
+  </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

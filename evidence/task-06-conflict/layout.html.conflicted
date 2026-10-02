@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!--
+  Shared page shell. Bootstrap is vendored into /css/bootstrap.min.css rather
+  than loaded from a CDN, because the demonstration must work with no internet.
+-->
+<head th:fragment="head(pageTitle)">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title th:text="|${pageTitle} · Blood Bank Portal|">Blood Bank Portal</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+  <link rel="stylesheet" th:href="@{/css/app.css}"/>
+</head>
+<body>
+
+<nav th:fragment="navbar(active)" class="navbar navbar-expand-lg navbar-dark bb-navbar">
+  <div class="container">
+    <a class="navbar-brand" th:href="@{/}" data-testid="nav-brand">
+      <span class="bb-drop">&#10084;</span> Blood Bank Portal
+    </a>
+    <!-- Role-aware navigation: a DONOR sees only their own record, so the
+         registry and workflow links are not rendered for them at all. -->
+    <ul class="navbar-nav me-auto" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      <li class="nav-item" sec:authorize="hasAnyRole('STAFF','ADMIN')">
+        <a class="nav-link" th:classappend="${active == 'dashboard'} ? 'active'"
+           th:href="@{/dashboard}" data-testid="nav-dashboard">Dashboard</a>
+      </li>
+      <li class="nav-item" sec:authorize="hasAnyRole('STAFF','ADMIN')">
+        <a class="nav-link" th:classappend="${active == 'donors'} ? 'active'"
+           th:href="@{/donors}" data-testid="nav-donors">Donors</a>
+      </li>
+      <li class="nav-item" sec:authorize="hasAnyRole('STAFF','ADMIN')">
+        <a class="nav-link" th:classappend="${active == 'requests'} ? 'active'"
+           th:href="@{/requests}" data-testid="nav-requests">Requests</a>
+      </li>
+      <li class="nav-item" sec:authorize="hasAnyRole('STAFF','ADMIN')">
+        <a class="nav-link" th:classappend="${active == 'match'} ? 'active'"
+           th:href="@{/match}" data-testid="nav-match">Find donors</a>
+      </li>
+<<<<<<< HEAD
+      <li class="nav-item" sec:authorize="hasRole('DONOR')">
+        <a class="nav-link" th:classappend="${active == 'me'} ? 'active'"
+           th:href="@{/me}" data-testid="nav-me">My profile</a>
+=======
+      <li class="nav-item">
+        <a class="nav-link bb-nav-health" th:href="@{/actuator/health}" target="_blank"
+           title="Application health - used by the container probe and Ansible"
+           data-testid="nav-health">
+          <span class="bb-health-dot"></span> Health
+        </a>
+>>>>>>> develop
+      </li>
+    </ul>
+    <div class="d-flex align-items-center gap-3" sec:authorize="isAuthenticated()"
+         xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      <!-- The role is rendered with sec:authorize rather than by projecting over
+           #authentication.authorities: the projection form has no readable way to
+           strip the ROLE_ prefix, and three explicit cases are clearer than one
+           clever expression for a fixed set of three roles. -->
+      <span class="bb-user" data-testid="current-user">
+        <span th:text="${#authentication.name}">user</span>
+        <span class="badge bb-role" data-testid="current-role" sec:authorize="hasRole('ADMIN')">ADMIN</span>
+        <span class="badge bb-role" data-testid="current-role" sec:authorize="hasRole('STAFF')">STAFF</span>
+        <span class="badge bb-role" data-testid="current-role" sec:authorize="hasRole('DONOR')">DONOR</span>
+      </span>
+      <form th:action="@{/logout}" method="post" class="m-0">
+        <button class="btn btn-sm btn-outline-light" type="submit" data-testid="logout">Sign out</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<div th:fragment="flash" class="container mt-3">
+  <div th:if="${message}" class="alert alert-success" role="alert" data-testid="flash-message"
+       th:text="${message}">message</div>
+  <div th:if="${errorMessage}" class="alert alert-danger" role="alert" data-testid="flash-error"
+       th:text="${errorMessage}">error</div>
+</div>
+
+<footer th:fragment="footer" class="bb-footer">
+  <div class="container">
+    <span>Containerized Blood Bank Donor Matching Portal</span>
+    <span class="bb-footer-sep">&middot;</span>
+    <span>Ayush Mayekar &middot; 23102A0018 &middot; BE CMPN A</span>
+    <span class="bb-footer-sep">&middot;</span>
+    <a th:href="@{/actuator/health}" data-testid="footer-health">health</a>
+  </div>
+</footer>
+
+<!-- Blood group pill, reused on every screen so the colour coding is consistent -->
+<span th:fragment="groupBadge(group)" class="badge bb-group"
+      th:classappend="${group.rhPositive} ? 'bb-group-pos' : 'bb-group-neg'"
+      th:text="${group.label}">O-</span>
+
+<!-- Eligibility pill: the single visual that explains why a donor is or is not callable -->
+<span th:fragment="eligibility(donor, today)">
+  <span th:if="${!donor.available}" class="badge bb-pill bb-pill-off" data-testid="eligibility">Unavailable</span>
+  <span th:if="${donor.available and donor.isEligible(today)}" class="badge bb-pill bb-pill-ok"
+        data-testid="eligibility">Eligible</span>
+  <span th:if="${donor.available and !donor.isEligible(today)}" class="badge bb-pill bb-pill-wait"
+        data-testid="eligibility"
+        th:text="|Eligible on ${#temporals.format(donor.nextEligibleDate(today), 'dd MMM yyyy')}|">Eligible on</span>
+</span>
+</body>
+</html>

@@ -61,6 +61,28 @@ management:
     env:
       enabled: true
 
+# ---------------------------------------------------------------------------
+# Portal accounts. Defined here and overridable by environment variables so
+# that no password appears in Java source (NFR-06); they are BCrypt-hashed at
+# startup. These are credentials for a locally deployed demonstration instance.
+# A user-management screen is out of MVP scope - three fixed roles are what the
+# role-based workflow needs.
+# ---------------------------------------------------------------------------
+bloodbank:
+  security:
+    users:
+      - username: ${BLOODBANK_ADMIN_USER:admin}
+        password: ${BLOODBANK_ADMIN_PASSWORD:Admin@123}
+        role: ADMIN
+      - username: ${BLOODBANK_STAFF_USER:staff}
+        password: ${BLOODBANK_STAFF_PASSWORD:Staff@123}
+        role: STAFF
+      - username: ${BLOODBANK_DONOR_USER:donor}
+        password: ${BLOODBANK_DONOR_PASSWORD:Donor@123}
+        role: DONOR
+        # the donor record this login represents; seeded donor 1
+        donor-id: ${BLOODBANK_DONOR_RECORD_ID:1}
+
 info:
   app:
     name: Blood Bank Donor Matching Portal

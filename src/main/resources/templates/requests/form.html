@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Record blood request')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('requests')}"></nav>
+
+<main class="container my-4" style="max-width: 760px;">
+  <h1 class="h3 mb-3" data-testid="page-title">Record blood request</h1>
+
+  <form class="card card-body bb-card" method="post" th:action="@{/requests}" th:object="${request}"
+        data-testid="request-form">
+
+    <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" data-testid="form-errors">
+      <strong>Please correct the following:</strong>
+      <ul class="mb-0"><li th:each="err : ${#fields.allErrors()}" th:text="${err}">error</li></ul>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-8">
+        <label class="form-label" for="patientName">Patient name</label>
+        <input class="form-control" id="patientName" type="text" th:field="*{patientName}"
+               th:classappend="${#fields.hasErrors('patientName')} ? 'is-invalid'"
+               data-testid="field-patientName"/>
+        <div class="invalid-feedback" th:errors="*{patientName}">error</div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label" for="bloodGroup">Blood group required</label>
+        <select class="form-select" id="bloodGroup" th:field="*{bloodGroup}"
+                th:classappend="${#fields.hasErrors('bloodGroup')} ? 'is-invalid'"
+                data-testid="field-request-bloodGroup">
+          <option value="">Select…</option>
+          <option th:each="g : ${groups}" th:value="${g}" th:text="${g.label}">O-</option>
+        </select>
+        <div class="invalid-feedback" th:errors="*{bloodGroup}">error</div>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label" for="unitsNeeded">Units (1–10)</label>
+        <input class="form-control" id="unitsNeeded" type="number" min="1" max="10"
+               th:field="*{unitsNeeded}"
+               th:classappend="${#fields.hasErrors('unitsNeeded')} ? 'is-invalid'"
+               data-testid="field-unitsNeeded"/>
+        <div class="invalid-feedback" th:errors="*{unitsNeeded}">error</div>
+      </div>
+
+      <div class="col-md-5">
+        <label class="form-label" for="hospital">Hospital</label>
+        <input class="form-control" id="hospital" type="text" th:field="*{hospital}"
+               th:classappend="${#fields.hasErrors('hospital')} ? 'is-invalid'"
+               data-testid="field-hospital"/>
+        <div class="invalid-feedback" th:errors="*{hospital}">error</div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label" for="city">City</label>
+        <input class="form-control" id="city" type="text" th:field="*{city}"
+               th:classappend="${#fields.hasErrors('city')} ? 'is-invalid'"
+               data-testid="field-request-city"/>
+        <div class="invalid-feedback" th:errors="*{city}">error</div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label" for="urgency">Urgency</label>
+        <select class="form-select" id="urgency" th:field="*{urgency}" data-testid="field-urgency">
+          <option th:each="u : ${urgencies}" th:value="${u}" th:text="${u.label}">Medium</option>
+        </select>
+        <div class="form-text">Urgency affects display order only — it never relaxes the
+          compatibility or eligibility rules.</div>
+      </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+      <button class="btn bb-btn-primary" type="submit" data-testid="save-request">Record request</button>
+      <a class="btn btn-outline-secondary" th:href="@{/requests}" data-testid="cancel">Cancel</a>
+    </div>
+  </form>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

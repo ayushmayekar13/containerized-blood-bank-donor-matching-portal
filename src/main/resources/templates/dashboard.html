@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('dashboard')}"></nav>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container my-4">
+  <h1 class="h3 mb-1" data-testid="page-title">Dashboard</h1>
+  <p class="text-muted">Supply against demand. "Callable" means available <em>and</em> past the
+    90-day interval — people who could actually be phoned today.</p>
+
+  <!-- FR-23: demand with no supply, the condition the manual process only
+       discovers when a request fails -->
+  <div th:if="${snapshot.hasShortages()}" class="alert alert-danger" data-testid="shortage-alert">
+    <strong>Shortage.</strong>
+    <span th:text="${#strings.listJoin(snapshot.shortages, ', ')}">AB-</span>
+    <span th:text="${#lists.size(snapshot.shortages) == 1} ? 'has an open request and no callable donor.'
+                                                           : 'have open requests and no callable donors.'">…</span>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+      <div class="bb-tile">
+        <div class="bb-tile-label">Registered donors</div>
+        <div class="bb-tile-value" data-testid="tile-total-donors" th:text="${snapshot.totalDonors}">0</div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="bb-tile">
+        <div class="bb-tile-label">Callable today</div>
+        <div class="bb-tile-value" data-testid="tile-callable" th:text="${snapshot.callableDonors}">0</div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="bb-tile">
+        <div class="bb-tile-label">Open requests</div>
+        <div class="bb-tile-value" data-testid="tile-open-requests" th:text="${snapshot.openRequests}">0</div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="bb-tile" th:classappend="${snapshot.hasShortages()} ? 'bb-shortage'">
+        <div class="bb-tile-label">Groups in shortage</div>
+        <div class="bb-tile-value" data-testid="tile-shortages"
+             th:text="${#lists.size(snapshot.shortages)}">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card bb-card">
+        <div class="card-body pb-0">
+          <h2 class="h6 text-uppercase text-muted mb-0">Donors per blood group</h2>
+        </div>
+        <table class="table mb-0 align-middle" data-testid="supply-table">
+          <thead>
+            <tr><th>Group</th><th class="text-end">Registered</th>
+                <th class="text-end">Callable today</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr th:each="g : ${groups}" th:attr="data-testid='supply-row-' + ${g.name()}">
+              <td><span th:replace="~{fragments/layout :: groupBadge(${g})}"></span></td>
+              <td class="text-end" th:text="${snapshot.donorsByGroup.get(g.label)}">0</td>
+              <td class="text-end fw-semibold" data-testid="callable-count"
+                  th:text="${snapshot.callableByGroup.get(g.label)}">0</td>
+              <td>
+                <span th:if="${snapshot.shortages.contains(g.label)}"
+                      class="badge bb-pill bb-status-rejected" data-testid="shortage-flag">Shortage</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card bb-card mb-4">
+        <div class="card-body pb-0">
+          <h2 class="h6 text-uppercase text-muted mb-0">Requests per status</h2>
+        </div>
+        <table class="table mb-0" data-testid="status-table">
+          <tbody>
+            <tr th:each="s : ${snapshot.requestsByStatus}" th:attr="data-testid='status-row-' + ${s.key}">
+              <td>
+                <span class="badge bb-status"
+                      th:classappend="'bb-status-' + ${#strings.toLowerCase(s.key)}"
+                      th:text="${s.key}">NEW</span>
+              </td>
+              <td class="text-end fw-semibold" th:text="${s.value}">0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card bb-card">
+        <div class="card-body pb-2">
+          <h2 class="h6 text-uppercase text-muted mb-2">Unmatched requests</h2>
+        </div>
+        <ul class="list-group list-group-flush" data-testid="open-request-list">
+          <li th:if="${#lists.isEmpty(openRequests)}" class="list-group-item text-muted">
+            Nothing waiting to be matched.
+          </li>
+          <li th:each="r : ${openRequests}" class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              <a class="bb-link" th:href="@{/requests/{id}(id=${r.id})}" th:text="${r.patientName}">Patient</a>
+              <span th:replace="~{fragments/layout :: groupBadge(${r.bloodGroup})}"></span>
+            </span>
+            <span th:class="'bb-urgency-' + ${r.urgency.name()}" th:text="${r.urgency.label}">Urgency</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

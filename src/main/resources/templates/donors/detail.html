@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Donor')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('donors')}"></nav>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container my-4" style="max-width: 860px;">
+  <div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+      <h1 class="h3 mb-1" th:text="${donor.fullName}" data-testid="donor-detail-name">Name</h1>
+      <p class="mb-0">
+        <span th:replace="~{fragments/layout :: groupBadge(${donor.bloodGroup})}"></span>
+        <span th:replace="~{fragments/layout :: eligibility(${donor}, ${today})}"></span>
+      </p>
+    </div>
+    <a class="btn bb-btn-primary" th:href="@{/donors/{id}/edit(id=${donor.id})}"
+       data-testid="edit-donor">Edit donor</a>
+  </div>
+
+  <div class="card bb-card card-body mb-4">
+    <dl class="row mb-0">
+      <dt class="col-sm-4">Phone</dt><dd class="col-sm-8" th:text="${donor.phone}">-</dd>
+      <dt class="col-sm-4">Email</dt><dd class="col-sm-8" th:text="${donor.email}">-</dd>
+      <dt class="col-sm-4">City</dt><dd class="col-sm-8" th:text="${donor.city}" data-testid="donor-detail-city">-</dd>
+      <dt class="col-sm-4">Last donation</dt>
+      <dd class="col-sm-8" data-testid="donor-detail-lastdonation">
+        <span th:if="${donor.lastDonationDate == null}" class="text-muted">Never donated</span>
+        <span th:unless="${donor.lastDonationDate == null}"
+              th:text="${#temporals.format(donor.lastDonationDate, 'dd MMMM yyyy')}">date</span>
+      </dd>
+      <dt class="col-sm-4">Next eligible</dt>
+      <dd class="col-sm-8" data-testid="donor-detail-nexteligible"
+          th:text="${#temporals.format(donor.nextEligibleDate(today), 'dd MMMM yyyy')}">date</dd>
+      <dt class="col-sm-4">Notes</dt>
+      <dd class="col-sm-8" th:text="${donor.notes != null and !donor.notes.isBlank()} ? ${donor.notes} : '—'">—</dd>
+    </dl>
+  </div>
+
+  <div class="card bb-card card-body">
+    <h2 class="h6 text-uppercase text-muted mb-3">Who this donor can help</h2>
+    <p class="mb-2">
+      Red cells from <strong th:text="${donor.bloodGroup.label}">O-</strong> can be transfused to
+      <span th:text="${#lists.size(canDonateTo)}">0</span> of the eight recipient groups:
+    </p>
+    <div class="d-flex flex-wrap gap-2" data-testid="can-donate-to">
+      <span th:each="g : ${canDonateTo}">
+        <span th:replace="~{fragments/layout :: groupBadge(${g})}"></span>
+      </span>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Sign in')}"></head>
+<body>
+<main class="bb-login">
+  <div class="bb-login-head">
+    <h1><span style="color:#b3202e">&#10084;</span> Blood Bank Donor Matching Portal</h1>
+    <p class="text-muted mb-0">Sign in to continue</p>
+  </div>
+
+  <div class="card bb-card card-body">
+    <div th:if="${param.error}" class="alert alert-danger py-2" data-testid="login-error">
+      Incorrect username or password.
+    </div>
+    <div th:if="${param.loggedOut}" class="alert alert-success py-2" data-testid="logout-notice">
+      You have been signed out.
+    </div>
+
+    <form th:action="@{/login}" method="post" data-testid="login-form">
+      <div class="mb-3">
+        <label class="form-label" for="username">Username</label>
+        <input class="form-control" id="username" name="username" type="text"
+               autocomplete="username" required autofocus data-testid="login-username"/>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="password">Password</label>
+        <input class="form-control" id="password" name="password" type="password"
+               autocomplete="current-password" required data-testid="login-password"/>
+      </div>
+      <button class="btn bb-btn-primary w-100" type="submit" data-testid="login-submit">Sign in</button>
+    </form>
+  </div>
+
+  <!--
+    The demonstration accounts are listed on the page on purpose: the role-based
+    workflow is the behaviour under examination, and an examiner should be able to
+    switch roles without being told passwords out of band. These credentials are
+    valid only against this locally deployed instance.
+  -->
+  <div class="card bb-card card-body mt-3">
+    <h2 class="h6 text-uppercase text-muted mb-2">Demonstration accounts</h2>
+    <table class="table table-sm bb-cred-table mb-0">
+      <thead>
+        <tr><th>Username</th><th>Password</th><th>Role</th><th>May</th></tr>
+      </thead>
+      <tbody>
+        <tr th:each="a : ${accounts}" th:attr="data-testid='account-' + ${a.username}">
+          <td><code th:text="${a.username}">user</code></td>
+          <td><code th:text="${a.password}">pass</code></td>
+          <td><span class="badge bb-role text-dark border" th:text="${a.role}">ROLE</span></td>
+          <td class="text-muted">
+            <span th:if="${a.role == 'ADMIN'}">everything, including fulfil and reject</span>
+            <span th:if="${a.role == 'STAFF'}">donors, requests, assign a matched donor</span>
+            <span th:if="${a.role == 'DONOR'}">own profile and availability only</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="text-center text-muted mt-3 mb-0" style="font-size:.85rem">
+    Ayush Mayekar &middot; 23102A0018 &middot; BE CMPN A &middot; DevOps
+  </p>
+</main>
+</body>
+</html>

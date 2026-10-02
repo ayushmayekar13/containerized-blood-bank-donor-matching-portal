@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Request')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('requests')}"></nav>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container my-4">
+  <div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+      <h1 class="h3 mb-1" data-testid="request-detail-patient" th:text="${request.patientName}">Patient</h1>
+      <p class="mb-0">
+        <span th:replace="~{fragments/layout :: groupBadge(${request.bloodGroup})}"></span>
+        <span class="badge bb-status" data-testid="request-detail-status"
+              th:classappend="'bb-status-' + ${#strings.toLowerCase(request.status.name())}"
+              th:text="${request.status.label}">New</span>
+        <span th:class="'bb-urgency-' + ${request.urgency.name()}" th:text="${request.urgency.label}">Urgency</span>
+      </p>
+    </div>
+    <a class="btn btn-outline-secondary" th:href="@{/requests}">Back to requests</a>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card bb-card card-body mb-4">
+        <dl class="row mb-0">
+          <dt class="col-5">Units needed</dt><dd class="col-7" th:text="${request.unitsNeeded}">1</dd>
+          <dt class="col-5">Hospital</dt><dd class="col-7" th:text="${request.hospital}">-</dd>
+          <dt class="col-5">City</dt><dd class="col-7" th:text="${request.city}">-</dd>
+          <dt class="col-5">Matched donor</dt>
+          <dd class="col-7" data-testid="matched-donor">
+            <span th:if="${request.matchedDonor == null}" class="text-muted">Not yet matched</span>
+            <a th:unless="${request.matchedDonor == null}" class="bb-link"
+               th:href="@{/donors/{id}(id=${request.matchedDonor.id})}"
+               th:text="${request.matchedDonor.fullName}">Donor</a>
+          </dd>
+          <dt class="col-5" th:if="${request.rejectionReason != null}">Rejection reason</dt>
+          <dd class="col-7" th:if="${request.rejectionReason != null}"
+              data-testid="rejection-reason" th:text="${request.rejectionReason}">-</dd>
+        </dl>
+      </div>
+
+      <!-- NFR-15: who did what, and when -->
+      <div class="card bb-card card-body mb-4">
+        <h2 class="h6 text-uppercase text-muted mb-3">Audit trail</h2>
+        <dl class="row mb-0" style="font-size:.9rem">
+          <dt class="col-5">Recorded by</dt>
+          <dd class="col-7" data-testid="created-by" th:text="${request.createdBy}">-</dd>
+          <dt class="col-5">Recorded at</dt>
+          <dd class="col-7" th:text="${#temporals.format(request.createdAt, 'dd MMM yyyy HH:mm')}">-</dd>
+          <dt class="col-5">Last changed by</dt>
+          <dd class="col-7" data-testid="modified-by" th:text="${request.lastModifiedBy}">-</dd>
+          <dt class="col-5">Last changed at</dt>
+          <dd class="col-7" th:text="${#temporals.format(request.lastModifiedAt, 'dd MMM yyyy HH:mm')}">-</dd>
+        </dl>
+      </div>
+
+      <!--
+        Action buttons are driven by RequestStatus.allowedNext() plus the role, so
+        the screen can never offer a transition the service layer would refuse.
+        The reverse is not true, and deliberately so: the service refuses even a
+        request that bypasses this screen entirely (NFR-07).
+      -->
+      <div class="card bb-card card-body" data-testid="actions">
+        <h2 class="h6 text-uppercase text-muted mb-3">Actions</h2>
+
+        <p th:if="${request.status.isTerminal()}" class="mb-0 text-muted" data-testid="no-actions">
+          <span th:text="${request.status.label}">Fulfilled</span> is a terminal state — a closed
+          request is never reopened; record a new request instead.
+        </p>
+
+        <form th:if="${allowedNext.contains(T(com.bloodbank.domain.RequestStatus).FULFILLED)}"
+              sec:authorize="hasRole('ADMIN')"
+              th:action="@{/requests/{id}/fulfil(id=${request.id})}" method="post" class="mb-3">
+          <button class="btn bb-btn-primary w-100" type="submit" data-testid="fulfil-request">
+            Confirm donation (fulfil)
+          </button>
+          <div class="form-text">Stamps the donor's donation date; they become ineligible for 90 days.</div>
+        </form>
+
+        <!-- A STAFF user is told why the action is absent, rather than being left
+             to wonder. The API returns 403 for the same attempt. -->
+        <div th:if="${allowedNext.contains(T(com.bloodbank.domain.RequestStatus).FULFILLED)}"
+             sec:authorize="!hasRole('ADMIN')" class="alert alert-secondary py-2 mb-3"
+             data-testid="fulfil-not-permitted">
+          Only an ADMIN may confirm a donation. Your role may assign a matched donor.
+        </div>
+
+        <form th:if="${allowedNext.contains(T(com.bloodbank.domain.RequestStatus).REJECTED)}"
+              sec:authorize="hasRole('ADMIN')"
+              th:action="@{/requests/{id}/reject(id=${request.id})}" method="post">
+          <label class="form-label" for="reason">Reject with reason</label>
+          <input class="form-control mb-2" id="reason" name="reason" type="text" required
+                 placeholder="Reason is mandatory" data-testid="reject-reason"/>
+          <button class="btn btn-outline-danger w-100" type="submit" data-testid="reject-request">
+            Reject request
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div th:if="${request.status.name() == 'NEW'}">
+        <div class="card bb-card">
+          <div class="card-body pb-2">
+            <h2 class="h6 text-uppercase text-muted mb-1">Matching donors</h2>
+            <p class="text-muted mb-0" style="font-size:.88rem">
+              Compatible, available and past the 90-day interval. Ranked by exact group,
+              then same city, then longest rested.
+            </p>
+          </div>
+
+          <div th:if="${#lists.isEmpty(matches)}" class="card-body">
+            <div class="alert alert-danger mb-0" data-testid="no-matches">
+              <strong>No callable donor.</strong> Every compatible donor is unavailable or still
+              inside the 90-day interval.
+            </div>
+          </div>
+
+          <table th:unless="${#lists.isEmpty(matches)}" class="table table-hover align-middle mb-0"
+                 data-testid="match-table">
+            <thead>
+              <tr><th style="width:3.5rem">#</th><th>Donor</th><th>Group</th><th>City</th>
+                  <th>Rested</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr th:each="m : ${matches}" th:attr="data-testid='match-row-' + ${m.rank}">
+                <td><span class="badge bb-rank" th:text="${m.rank}">1</span></td>
+                <td>
+                  <a class="bb-link" th:href="@{/donors/{id}(id=${m.donorId})}"
+                     th:text="${m.fullName}" data-testid="match-name">Name</a>
+                  <div style="font-size:.78rem">
+                    <span th:if="${m.exactGroupMatch}" class="badge bb-pill bb-pill-ok">Exact group</span>
+                    <span th:if="${m.sameCity}" class="badge bb-pill bb-pill-city">Same city</span>
+                  </div>
+                </td>
+                <td><span th:replace="~{fragments/layout :: groupBadge(${m.donor.bloodGroup})}"></span></td>
+                <td th:text="${m.city}">City</td>
+                <td>
+                  <span th:if="${m.neverDonated}" class="text-muted">Never</span>
+                  <span th:unless="${m.neverDonated}" th:text="|${m.daysSinceLastDonation} d|">0 d</span>
+                </td>
+                <td class="text-end">
+                  <form th:action="@{/requests/{id}/match(id=${request.id})}" method="post" class="m-0">
+                    <input type="hidden" name="donorId" th:value="${m.donorId}"/>
+                    <button class="btn btn-sm bb-btn-primary" type="submit"
+                            th:attr="data-testid='assign-donor-' + ${m.rank}">Assign</button>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div th:unless="${request.status.name() == 'NEW'}" class="card bb-card card-body">
+        <h2 class="h6 text-uppercase text-muted mb-2">Matching</h2>
+        <p class="mb-0 text-muted">
+          A donor has already been assigned to this request, so the shortlist is no longer offered.
+          Reassignment would lose the record of who was originally matched; reject this request and
+          record a new one instead.
+        </p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
