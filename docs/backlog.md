@@ -35,10 +35,20 @@ documentation) = 82 points of planned effort.
 |---|---|---|---|---|
 | BUG-01 | Donor who donated 30 days ago appears in match shortlist | Unit test on eligibility boundary | 5 | Eligibility comparison was `>` on days instead of `>=` against the 90-day cut-off; corrected with boundary tests at 89/90/91 days |
 | BUG-02 | Dashboard shortage flag counted unavailable donors as supply | Selenium journey 3 | 6 | Shortage calculation now uses the same eligible-and-available predicate as the matching engine |
-| BUG-03 | Staff could fulfil a `NEW` request directly from the request detail page | Deliberate defect for the Task 10 quality-gate demonstration | 10 | Role and transition guard restored in the service layer; pipeline turned red first, then green after the fix |
+| BUG-03 | Dashboard reported 8 callable donors with only 1 registered | Manual HTTP check after the unit suite was green | 6 | The total summed the per-group figures, which deliberately overlap — one O− donor is callable for all eight recipient groups. The distinct count is the shortlist for AB+, the universal recipient. Regression test added |
+| BUG-04 | Request table sometimes empty at startup | Manual check after a volume recreate | 6 | Two separate `ApplicationRunner` beans have no guaranteed order, so requests were seeded before donors and skipped silently. Merged into one ordered runner |
+| BUG-05 | Worklist showed MEDIUM above HIGH above CRITICAL | Manual HTTP check | 6 | `urgency` is `@Enumerated(STRING)`, so ordering it in SQL sorted the stored text — alphabetical, and backwards for the two that matter. Ordering moved to the service using `Urgency.getWeight()`. Regression test added |
+| BUG-06 | Staff could fulfil a `NEW` request directly from the request detail page | Deliberate defect for the Task 10 quality-gate demonstration | 10 | Role and transition guard restored in the service layer; pipeline turned red first, then green after the fix |
 
-BUG-03 is intentional: it is the defect introduced in Task 10 to prove that the Selenium quality
+BUG-06 is intentional: it is the defect introduced in Task 10 to prove that the Selenium quality
 gate stops a deployment, and its correction commit is part of that task's evidence.
+
+BUG-03, BUG-04 and BUG-05 share a cause worth recording: all three were found by **exercising the
+running application over HTTP after the unit suite was already green**. BUG-05 is the sharpest —
+the unit tests asserted *which* requests came back and never in what order, and because the
+ordering lived in SQL, a JPA test over H2 agreed with production, both wrong in the same way. That
+is the concrete justification for the Selenium journeys in Task 9 and the blocking quality gate in
+Task 10.
 
 ## Product backlog (not in this release — future enhancements)
 
