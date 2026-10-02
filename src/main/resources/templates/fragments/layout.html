@@ -29,6 +29,13 @@
         <a class="nav-link" th:classappend="${active == 'match'} ? 'active'"
            th:href="@{/match}" data-testid="nav-match">Find donors</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link bb-nav-health" th:href="@{/actuator/health}" target="_blank"
+           title="Application health - used by the container probe and Ansible"
+           data-testid="nav-health">
+          <span class="bb-health-dot"></span> Health
+        </a>
+      </li>
     </ul>
     <div class="d-flex align-items-center gap-3" sec:authorize="isAuthenticated()"
          xmlns:sec="http://www.thymeleaf.org/extras/spring-security">

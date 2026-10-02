@@ -27,6 +27,14 @@ body {
 .bb-navbar .nav-link:hover { opacity: 1; }
 .bb-navbar .nav-link.active { opacity: 1; font-weight: 600; border-bottom: 2px solid #fff; }
 .bb-drop { color: #ffd9dc; }
+.bb-nav-health { display: inline-flex; align-items: center; gap: .4rem; }
+.bb-health-dot {
+  width: .55rem;
+  height: .55rem;
+  border-radius: 50%;
+  background: #6ee7a8;
+  box-shadow: 0 0 0 2px rgba(110, 231, 168, .3);
+}
 .bb-user { color: #fff; font-size: .9rem; }
 .bb-role {
   background: rgba(255, 255, 255, .22);
