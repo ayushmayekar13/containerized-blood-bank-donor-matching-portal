@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Blood requests')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('requests')}"></nav>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h1 class="h3 mb-1" data-testid="page-title">Blood requests</h1>
+      <p class="text-muted mb-0">
+        <span data-testid="request-count" th:text="${#lists.size(requests)}">0</span> request(s),
+        most urgent first
+      </p>
+    </div>
+    <a class="btn bb-btn-primary" th:href="@{/requests/new}" data-testid="new-request">Record request</a>
+  </div>
+
+  <form class="card card-body bb-card mb-4" method="get" th:action="@{/requests}" data-testid="request-search">
+    <div class="row g-3 align-items-end">
+      <div class="col-sm-3">
+        <label class="form-label" for="status">Status</label>
+        <select class="form-select" id="status" name="status" data-testid="filter-status">
+          <option value="">Any status</option>
+          <option th:each="s : ${statuses}" th:value="${s.name()}" th:text="${s.label}"
+                  th:selected="${status != null and status == s.name()}">New</option>
+        </select>
+      </div>
+      <div class="col-sm-3">
+        <label class="form-label" for="group">Blood group</label>
+        <select class="form-select" id="group" name="group" data-testid="filter-request-group">
+          <option value="">Any group</option>
+          <option th:each="g : ${groups}" th:value="${g.label}" th:text="${g.label}"
+                  th:selected="${group != null and group == g.label}">O-</option>
+        </select>
+      </div>
+      <div class="col-sm-3 d-flex gap-2">
+        <button class="btn bb-btn-primary w-100" type="submit" data-testid="request-search-submit">Search</button>
+        <a class="btn btn-outline-secondary" th:href="@{/requests}">Reset</a>
+      </div>
+    </div>
+  </form>
+
+  <div th:if="${#lists.isEmpty(requests)}" class="alert alert-warning" data-testid="no-requests">
+    No requests found for the selected filters.
+  </div>
+
+  <div th:unless="${#lists.isEmpty(requests)}" class="card bb-card">
+    <table class="table table-hover align-middle mb-0" data-testid="request-table">
+      <thead>
+        <tr><th>Patient</th><th>Group</th><th>Units</th><th>Hospital</th>
+            <th>Urgency</th><th>Status</th><th>Matched donor</th></tr>
+      </thead>
+      <tbody>
+        <tr th:each="r : ${requests}" th:attr="data-testid='request-row-' + ${r.id}">
+          <td>
+            <a class="bb-link" th:href="@{/requests/{id}(id=${r.id})}" th:text="${r.patientName}"
+               data-testid="request-patient">Patient</a>
+            <div class="text-muted" style="font-size:.8rem" th:text="${r.city}">City</div>
+          </td>
+          <td><span th:replace="~{fragments/layout :: groupBadge(${r.bloodGroup})}"></span></td>
+          <td th:text="${r.unitsNeeded}">1</td>
+          <td th:text="${r.hospital}">Hospital</td>
+          <td><span th:class="'bb-urgency-' + ${r.urgency.name()}" th:text="${r.urgency.label}">Low</span></td>
+          <td>
+            <span class="badge bb-status" data-testid="request-status"
+                  th:classappend="'bb-status-' + ${#strings.toLowerCase(r.status.name())}"
+                  th:text="${r.status.label}">New</span>
+          </td>
+          <td>
+            <span th:if="${r.matchedDonor == null}" class="text-muted">—</span>
+            <a th:unless="${r.matchedDonor == null}" class="bb-link"
+               th:href="@{/donors/{id}(id=${r.matchedDonor.id})}"
+               th:text="${r.matchedDonor.fullName}">Donor</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

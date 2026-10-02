@@ -1,7 +1,10 @@
 package com.bloodbank.config;
 
 import com.bloodbank.domain.BloodGroup;
+import com.bloodbank.domain.BloodRequest;
 import com.bloodbank.domain.Donor;
+import com.bloodbank.domain.Urgency;
+import com.bloodbank.repo.BloodRequestRepository;
 import com.bloodbank.repo.DonorRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +35,20 @@ public class DataSeeder {
     private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
 
     @Bean
-    ApplicationRunner seedDonors(DonorRepository donors, Clock clock) {
+    ApplicationRunner seedDemonstrationData(DonorRepository donors,
+                                            BloodRequestRepository requests,
+                                            Clock clock) {
+        // One runner, not two: separate ApplicationRunner beans have no
+        // guaranteed order, and seeding requests before donors silently produced
+        // an empty request table (defect BUG-04).
         return args -> {
+            seedDonors(donors, clock);
+            seedRequests(requests, donors);
+        };
+    }
+
+    private void seedDonors(DonorRepository donors, Clock clock) {
+        {
             if (donors.count() > 0) {
                 log.info("Database already contains {} donors; skipping seed", donors.count());
                 return;
@@ -65,7 +80,45 @@ public class DataSeeder {
             donors.saveAll(seed);
             log.info("Seeded {} demonstration donors across {} blood groups",
                      seed.size(), BloodGroup.values().length);
-        };
+        }
+    }
+
+    /**
+     * Seeds three open requests, so that the dashboard, the ranked shortlist and
+     * the role-based workflow are all exercisable the moment the application
+     * starts.
+     *
+     * <p>The three are chosen to show different things:
+     * <ul>
+     *   <li><strong>B+ in Thane</strong> — a healthy shortlist with every ranking
+     *       rule visible at once: exact group, same city, and longest rested.</li>
+     *   <li><strong>O- in Mumbai</strong> — the scarcest group. Exactly one donor
+     *       in the seed register is callable for it (the other O- donor donated ten
+     *       days ago), so marking that one donor unavailable turns this request into
+     *       a <strong>shortage</strong> live on screen. That cause-and-effect is far
+     *       more informative than a shortage that is simply present at startup.</li>
+     *   <li><strong>AB- in Thane</strong> — shows that compatibility is wider than
+     *       "same group only": the only AB- donor is unavailable, yet the request
+     *       is still satisfiable from a B- donor.</li>
+     * </ul>
+     */
+    private void seedRequests(BloodRequestRepository requests, DonorRepository donors) {
+        if (requests.count() > 0 || donors.count() == 0) {
+            return;
+        }
+        requests.saveAll(List.of(
+            request("Meera Joshi",   BloodGroup.B_POS,  2, "Civil Hospital, Thane",   "Thane",  Urgency.HIGH),
+            request("Aditya Kamat",  BloodGroup.O_NEG,  1, "Sion Hospital",           "Mumbai", Urgency.CRITICAL),
+            request("Shalini Desai", BloodGroup.AB_NEG, 1, "Jupiter Hospital, Thane", "Thane",  Urgency.MEDIUM)
+        ));
+        log.info("Seeded {} demonstration blood requests", requests.count());
+    }
+
+    private static BloodRequest request(String patient, BloodGroup group, int units,
+                                        String hospital, String city, Urgency urgency) {
+        BloodRequest request = new BloodRequest(patient, group, units, hospital, city, urgency);
+        request.recordCreation("staff", java.time.Instant.now());
+        return request;
     }
 
     private static Donor donor(String name, BloodGroup group, String phone, String city,

@@ -1,6 +1,7 @@
 package com.bloodbank.web;
 
 import com.bloodbank.service.DonorService;
+import com.bloodbank.service.RequestService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,9 +54,35 @@ public class GlobalExceptionHandler {
                      "One or more fields are invalid", request, fields);
     }
 
-    @ExceptionHandler(DonorService.DonorNotFoundException.class)
+    @ExceptionHandler({DonorService.DonorNotFoundException.class,
+                       RequestService.RequestNotFoundException.class})
     public ResponseEntity<ApiError> onNotFound(RuntimeException e, HttpServletRequest request) {
         return build(HttpStatus.NOT_FOUND, "NotFound", e.getMessage(), request, null);
+    }
+
+    /**
+     * 409: the request was well-formed and the caller was permitted, but the
+     * state machine forbids the move. This is the code that proves the workflow
+     * is enforced in the service layer rather than by hiding a button.
+     */
+    @ExceptionHandler(RequestService.IllegalTransitionException.class)
+    public ResponseEntity<ApiError> onIllegalTransition(RuntimeException e,
+                                                        HttpServletRequest request) {
+        return build(HttpStatus.CONFLICT, "IllegalTransition", e.getMessage(), request, null);
+    }
+
+    /** 403: authenticated, but this role may not perform this transition. */
+    @ExceptionHandler(RequestService.InsufficientRoleException.class)
+    public ResponseEntity<ApiError> onInsufficientRole(RuntimeException e,
+                                                       HttpServletRequest request) {
+        return build(HttpStatus.FORBIDDEN, "InsufficientRole", e.getMessage(), request, null);
+    }
+
+    /** 422: well-formed input that breaks a business rule - an unusable donor. */
+    @ExceptionHandler(RequestService.InvalidMatchException.class)
+    public ResponseEntity<ApiError> onInvalidMatch(RuntimeException e,
+                                                   HttpServletRequest request) {
+        return build(HttpStatus.UNPROCESSABLE_ENTITY, "InvalidMatch", e.getMessage(), request, null);
     }
 
     @ExceptionHandler(DonorService.DuplicatePhoneException.class)
