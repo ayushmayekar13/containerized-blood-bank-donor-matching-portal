@@ -1,0 +1,5 @@
+build      #2
+result     SUCCESS
+duration   13.5s
+url        http://localhost:8090/job/bloodbank-ci/2/
+artefact   bloodbank.war

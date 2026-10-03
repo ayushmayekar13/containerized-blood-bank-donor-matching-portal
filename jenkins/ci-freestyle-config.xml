@@ -1,0 +1,135 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<!--
+  Task 7 - continuous integration job for the Blood Bank Donor Matching Portal.
+
+  A freestyle job on purpose: Task 7 asks for a Maven build job connected to the
+  repository and triggered by commit, and a freestyle job shows each of those
+  pieces as a separate, inspectable configuration block. The pipeline-as-code
+  version of the same build, with deployment stages added, is the Jenkinsfile in
+  Task 8 - keeping both makes the difference between the two approaches
+  demonstrable side by side rather than described.
+
+  Created by scripts/jenkins-job.sh, which posts this file to the Jenkins REST
+  API. The job is therefore version-controlled: changing CI means editing this
+  file and re-running the script, never clicking in the UI.
+-->
+<project>
+  <description>Task 7 - CI build of the Blood Bank Donor Matching Portal. Polls the local repository, builds with Maven on JDK 21, publishes unit test results and archives bloodbank.war.</description>
+  <keepDependencies>false</keepDependencies>
+
+  <properties>
+    <!-- Keep 20 builds of history: enough to show a test trend and the red/green
+         transition from Task 10, without the controller growing without bound. -->
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>20</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>5</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+  </properties>
+
+  <!-- SOURCE: the local Git repository. There is no remote yet, so Jenkins
+       clones from the working copy on disk. Once the repository is pushed, the
+       only change needed is the URL below. -->
+  <scm class="hudson.plugins.git.GitSCM" plugin="git">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>@@REPO_URL@@</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/main</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="empty-list"/>
+    <extensions/>
+  </scm>
+
+  <!-- JDK pinned by name to the installation registered in
+       jenkins/init.groovy.d/02-tools-and-url.groovy -->
+  <jdk>jdk21</jdk>
+
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+
+  <!-- TRIGGER: poll the repository every two minutes. A webhook would be the
+       right answer for a hosted repository and is what this becomes after the
+       push; polling is what works for a local repository with no server able to
+       call back into Jenkins, and it still satisfies "triggered by commit or
+       scheduled polling". -->
+  <triggers>
+    <hudson.triggers.SCMTrigger>
+      <spec>H/2 * * * *</spec>
+      <ignorePostCommitHooks>false</ignorePostCommitHooks>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
+
+  <concurrentBuild>false</concurrentBuild>
+
+  <builders>
+    <!-- BUILD: Maven, with the JDK pinned. The host default java is 11 and
+         Spring Boot 3 needs 17+, so JAVA_HOME is set explicitly rather than
+         inherited from the agent's environment. -->
+    <hudson.tasks.Maven>
+      <targets>clean package</targets>
+      <mavenName>maven3</mavenName>
+      <jvmOptions></jvmOptions>
+      <usePrivateRepository>false</usePrivateRepository>
+      <settings class="jenkins.mvn.DefaultSettingsProvider"/>
+      <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
+      <injectBuildVariables>false</injectBuildVariables>
+    </hudson.tasks.Maven>
+  </builders>
+
+  <publishers>
+    <!-- Publish the unit test results so Jenkins shows pass/fail counts and a
+         trend graph across builds, rather than requiring the console log to be
+         read. -->
+    <hudson.tasks.junit.JUnitResultArchiver plugin="junit">
+      <testResults>target/surefire-reports/*.xml</testResults>
+      <keepLongStdio>false</keepLongStdio>
+      <healthScaleFactor>1.0</healthScaleFactor>
+      <allowEmptyResults>false</allowEmptyResults>
+    </hudson.tasks.junit.JUnitResultArchiver>
+
+    <!-- ARCHIVE the artefact, which is the task's explicit deliverable. The WAR
+         is what every later task consumes: Task 8 deploys it, Task 11 copies it
+         into the image, Task 12 publishes that image. -->
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>target/bloodbank.war</artifacts>
+      <allowEmptyArchive>false</allowEmptyArchive>
+      <onlyIfSuccessful>true</onlyIfSuccessful>
+      <fingerprint>true</fingerprint>
+      <defaultExcludes>true</defaultExcludes>
+      <caseSensitive>true</caseSensitive>
+      <followSymlinks>false</followSymlinks>
+    </hudson.tasks.ArtifactArchiver>
+  </publishers>
+
+  <buildWrappers>
+    <!-- Wipe the workspace first: a build that only passes because of leftovers
+         from the previous build is not a reproducible build. -->
+    <hudson.plugins.ws__cleanup.PreBuildCleanup plugin="ws-cleanup">
+      <deleteDirs>false</deleteDirs>
+      <cleanupParameter></cleanupParameter>
+      <externalDelete></externalDelete>
+      <disableDeferredWipeout>false</disableDeferredWipeout>
+    </hudson.plugins.ws__cleanup.PreBuildCleanup>
+
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper"/>
+
+    <hudson.plugins.build__timeout.BuildTimeoutWrapper plugin="build-timeout">
+      <strategy class="hudson.plugins.build_timeout.impl.AbsoluteTimeOutStrategy">
+        <timeoutMinutes>20</timeoutMinutes>
+      </strategy>
+      <operationList/>
+    </hudson.plugins.build__timeout.BuildTimeoutWrapper>
+  </buildWrappers>
+</project>

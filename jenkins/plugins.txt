@@ -1,0 +1,15 @@
+# Plugins this project needs, and why each one is here.
+# Installed by scripts/jenkins-setup.sh through the Jenkins CLI, which resolves
+# each plugin's own dependencies from the update centre.
+#
+# Deliberately minimal: every plugin is a thing that can break an upgrade, so the
+# pipeline shells out to `docker` rather than pulling in docker-workflow, and
+# uses `sh` steps rather than wrappers wherever a shell command is as clear.
+
+git                     # clone the repository in both the freestyle job and the pipeline
+workflow-aggregator     # the Pipeline suite - needed for the declarative Jenkinsfile (Task 8)
+junit                   # publish Surefire and Failsafe XML, and the test trend over builds (Tasks 7, 10)
+ws-cleanup              # wipe the workspace before a build, so "works because of leftovers" cannot happen
+timestamper             # timestamps in the console log, which makes the captured evidence readable
+build-timeout           # stop a hung build instead of occupying the executor forever
+credentials-binding     # inject registry credentials as environment variables, never in the Jenkinsfile (Task 12)
