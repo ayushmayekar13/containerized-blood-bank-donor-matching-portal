@@ -1,0 +1,16 @@
+# Parameterised run - evidence that DEPLOY_PORT and SPRING_PROFILE genuinely change the deployment
+
+$ bash scripts/jenkins-setup.sh cli build bloodbank-pipeline -p DEPLOY_PORT=9095 -p SPRING_PROFILE=local -s
+Started bloodbank-pipeline #4
+Completed bloodbank-pipeline #4 : SUCCESS
+
+$ docker ps --format '{{.Names}} {{.Image}} {{.Ports}}' -f name=bloodbank-app
+bloodbank-app tomcat:10.1-jdk21-temurin 0.0.0.0:9095->8080/tcp
+
+$ curl -s http://localhost:9095/actuator/health
+{"status":"UP","groups":["liveness","readiness"]}
+
+$ docker inspect bloodbank-app --format '{{range .Config.Env}}{{println .}}{{end}}' | grep -E 'SPRING|BLOODBANK|SERVER_PORT'
+BLOODBANK_DB_PATH=/opt/bloodbank/data/bloodbank
+SERVER_PORT=8080
+SPRING_PROFILES_ACTIVE=local
