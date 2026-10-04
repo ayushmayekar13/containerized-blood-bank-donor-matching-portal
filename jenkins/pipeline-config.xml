@@ -1,0 +1,55 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<!--
+  Task 8 - the pipeline job. Almost all of its behaviour lives in the
+  Jenkinsfile in the repository root; this file only tells Jenkins where to find
+  that Jenkinsfile.
+
+  That asymmetry is the point of pipeline-as-code. Compare the size of this file
+  with jenkins/ci-freestyle-config.xml, which has to describe every build step,
+  publisher and wrapper in Jenkins' own XML: here, changing the pipeline means
+  editing a Groovy file that is reviewed in the same pull request as the code it
+  builds, and the job definition itself never changes again.
+
+  Created by: bash scripts/jenkins-job.sh create bloodbank-pipeline jenkins/pipeline-config.xml
+-->
+<flow-definition plugin="workflow-job">
+  <description>Task 8 onwards - pipeline as code for the Blood Bank Donor Matching Portal. Checkout, build, unit test, package, deploy to Tomcat, health check; the Selenium quality gate (Task 10) and the Docker registry stages (Task 12) are added to the Jenkinsfile itself.</description>
+  <keepDependencies>false</keepDependencies>
+
+  <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>20</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>5</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+    <!-- Parameters are declared in the Jenkinsfile, not here. Jenkins learns
+         about them from the first build, which is why this file does not
+         duplicate them: two declarations would be two things to keep in step. -->
+  </properties>
+
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps">
+    <scm class="hudson.plugins.git.GitSCM" plugin="git">
+      <configVersion>2</configVersion>
+      <userRemoteConfigs>
+        <hudson.plugins.git.UserRemoteConfig>
+          <url>@@REPO_URL@@</url>
+        </hudson.plugins.git.UserRemoteConfig>
+      </userRemoteConfigs>
+      <branches>
+        <hudson.plugins.git.BranchSpec>
+          <name>*/main</name>
+        </hudson.plugins.git.BranchSpec>
+      </branches>
+      <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+      <submoduleCfg class="empty-list"/>
+      <extensions/>
+    </scm>
+    <scriptPath>Jenkinsfile</scriptPath>
+    <lightweight>false</lightweight>
+  </definition>
+
+  <disabled>false</disabled>
+</flow-definition>
