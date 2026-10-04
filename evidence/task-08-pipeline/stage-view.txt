@@ -1,0 +1,11 @@
+pipeline build #2  status=SUCCESS  duration=625.3s
+
+STAGE                  STATUS         TIME
+Declarative: Checkout SCM SUCCESS        0.3s
+Checkout               SUCCESS        1.1s
+Build                  SUCCESS        3.0s
+Unit Test              SUCCESS       11.0s
+Package                SUCCESS      597.6s
+Deploy to Tomcat       SUCCESS        7.5s
+Health Check           SUCCESS        1.5s
+Declarative: Post Actions SUCCESS        0.4s

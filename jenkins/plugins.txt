@@ -13,3 +13,4 @@ ws-cleanup              # wipe the workspace before a build, so "works because o
 timestamper             # timestamps in the console log, which makes the captured evidence readable
 build-timeout           # stop a hung build instead of occupying the executor forever
 credentials-binding     # inject registry credentials as environment variables, never in the Jenkinsfile (Task 12)
+pipeline-stage-view     # the visual stage-by-stage view; this is what makes the Task 10 quality gate legible at a glance rather than buried in a console log

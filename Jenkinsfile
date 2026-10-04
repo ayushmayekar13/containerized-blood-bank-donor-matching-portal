@@ -70,9 +70,15 @@ pipeline {
         APP_VOLUME    = 'bloodbank-data'
         TOMCAT_IMAGE  = "${params.TOMCAT_IMAGE}"
         SPRING_PROFILE = "${params.SPRING_PROFILE}"
-        // Maven in CI: batch mode so the log has no download progress spam, and
-        // no transfer progress, which keeps the captured evidence readable.
-        MAVEN_OPTS    = '-Dmaven.repo.local=.m2/repository'
+        // Maven in CI: batch mode and no transfer progress, so the captured
+        // console log is readable evidence rather than pages of download bars.
+        //
+        // The local repository is deliberately NOT redirected into the
+        // workspace. Doing that on the first run cost 597 seconds in the
+        // Package stage, because every dependency was downloaded again - a
+        // per-workspace cache is wiped with the workspace, so it is not a cache.
+        // The shared ~/.m2 brings the stage under ten seconds and keeps the
+        // pipeline inside the six-minute budget in NFR-13.
         MVN           = 'mvn -B -ntp'
     }
 
