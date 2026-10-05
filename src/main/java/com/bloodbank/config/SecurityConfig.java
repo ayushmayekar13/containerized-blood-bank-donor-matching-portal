@@ -91,7 +91,8 @@ public class SecurityConfig {
     /** Chain 2 — the browser application: form login, session, CSRF protection. */
     @Bean
     @Order(2)
-    SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain webFilterChain(HttpSecurity http,
+                                       RoleAwareSuccessHandler successHandler) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
                 // open: probes, the login page and static assets
@@ -106,7 +107,10 @@ public class SecurityConfig {
                 .anyRequest().authenticated())
             .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/dashboard", true)
+                // Role-aware, not a single fixed URL: /dashboard is forbidden to
+                // a DONOR, so a fixed success URL sent them straight to a 403
+                // after a successful sign-in (BUG-07, found by Selenium J5).
+                .successHandler(successHandler)
                 .permitAll())
             .logout(logout -> logout
                 .logoutUrl("/logout")

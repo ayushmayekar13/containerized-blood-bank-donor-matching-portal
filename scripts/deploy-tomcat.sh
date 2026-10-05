@@ -33,6 +33,18 @@ if [ ! -f "$WAR" ]; then
   exit 1
 fi
 
+# Copy the WAR out of target/ before mounting it.
+#
+# Bind-mounting straight out of target/ ties the build directory to the
+# container's lifetime: Docker holds the file open, so the next `mvn clean`
+# fails with "Could not copy webapp classes". Staging it in .deploy/ decouples
+# the two - the build directory is the build's to delete, and the deployed
+# artefact is a snapshot that stays put until the next deployment replaces it.
+STAGE_DIR="${PROJECT_ROOT}/.deploy"
+mkdir -p "$STAGE_DIR"
+STAGED_WAR="${STAGE_DIR}/ROOT.war"
+cp "$WAR" "$STAGED_WAR"
+
 say "Deploying $(basename "$WAR") ($(du -h "$WAR" | cut -f1)) to Tomcat"
 say "  image      ${TOMCAT_IMAGE}"
 say "  container  ${APP_CONTAINER}"
@@ -54,7 +66,7 @@ docker run -d \
   --name "${APP_CONTAINER}" \
   -p "${APP_PORT}:${APP_CONTAINER_PORT}" \
   -v "${APP_VOLUME}:/opt/bloodbank/data" \
-  -v "$(cd "$(dirname "$WAR")" && pwd)/$(basename "$WAR")":/usr/local/tomcat/webapps/ROOT.war:ro \
+  -v "${STAGED_WAR}":/usr/local/tomcat/webapps/ROOT.war:ro \
   -e BLOODBANK_DB_PATH=/opt/bloodbank/data/bloodbank \
   -e SERVER_PORT="${APP_CONTAINER_PORT}" \
   ${SPRING_PROFILE:+-e SPRING_PROFILES_ACTIVE=$SPRING_PROFILE} \

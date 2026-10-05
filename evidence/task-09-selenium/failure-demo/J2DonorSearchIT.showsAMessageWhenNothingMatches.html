@@ -1,0 +1,129 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Donor registry · Blood Bank Portal</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bb-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/" data-testid="nav-brand">
+      <span class="bb-drop">❤</span> Blood Bank Portal
+    </a>
+    <!-- Role-aware navigation: a DONOR sees only their own record, so the
+         registry and workflow links are not rendered for them at all. -->
+    <ul class="navbar-nav me-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/dashboard" data-testid="nav-dashboard">Dashboard</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="/donors" data-testid="nav-donors">Donors</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/requests" data-testid="nav-requests">Requests</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/match" data-testid="nav-match">Find donors</a>
+      </li>
+      
+      <!-- Conflict resolution (PR-02): develop added this Health link while this
+           branch added the DONOR profile link, both as the last item of the same
+           list. Both are kept, because they serve different people and neither
+           replaces the other. The Health link stays unconditional - a DONOR
+           benefits from seeing that the portal is up, and the endpoint itself is
+           deliberately unauthenticated for the container probe (FR-26), so
+           restricting the link would protect nothing. -->
+      <li class="nav-item">
+        <a class="nav-link bb-nav-health" href="/actuator/health" target="_blank" title="Application health - used by the container probe and Ansible" data-testid="nav-health">
+          <span class="bb-health-dot"></span> Health
+        </a>
+      </li>
+    </ul>
+    <div class="d-flex align-items-center gap-3">
+      <!-- The role is rendered with sec:authorize rather than by projecting over
+           #authentication.authorities: the projection form has no readable way to
+           strip the ROLE_ prefix, and three explicit cases are clearer than one
+           clever expression for a fixed set of three roles. -->
+      <span class="bb-user" data-testid="current-user">
+        <span>staff</span>
+        
+        <span class="badge bb-role" data-testid="current-role">STAFF</span>
+        
+      </span>
+      <form action="/logout" method="post" class="m-0"><input type="hidden" name="_csrf" value="GYJ5Mg7ErQbG09Uj_h15F2JeRG1rJFijB8DH3MedrWlflNXrerJLBTbwzGTr4eRHzzBNdgc_aVUIQTqOYvmhvfP8zwppo7Pe">
+        <button class="btn btn-sm btn-outline-light" type="submit" data-testid="logout">Sign out</button>
+      </form>
+    </div>
+  </div>
+</nav>
+<div class="container mt-3">
+  
+  
+</div>
+
+<main class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h1 class="h3 mb-1" data-testid="page-title">Donor registry</h1>
+      <p class="text-muted mb-0">
+        <span data-testid="donor-count">0</span> donor(s) shown
+      </p>
+    </div>
+    <a class="btn bb-btn-primary" href="/donors/new" data-testid="register-donor">Register donor</a>
+  </div>
+
+  <!-- FR-04: filters combine with logical AND -->
+  <form class="card card-body bb-card mb-4" method="get" action="/donors" data-testid="search-form">
+    <div class="row g-3 align-items-end">
+      <div class="col-sm-3">
+        <label class="form-label" for="group">Blood group</label>
+        <select class="form-select" id="group" name="group" data-testid="filter-group">
+          <option value="">Any group</option>
+          <option value="O-">O-</option>
+          <option value="O+">O+</option>
+          <option value="B-">B-</option>
+          <option value="B+">B+</option>
+          <option value="A-">A-</option>
+          <option value="A+">A+</option>
+          <option value="AB-" selected="selected">AB-</option>
+          <option value="AB+">AB+</option>
+        </select>
+      </div>
+      <div class="col-sm-4">
+        <label class="form-label" for="city">City</label>
+        <input class="form-control" id="city" name="city" type="text" value="Nagpur" placeholder="Any city" data-testid="filter-city">
+      </div>
+      <div class="col-sm-3">
+        <div class="form-check mt-4">
+          <input class="form-check-input" type="checkbox" id="availableOnly" name="availableOnly" value="true" data-testid="filter-available">
+          <label class="form-check-label" for="availableOnly">Available only</label>
+        </div>
+      </div>
+      <div class="col-sm-2 d-flex gap-2">
+        <button class="btn bb-btn-primary w-100" type="submit" data-testid="search-submit">Search</button>
+        <a class="btn btn-outline-secondary" href="/donors" data-testid="search-reset">Reset</a>
+      </div>
+    </div>
+  </form>
+
+  <!-- AC-02.4: an empty result must say so explicitly, not render an empty page -->
+  <div class="alert alert-warning" data-testid="no-donors">
+    No donors found for the selected filters.
+  </div>
+
+  
+</main>
+
+<footer class="bb-footer">
+  <div class="container">
+    <span>Containerized Blood Bank Donor Matching Portal</span>
+    <span class="bb-footer-sep">·</span>
+    <span>Ayush Mayekar · 23102A0018 · BE CMPN A</span>
+    <span class="bb-footer-sep">·</span>
+    <a href="/actuator/health" data-testid="footer-health">health</a>
+  </div>
+</footer>
+
+
+</body></html>

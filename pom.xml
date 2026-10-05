@@ -30,6 +30,7 @@
     <it.source.directory>${project.basedir}/src/it/java</it.source.directory>
     <app.base.url>http://localhost:9090</app.base.url>
     <selenium.headless>true</selenium.headless>
+    <selenium.version>4.25.0</selenium.version>
   </properties>
 
   <dependencies>
@@ -91,6 +92,18 @@
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- Selenium 4 for the UI journeys. No chromedriver binary is committed and
+         no version is pinned: Selenium Manager, built in since 4.6, detects the
+         installed Chrome and downloads the matching driver. A pinned driver in
+         the repository rots the moment Chrome auto-updates, which is the most
+         common reason a UI suite that used to work stops working. -->
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>${selenium.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -126,4 +139,87 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <!--
+      The Selenium journeys live in their own profile, and that is a deliberate
+      design decision rather than a convenience.
+
+      `mvn clean verify` must be green on any machine, from a clean checkout,
+      with nothing else running - that is requirement US-10 and it is what the
+      Jenkins Unit Test stage relies on. The UI journeys cannot satisfy that:
+      they need a *deployed* application to drive and a browser to drive it with.
+      Making them part of the default build would mean the default build fails
+      for a reason that has nothing to do with the commit under test, and the
+      usual response to that is for people to stop trusting the build.
+
+      So:
+        mvn clean verify              unit tests only, always runnable
+        mvn clean verify -P ui-tests  UI journeys, against a deployed instance
+
+      The Jenkins pipeline deploys first and then activates this profile, which
+      is exactly the ordering the quality gate in Task 10 depends on.
+    -->
+    <profile>
+      <id>ui-tests</id>
+      <build>
+        <plugins>
+          <!-- src/it/java is a separate source root so the fast unit suite is
+               never slowed down by a browser, and so the two kinds of test
+               cannot be confused for one another. -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>3.6.0</version>
+            <executions>
+              <execution>
+                <id>add-integration-test-source</id>
+                <phase>generate-test-sources</phase>
+                <goals>
+                  <goal>add-test-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>${it.source.directory}</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <includes>
+                <include>**/*IT.java</include>
+              </includes>
+              <systemPropertyVariables>
+                <app.base.url>${app.base.url}</app.base.url>
+                <selenium.headless>${selenium.headless}</selenium.headless>
+              </systemPropertyVariables>
+              <!-- The journeys drive one shared application instance, so they
+                   must not run in parallel: two browsers racing on the same
+                   blood request would make failures depend on timing rather
+                   than on the code. -->
+              <forkCount>1</forkCount>
+              <reuseForks>true</reuseForks>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <!-- `verify` is what turns a failed journey into a failed
+                       build. Without it, failsafe records the failure and the
+                       build still goes green - which is precisely the hole the
+                       Task 10 quality gate must not have. -->
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

@@ -1,0 +1,15 @@
+# Selenium journey results - local execution through Maven
+
+Command:
+    bash scripts/run-ui-tests.sh
+    (equivalently: mvn -P ui-tests verify -Dapp.base.url=http://localhost:9091)
+
+Result:
+    Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.96 s -- in com.bloodbank.ui.J2DonorSearchIT
+    Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 33.62 s -- in com.bloodbank.ui.J1DonorRegistrationIT
+    Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 25.41 s -- in com.bloodbank.ui.J3RequestAndDashboardIT
+    Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 25.69 s -- in com.bloodbank.ui.J4MatchAndRoleGuardIT
+    Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 36.06 s -- in com.bloodbank.ui.J5FulfilAndEligibilityIT
+
+    Tests run: 16, Failures: 0, Errors: 0, Skipped: 0
+    BUILD SUCCESS

@@ -34,6 +34,9 @@ desktop.ini
 *.trace.db
 *.lock.db
 data/
+# Staging directory for the WAR that is bind-mounted into the Tomcat container.
+# It holds a copy of a build artefact, so it is as disposable as target/.
+.deploy/
 logs/
 *.log
 # ...but the curated evidence under evidence/ IS the submission's proof that the
