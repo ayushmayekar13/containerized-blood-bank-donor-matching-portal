@@ -55,6 +55,11 @@ pipeline {
             description: 'Spring profile to activate in the deployed container. Empty is the default production-like profile; "local" enables the H2 console and debug logging.'
         )
         booleanParam(
+            name: 'RUN_UI_TESTS',
+            defaultValue: true,
+            description: 'Run the Selenium journeys as a blocking quality gate. This exists so a deployment can be inspected by hand without the browser suite running - NOT as a way to make a red build go green. Turning it off is recorded in the build parameters of every build that did so.'
+        )
+        booleanParam(
             name: 'RUN_HEALTH_CHECK',
             defaultValue: true,
             description: 'Run the behavioural health check after deployment. Leave on: a container that answers 200 while the matching engine is broken has failed in the only way that matters.'
@@ -170,6 +175,63 @@ pipeline {
                 // Behavioural, not just a 200: it asserts the compatibility
                 // matrix, the role guard and the state machine through the API.
                 sh 'bash scripts/health-check.sh "http://localhost:${APP_PORT}"'
+            }
+        }
+
+        /* ------------------------------------------------------------------
+         * THE QUALITY GATE (Task 10).
+         *
+         * Everything that promotes a build - publishing the image to the
+         * registry, deploying it as the running container - is placed AFTER
+         * this stage. That ordering is the entire mechanism: if a journey
+         * fails, this stage fails, the pipeline stops, and the stages below
+         * are never entered. Nothing needs to check a flag, because a failing
+         * regression cannot physically reach them.
+         *
+         * Two things are deliberately NOT done here:
+         *
+         *   - no `catchError`, no `|| true`, no `unstable`. Any of those would
+         *     record the failure and let the build continue, which is a gate
+         *     that reports rather than a gate that stops;
+         *   - no retry. A journey that passes on the second attempt is telling
+         *     you the suite is flaky, and hiding that is how a suite stops
+         *     being believed.
+         * ------------------------------------------------------------------ */
+        stage('UI Test (quality gate)') {
+            when { expression { return params.RUN_UI_TESTS } }
+            steps {
+                sh """
+                    set -e
+                    rm -rf target/screenshots
+                    ${MVN} -P ui-tests verify \
+                        -Dapp.base.url=http://localhost:${APP_PORT} \
+                        -Dselenium.headless=true
+                """
+            }
+            post {
+                always {
+                    // `always`: a red gate is exactly when the report and the
+                    // screenshots are needed, and the next build overwrites the
+                    // workspace.
+                    junit allowEmptyResults: false, testResults: 'target/failsafe-reports/*.xml'
+                    archiveArtifacts artifacts: 'target/screenshots/**',
+                                     allowEmptyArchive: true,
+                                     onlyIfSuccessful: false
+                }
+                failure {
+                    echo 'QUALITY GATE FAILED - a user journey is broken.'
+                    echo 'Nothing after this stage runs: no image is published and no container is replaced.'
+                    sh 'ls -1 target/screenshots 2>/dev/null | sed "s/^/  screenshot: /" || echo "  (no screenshots captured)"'
+                }
+            }
+        }
+
+        /* Everything below this point is promotion, and is therefore
+         * unreachable while the gate above is red. */
+        stage('Promote') {
+            steps {
+                echo "Quality gate passed - build #${env.BUILD_NUMBER} is promotable."
+                echo 'Task 12 extends this stage into: build a versioned image, push it to the registry, and deploy a fresh container from it.'
             }
         }
     }
