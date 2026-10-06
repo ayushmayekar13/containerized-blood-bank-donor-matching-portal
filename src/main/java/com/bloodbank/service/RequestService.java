@@ -173,20 +173,7 @@ public class RequestService {
      */
     @Transactional
     public BloodRequest fulfil(Long requestId, Actor actor) {
-        // DELIBERATE DEFECT - BUG-06, introduced for Task 10.
-        //
-        // The ADMIN-only guard below has been weakened to allow STAFF as well,
-        // which is exactly the regression AC-07.4 forbids: any technician could
-        // close any request, and the accountability the workflow exists to
-        // provide would be gone.
-        //
-        // It is a realistic mistake rather than a contrived one - it looks like
-        // someone "fixing" a support complaint that staff could not complete
-        // their own requests. The 178 unit tests do not all pass with this in
-        // place, but the point being demonstrated is that the SELENIUM gate
-        // stops the deployment: the pipeline must go red and the Promote stage
-        // must never be entered.
-        requireStaffOrAdmin(actor, "confirm that a donation took place");
+        requireAdmin(actor, "confirm that a donation took place");
 
         BloodRequest request = findById(requestId);
         requireLegalTransition(request, RequestStatus.FULFILLED);

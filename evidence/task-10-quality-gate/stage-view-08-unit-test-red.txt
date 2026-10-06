@@ -1,0 +1,11 @@
+build #8  status=FAILED  total=63.4s
+  Declarative: Checkout SCM    SUCCESS       1.1s
+  Checkout                     SUCCESS       3.7s
+  Build                        SUCCESS      28.6s
+  Unit Test                    FAILED       24.3s
+  Package                      FAILED        0.1s
+  Deploy to Tomcat             FAILED        0.1s
+  Health Check                 FAILED        0.1s
+  UI Test (quality gate)       FAILED        0.1s
+  Promote                      FAILED        0.1s
+  Declarative: Post Actions    SUCCESS       0.4s

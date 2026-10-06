@@ -70,8 +70,24 @@
           request is never reopened; record a new request instead.
         </p>
 
+        <!--
+          DELIBERATE DEFECT - BUG-06, introduced for Task 10.
+
+          The sec:authorize="hasRole('ADMIN')" guard has been removed from this
+          form, so the request detail page now offers the fulfil action to a
+          STAFF user as well.
+
+          This is the defect shape that matters for demonstrating the Selenium
+          gate: the SERVICE layer is untouched and still refuses a STAFF caller
+          with 403, so all 178 unit tests stay green and the build reaches
+          deployment. Only a browser can see that the screen is now offering an
+          action the user is not permitted to take - which is precisely what
+          journey J4 asserts, and precisely what unit tests structurally cannot.
+
+          It is also a realistic mistake: a template tidy-up that removes an
+          attribute someone did not realise was load-bearing.
+        -->
         <form th:if="${allowedNext.contains(T(com.bloodbank.domain.RequestStatus).FULFILLED)}"
-              sec:authorize="hasRole('ADMIN')"
               th:action="@{/requests/{id}/fulfil(id=${request.id})}" method="post" class="mb-3">
           <button class="btn bb-btn-primary w-100" type="submit" data-testid="fulfil-request">
             Confirm donation (fulfil)

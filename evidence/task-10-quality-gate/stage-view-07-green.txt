@@ -1,0 +1,11 @@
+GREEN build #7  status=SUCCESS  total=250.2s
+  Declarative: Checkout SCM    SUCCESS     0.7s
+  Checkout                     SUCCESS     2.2s
+  Build                        SUCCESS    10.4s
+  Unit Test                    SUCCESS    48.5s
+  Package                      SUCCESS    24.0s
+  Deploy to Tomcat             SUCCESS    29.8s
+  Health Check                 SUCCESS     3.9s
+  UI Test (quality gate)       SUCCESS   124.8s
+  Promote                      SUCCESS     0.3s
+  Declarative: Post Actions    SUCCESS     0.8s
