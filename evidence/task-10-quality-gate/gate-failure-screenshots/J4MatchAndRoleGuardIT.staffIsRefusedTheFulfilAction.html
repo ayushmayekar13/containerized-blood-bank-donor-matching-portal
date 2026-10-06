@@ -1,0 +1,181 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Request · Blood Bank Portal</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bb-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/" data-testid="nav-brand">
+      <span class="bb-drop">❤</span> Blood Bank Portal
+    </a>
+    <!-- Role-aware navigation: a DONOR sees only their own record, so the
+         registry and workflow links are not rendered for them at all. -->
+    <ul class="navbar-nav me-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/dashboard" data-testid="nav-dashboard">Dashboard</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/donors" data-testid="nav-donors">Donors</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="/requests" data-testid="nav-requests">Requests</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/match" data-testid="nav-match">Find donors</a>
+      </li>
+      
+      <!-- Conflict resolution (PR-02): develop added this Health link while this
+           branch added the DONOR profile link, both as the last item of the same
+           list. Both are kept, because they serve different people and neither
+           replaces the other. The Health link stays unconditional - a DONOR
+           benefits from seeing that the portal is up, and the endpoint itself is
+           deliberately unauthenticated for the container probe (FR-26), so
+           restricting the link would protect nothing. -->
+      <li class="nav-item">
+        <a class="nav-link bb-nav-health" href="/actuator/health" target="_blank" title="Application health - used by the container probe and Ansible" data-testid="nav-health">
+          <span class="bb-health-dot"></span> Health
+        </a>
+      </li>
+    </ul>
+    <div class="d-flex align-items-center gap-3">
+      <!-- The role is rendered with sec:authorize rather than by projecting over
+           #authentication.authorities: the projection form has no readable way to
+           strip the ROLE_ prefix, and three explicit cases are clearer than one
+           clever expression for a fixed set of three roles. -->
+      <span class="bb-user" data-testid="current-user">
+        <span>staff</span>
+        
+        <span class="badge bb-role" data-testid="current-role">STAFF</span>
+        
+      </span>
+      <form action="/logout" method="post" class="m-0"><input type="hidden" name="_csrf" value="wutYfJaiziX_62aMgW1D9OW8dC95koXaMOyFefhTF737nUWaoYg8H6GU9hXSiQS8skB3wYePWU0f9-P3Aty9GMlmdN7LrSOi">
+        <button class="btn btn-sm btn-outline-light" type="submit" data-testid="logout">Sign out</button>
+      </form>
+    </div>
+  </div>
+</nav>
+<div class="container mt-3">
+  <div class="alert alert-success" role="alert" data-testid="flash-message">Vikram Shinde assigned to this request</div>
+  
+</div>
+
+<main class="container my-4">
+  <div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+      <h1 class="h3 mb-1" data-testid="request-detail-patient">Match Target 8088901</h1>
+      <p class="mb-0">
+        <span class="badge bb-group bb-group-pos">B+</span>
+        <span class="badge bb-status bb-status-matched" data-testid="request-detail-status">Matched</span>
+        <span class="bb-urgency-MEDIUM">Medium</span>
+      </p>
+    </div>
+    <a class="btn btn-outline-secondary" href="/requests">Back to requests</a>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card bb-card card-body mb-4">
+        <dl class="row mb-0">
+          <dt class="col-5">Units needed</dt><dd class="col-7">1</dd>
+          <dt class="col-5">Hospital</dt><dd class="col-7">Civil Hospital</dd>
+          <dt class="col-5">City</dt><dd class="col-7">Thane</dd>
+          <dt class="col-5">Matched donor</dt>
+          <dd class="col-7" data-testid="matched-donor">
+            
+            <a class="bb-link" href="/donors/12">Vikram Shinde</a>
+          </dd>
+          
+          
+        </dl>
+      </div>
+
+      <!-- NFR-15: who did what, and when -->
+      <div class="card bb-card card-body mb-4">
+        <h2 class="h6 text-uppercase text-muted mb-3">Audit trail</h2>
+        <dl class="row mb-0" style="font-size:.9rem">
+          <dt class="col-5">Recorded by</dt>
+          <dd class="col-7" data-testid="created-by">staff</dd>
+          <dt class="col-5">Recorded at</dt>
+          <dd class="col-7">09 Oct 2026 15:48</dd>
+          <dt class="col-5">Last changed by</dt>
+          <dd class="col-7" data-testid="modified-by">staff</dd>
+          <dt class="col-5">Last changed at</dt>
+          <dd class="col-7">09 Oct 2026 15:48</dd>
+        </dl>
+      </div>
+
+      <!--
+        Action buttons are driven by RequestStatus.allowedNext() plus the role, so
+        the screen can never offer a transition the service layer would refuse.
+        The reverse is not true, and deliberately so: the service refuses even a
+        request that bypasses this screen entirely (NFR-07).
+      -->
+      <div class="card bb-card card-body" data-testid="actions">
+        <h2 class="h6 text-uppercase text-muted mb-3">Actions</h2>
+
+        
+
+        <!--
+          DELIBERATE DEFECT - BUG-06, introduced for Task 10.
+
+          The sec:authorize="hasRole('ADMIN')" guard has been removed from this
+          form, so the request detail page now offers the fulfil action to a
+          STAFF user as well.
+
+          This is the defect shape that matters for demonstrating the Selenium
+          gate: the SERVICE layer is untouched and still refuses a STAFF caller
+          with 403, so all 178 unit tests stay green and the build reaches
+          deployment. Only a browser can see that the screen is now offering an
+          action the user is not permitted to take - which is precisely what
+          journey J4 asserts, and precisely what unit tests structurally cannot.
+
+          It is also a realistic mistake: a template tidy-up that removes an
+          attribute someone did not realise was load-bearing.
+        -->
+        <form action="/requests/97/fulfil" method="post" class="mb-3"><input type="hidden" name="_csrf" value="wutYfJaiziX_62aMgW1D9OW8dC95koXaMOyFefhTF737nUWaoYg8H6GU9hXSiQS8skB3wYePWU0f9-P3Aty9GMlmdN7LrSOi">
+          <button class="btn bb-btn-primary w-100" type="submit" data-testid="fulfil-request">
+            Confirm donation (fulfil)
+          </button>
+          <div class="form-text">Stamps the donor's donation date; they become ineligible for 90 days.</div>
+        </form>
+
+        <!-- A STAFF user is told why the action is absent, rather than being left
+             to wonder. The API returns 403 for the same attempt. -->
+        <div class="alert alert-secondary py-2 mb-3" data-testid="fulfil-not-permitted">
+          Only an ADMIN may confirm a donation. Your role may assign a matched donor.
+        </div>
+
+        
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      
+
+      <div class="card bb-card card-body">
+        <h2 class="h6 text-uppercase text-muted mb-2">Matching</h2>
+        <p class="mb-0 text-muted">
+          A donor has already been assigned to this request, so the shortlist is no longer offered.
+          Reassignment would lose the record of who was originally matched; reject this request and
+          record a new one instead.
+        </p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="bb-footer">
+  <div class="container">
+    <span>Containerized Blood Bank Donor Matching Portal</span>
+    <span class="bb-footer-sep">·</span>
+    <span>Ayush Mayekar · 23102A0018 · BE CMPN A</span>
+    <span class="bb-footer-sep">·</span>
+    <a href="/actuator/health" data-testid="footer-health">health</a>
+  </div>
+</footer>
+
+
+</body></html>

@@ -30,9 +30,12 @@ class J2DonorSearchIT extends BaseJourney {
         select("filter-group", "O-");
         click("search-submit");
 
-        var groups = findAll("donor-row-1").isEmpty()
-                ? driver.findElements(testId("donor-table")).stream().map(e -> e.getText()).toList()
-                : java.util.List.<String>of();
+        // Wait for the filtered page before reading anything from it. Clicking
+        // Search is a full navigation, and reading elements located before it
+        // completed is how this test previously threw StaleElementReference in
+        // Jenkins - a flaky failure in a test whose subject was never timing.
+        wait.until(org.openqa.selenium.support.ui.ExpectedConditions
+                .presenceOfElementLocated(testId("donor-table")));
 
         // Read the group badge of every row rather than trusting the filter: the
         // assertion must be about what the user sees, not about the query string.
@@ -43,7 +46,6 @@ class J2DonorSearchIT extends BaseJourney {
         assertThat(shownGroups)
                 .as("only O- donors may be listed when filtering by O-")
                 .containsExactly("O-");
-        assertThat(groups).isNotNull();   // keeps the unused-variable warning honest
     }
 
     @Test

@@ -1,0 +1,872 @@
+Started from command line by admin
+Checking out git /Users/ayushmayekar/code/College/devops_project into /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline@script/3096d29f50f8e04821263f842c29f096f1ae91f23777c1a09d19ad3f0d8dc9af to read Jenkinsfile
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline@script/3096d29f50f8e04821263f842c29f096f1ae91f23777c1a09d19ad3f0d8dc9af/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url /Users/ayushmayekar/code/College/devops_project # timeout=10
+Fetching upstream changes from /Users/ayushmayekar/code/College/devops_project
+ > git --version # timeout=10
+ > git --version # 'git version 2.46.0'
+ > git fetch --tags --force --progress -- /Users/ayushmayekar/code/College/devops_project +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 10ed63f5190ef06f041c71cc84d5f8acd936fd74 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 10ed63f5190ef06f041c71cc84d5f8acd936fd74 # timeout=10
+Commit message: "DEFECT (deliberate): offer the fulfil action to STAFF on the request page"
+ > git rev-list --no-walk 4b240ff8c148ab0ca002ca4bdfddff13894413ec # timeout=10
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url /Users/ayushmayekar/code/College/devops_project # timeout=10
+Fetching upstream changes from /Users/ayushmayekar/code/College/devops_project
+ > git --version # timeout=10
+ > git --version # 'git version 2.46.0'
+ > git fetch --tags --force --progress -- /Users/ayushmayekar/code/College/devops_project +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 10ed63f5190ef06f041c71cc84d5f8acd936fd74 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 10ed63f5190ef06f041c71cc84d5f8acd936fd74 # timeout=10
+Commit message: "DEFECT (deliberate): offer the fulfil action to STAFF on the request page"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] timeout
+[2026-10-09T15:47:02.888Z] Timeout set to expire in 25 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout)
+[Pipeline] echo
+[2026-10-09T15:47:02.965Z] Building bloodbank-pipeline #9
+[Pipeline] checkout
+[2026-10-09T15:47:02.984Z] The recommended git tool is: NONE
+[2026-10-09T15:47:02.984Z] No credentials specified
+[2026-10-09T15:47:02.984Z]  > git rev-parse --resolve-git-dir /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/.git # timeout=10
+[2026-10-09T15:47:02.995Z] Fetching changes from the remote Git repository
+[2026-10-09T15:47:02.998Z]  > git config remote.origin.url /Users/ayushmayekar/code/College/devops_project # timeout=10
+[2026-10-09T15:47:03.008Z] Fetching upstream changes from /Users/ayushmayekar/code/College/devops_project
+[2026-10-09T15:47:03.008Z]  > git --version # timeout=10
+[2026-10-09T15:47:03.018Z]  > git --version # 'git version 2.46.0'
+[2026-10-09T15:47:03.018Z]  > git fetch --tags --force --progress -- /Users/ayushmayekar/code/College/devops_project +refs/heads/*:refs/remotes/origin/* # timeout=10
+[2026-10-09T15:47:03.066Z]  > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+[2026-10-09T15:47:03.078Z] Checking out Revision 10ed63f5190ef06f041c71cc84d5f8acd936fd74 (refs/remotes/origin/main)
+[2026-10-09T15:47:03.078Z]  > git config core.sparsecheckout # timeout=10
+[2026-10-09T15:47:03.088Z]  > git checkout -f 10ed63f5190ef06f041c71cc84d5f8acd936fd74 # timeout=10
+[2026-10-09T15:47:03.104Z] Commit message: "DEFECT (deliberate): offer the fulfil action to STAFF on the request page"
+[Pipeline] sh
+[2026-10-09T15:47:03.391Z] + git --no-pager log -1 '--pretty=commit %h by %an on %ad%n  %s'
+[2026-10-09T15:47:03.391Z] commit 10ed63f by AYUSH MAYEKAR on Tue Oct 6 11:15:00 2026 +0530
+[2026-10-09T15:47:03.391Z]   DEFECT (deliberate): offer the fulfil action to STAFF on the request page
+[Pipeline] sh
+[2026-10-09T15:47:03.692Z] + java -version
+[2026-10-09T15:47:03.692Z] openjdk version "21.0.12" 2026-07-21
+[2026-10-09T15:47:03.692Z] OpenJDK Runtime Environment Homebrew (build 21.0.12)
+[2026-10-09T15:47:03.692Z] OpenJDK 64-Bit Server VM Homebrew (build 21.0.12, mixed mode, sharing)
+[2026-10-09T15:47:03.692Z] + mvn -v
+[2026-10-09T15:47:03.692Z] + head -3
+[2026-10-09T15:47:03.947Z] Apache Maven 3.10.0 (c43a36b8d67be7e0805a411bc0898af1a51f5472)
+[2026-10-09T15:47:03.947Z] Maven home: /opt/homebrew/opt/maven/libexec
+[2026-10-09T15:47:03.947Z] Java version: 21.0.12, vendor: Homebrew, runtime: /opt/homebrew/Cellar/openjdk@21/21.0.12/libexec/openjdk.jdk/Contents/Home
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] sh
+[2026-10-09T15:47:04.368Z] + mvn -B -ntp clean compile
+[2026-10-09T15:47:04.928Z] [INFO] Scanning for projects...
+[2026-10-09T15:47:04.928Z] [INFO] Loaded 24038 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[2026-10-09T15:47:05.184Z] [INFO] 
+[2026-10-09T15:47:05.184Z] [INFO] -------------------< com.bloodbank:bloodbank-portal >-------------------
+[2026-10-09T15:47:05.184Z] [INFO] Building Blood Bank Donor Matching Portal 1.0.0
+[2026-10-09T15:47:05.184Z] [INFO]   from pom.xml
+[2026-10-09T15:47:05.184Z] [INFO] --------------------------------[ war ]---------------------------------
+[2026-10-09T15:47:05.184Z] [INFO] Loaded 74 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[2026-10-09T15:47:06.108Z] [INFO] 
+[2026-10-09T15:47:06.108Z] [INFO] --- clean:3.3.2:clean (default-clean) @ bloodbank-portal ---
+[2026-10-09T15:47:06.108Z] [INFO] Deleting /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/target
+[2026-10-09T15:47:06.108Z] [INFO] 
+[2026-10-09T15:47:06.108Z] [INFO] --- resources:3.3.1:resources (default-resources) @ bloodbank-portal ---
+[2026-10-09T15:47:06.108Z] [INFO] Copying 1 resource from src/main/resources to target/classes
+[2026-10-09T15:47:06.108Z] [INFO] Copying 13 resources from src/main/resources to target/classes
+[2026-10-09T15:47:06.108Z] [INFO] 
+[2026-10-09T15:47:06.108Z] [INFO] --- compiler:3.13.0:compile (default-compile) @ bloodbank-portal ---
+[2026-10-09T15:47:06.108Z] [INFO] Recompiling the module because of changed source code.
+[2026-10-09T15:47:06.108Z] [INFO] Compiling 31 source files with javac [debug parameters release 21] to target/classes
+[2026-10-09T15:47:07.032Z] [INFO] ------------------------------------------------------------------------
+[2026-10-09T15:47:07.032Z] [INFO] BUILD SUCCESS
+[2026-10-09T15:47:07.032Z] [INFO] ------------------------------------------------------------------------
+[2026-10-09T15:47:07.032Z] [INFO] Total time:  1.984 s
+[2026-10-09T15:47:07.032Z] [INFO] Finished at: 2026-10-09T21:17:06+05:30
+[2026-10-09T15:47:07.032Z] [INFO] ------------------------------------------------------------------------
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Unit Test)
+[Pipeline] sh
+[2026-10-09T15:47:07.437Z] + mvn -B -ntp test
+[2026-10-09T15:47:07.998Z] [INFO] Scanning for projects...
+[2026-10-09T15:47:07.998Z] [INFO] Loaded 24038 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[2026-10-09T15:47:08.253Z] [INFO] 
+[2026-10-09T15:47:08.253Z] [INFO] -------------------< com.bloodbank:bloodbank-portal >-------------------
+[2026-10-09T15:47:08.253Z] [INFO] Building Blood Bank Donor Matching Portal 1.0.0
+[2026-10-09T15:47:08.253Z] [INFO]   from pom.xml
+[2026-10-09T15:47:08.253Z] [INFO] --------------------------------[ war ]---------------------------------
+[2026-10-09T15:47:08.253Z] [INFO] Loaded 74 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[2026-10-09T15:47:09.178Z] [INFO] 
+[2026-10-09T15:47:09.178Z] [INFO] --- resources:3.3.1:resources (default-resources) @ bloodbank-portal ---
+[2026-10-09T15:47:09.178Z] [INFO] Copying 1 resource from src/main/resources to target/classes
+[2026-10-09T15:47:09.178Z] [INFO] Copying 13 resources from src/main/resources to target/classes
+[2026-10-09T15:47:09.178Z] [INFO] 
+[2026-10-09T15:47:09.178Z] [INFO] --- compiler:3.13.0:compile (default-compile) @ bloodbank-portal ---
+[2026-10-09T15:47:09.178Z] [INFO] Nothing to compile - all classes are up to date.
+[2026-10-09T15:47:09.178Z] [INFO] 
+[2026-10-09T15:47:09.178Z] [INFO] --- resources:3.3.1:testResources (default-testResources) @ bloodbank-portal ---
+[2026-10-09T15:47:09.178Z] [INFO] Copying 1 resource from src/test/resources to target/test-classes
+[2026-10-09T15:47:09.178Z] [INFO] 
+[2026-10-09T15:47:09.178Z] [INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ bloodbank-portal ---
+[2026-10-09T15:47:09.178Z] [INFO] Recompiling the module because of changed source code.
+[2026-10-09T15:47:09.178Z] [INFO] Compiling 8 source files with javac [debug parameters release 21] to target/test-classes
+[2026-10-09T15:47:10.097Z] [INFO] 
+[2026-10-09T15:47:10.097Z] [INFO] --- surefire:3.2.5:test (default-test) @ bloodbank-portal ---
+[2026-10-09T15:47:10.352Z] [INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[2026-10-09T15:47:10.352Z] [INFO] 
+[2026-10-09T15:47:10.352Z] [INFO] -------------------------------------------------------
+[2026-10-09T15:47:10.352Z] [INFO]  T E S T S
+[2026-10-09T15:47:10.352Z] [INFO] -------------------------------------------------------
+[2026-10-09T15:47:10.607Z] [INFO] Running com.bloodbank.web.SecurityRoleTest
+[2026-10-09T15:47:10.863Z] 21:17:10.662 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.bloodbank.web.SecurityRoleTest]: SecurityRoleTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:10.863Z] 21:17:10.732 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.web.SecurityRoleTest
+[2026-10-09T15:47:10.863Z] [INFO] Running com.bloodbank.web.SecurityRoleTest$StatusCodeContract
+[2026-10-09T15:47:11.118Z] 21:17:10.781 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.bloodbank.web.SecurityRoleTest$StatusCodeContract]: StatusCodeContract does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:11.118Z] 21:17:10.784 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.web.SecurityRoleTest$StatusCodeContract
+[2026-10-09T15:47:11.118Z] 
+[2026-10-09T15:47:11.118Z]   .   ____          _            __ _ _
+[2026-10-09T15:47:11.118Z]  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+[2026-10-09T15:47:11.118Z] ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+[2026-10-09T15:47:11.118Z]  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+[2026-10-09T15:47:11.118Z]   '  |____| .__|_| |_|_| |_\__, | / / / /
+[2026-10-09T15:47:11.118Z]  =========|_|==============|___/=/_/_/_/
+[2026-10-09T15:47:11.118Z] 
+[2026-10-09T15:47:11.118Z]  :: Spring Boot ::                (v3.3.5)
+[2026-10-09T15:47:11.118Z] 
+[2026-10-09T15:47:11.118Z] 2026-10-09 21:17:10 INFO  [main] com.bloodbank.web.SecurityRoleTest - Starting SecurityRoleTest using Java 21.0.12 with PID 78375 (started by ayushmayekar in /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline)
+[2026-10-09T15:47:11.118Z] 2026-10-09 21:17:10 INFO  [main] com.bloodbank.web.SecurityRoleTest - The following 1 profile is active: "test"
+[2026-10-09T15:47:11.678Z] 2026-10-09 21:17:11 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[2026-10-09T15:47:11.678Z] 2026-10-09 21:17:11 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 22 ms. Found 2 JPA repository interfaces.
+[2026-10-09T15:47:11.934Z] 2026-10-09 21:17:11 INFO  [main] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+[2026-10-09T15:47:11.934Z] 2026-10-09 21:17:11 INFO  [main] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.3.Final
+[2026-10-09T15:47:11.934Z] 2026-10-09 21:17:11 INFO  [main] o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+[2026-10-09T15:47:12.185Z] 2026-10-09 21:17:11 INFO  [main] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+[2026-10-09T15:47:12.185Z] 2026-10-09 21:17:11 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+[2026-10-09T15:47:12.185Z] 2026-10-09 21:17:12 INFO  [main] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:bloodbank-test user=SA
+[2026-10-09T15:47:12.185Z] 2026-10-09 21:17:12 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+[2026-10-09T15:47:12.741Z] 2026-10-09 21:17:12 INFO  [main] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+[2026-10-09T15:47:12.741Z] 2026-10-09 21:17:12 INFO  [main] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+[2026-10-09T15:47:12.994Z] 2026-10-09 21:17:12 INFO  [main] o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+[2026-10-09T15:47:13.917Z] 2026-10-09 21:17:13 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+[2026-10-09T15:47:14.170Z] 2026-10-09 21:17:13 INFO  [main] o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoints beneath base path '/actuator'
+[2026-10-09T15:47:14.426Z] 2026-10-09 21:17:14 INFO  [main] o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+[2026-10-09T15:47:14.426Z] 2026-10-09 21:17:14 INFO  [main] o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+[2026-10-09T15:47:14.426Z] 2026-10-09 21:17:14 INFO  [main] o.s.t.w.s.TestDispatcherServlet - Completed initialization in 0 ms
+[2026-10-09T15:47:14.426Z] 2026-10-09 21:17:14 INFO  [main] com.bloodbank.web.SecurityRoleTest - Started SecurityRoleTest in 3.57 seconds (process running for 4.117)
+[2026-10-09T15:47:14.934Z] OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[2026-10-09T15:47:14.934Z] WARNING: A Java agent has been loaded dynamically (/Users/ayushmayekar/.m2/repository/net/bytebuddy/byte-buddy-agent/1.14.19/byte-buddy-agent-1.14.19.jar)
+[2026-10-09T15:47:14.934Z] WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+[2026-10-09T15:47:14.934Z] WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+[2026-10-09T15:47:14.934Z] WARNING: Dynamic loading of agents will be disallowed by default in a future release
+[2026-10-09T15:47:16.293Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.183 s -- in com.bloodbank.web.SecurityRoleTest$StatusCodeContract
+[2026-10-09T15:47:16.293Z] [INFO] Running com.bloodbank.web.SecurityRoleTest$ApiChain
+[2026-10-09T15:47:16.293Z] 2026-10-09 21:17:15 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.web.SecurityRoleTest$ApiChain]: ApiChain does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:16.293Z] 2026-10-09 21:17:15 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.web.SecurityRoleTest$ApiChain
+[2026-10-09T15:47:16.293Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.244 s -- in com.bloodbank.web.SecurityRoleTest$ApiChain
+[2026-10-09T15:47:16.293Z] [INFO] Running com.bloodbank.web.SecurityRoleTest$BrowserChain
+[2026-10-09T15:47:16.293Z] 2026-10-09 21:17:16 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.web.SecurityRoleTest$BrowserChain]: BrowserChain does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:16.293Z] 2026-10-09 21:17:16 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.web.SecurityRoleTest$BrowserChain
+[2026-10-09T15:47:16.293Z] 2026-10-09 21:17:16 WARN  [main] o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/donors' (previous null). Performing MatchableHandlerMapping lookup. This is logged once only at WARN level, and every time at TRACE.
+[2026-10-09T15:47:16.850Z] [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.399 s -- in com.bloodbank.web.SecurityRoleTest$BrowserChain
+[2026-10-09T15:47:16.850Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.038 s -- in com.bloodbank.web.SecurityRoleTest
+[2026-10-09T15:47:16.850Z] [INFO] Running com.bloodbank.BloodBankApplicationTest
+[2026-10-09T15:47:16.850Z] 2026-10-09 21:17:16 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.BloodBankApplicationTest]: BloodBankApplicationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:16.850Z] 2026-10-09 21:17:16 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.BloodBankApplicationTest
+[2026-10-09T15:47:16.850Z] [INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.024 s -- in com.bloodbank.BloodBankApplicationTest
+[2026-10-09T15:47:16.850Z] [INFO] Running com.bloodbank.service.DashboardServiceTest
+[2026-10-09T15:47:16.850Z] 2026-10-09 21:17:16 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.DashboardServiceTest]: DashboardServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:16.850Z] 2026-10-09 21:17:16 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.DashboardServiceTest
+[2026-10-09T15:47:16.850Z] 
+[2026-10-09T15:47:16.850Z]   .   ____          _            __ _ _
+[2026-10-09T15:47:16.850Z]  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+[2026-10-09T15:47:16.850Z] ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+[2026-10-09T15:47:16.850Z]  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+[2026-10-09T15:47:16.850Z]   '  |____| .__|_| |_|_| |_\__, | / / / /
+[2026-10-09T15:47:16.850Z]  =========|_|==============|___/=/_/_/_/
+[2026-10-09T15:47:16.850Z] 
+[2026-10-09T15:47:16.850Z]  :: Spring Boot ::                (v3.3.5)
+[2026-10-09T15:47:16.850Z] 
+[2026-10-09T15:47:16.850Z] 2026-10-09 21:17:16 INFO  [main] c.b.service.DashboardServiceTest - Starting DashboardServiceTest using Java 21.0.12 with PID 78375 (started by ayushmayekar in /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline)
+[2026-10-09T15:47:16.850Z] 2026-10-09 21:17:16 INFO  [main] c.b.service.DashboardServiceTest - The following 1 profile is active: "test"
+[2026-10-09T15:47:16.850Z] 2026-10-09 21:17:16 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[2026-10-09T15:47:16.850Z] 2026-10-09 21:17:16 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 6 ms. Found 2 JPA repository interfaces.
+[2026-10-09T15:47:17.105Z] 2026-10-09 21:17:16 INFO  [main] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+[2026-10-09T15:47:17.106Z] 2026-10-09 21:17:16 INFO  [main] o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+[2026-10-09T15:47:17.106Z] 2026-10-09 21:17:16 INFO  [main] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+[2026-10-09T15:47:17.106Z] 2026-10-09 21:17:16 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Starting...
+[2026-10-09T15:47:17.106Z] 2026-10-09 21:17:16 INFO  [main] com.zaxxer.hikari.pool.HikariPool - HikariPool-2 - Added connection conn10: url=jdbc:h2:mem:bloodbank-test user=SA
+[2026-10-09T15:47:17.106Z] 2026-10-09 21:17:16 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Start completed.
+[2026-10-09T15:47:17.106Z] 2026-10-09 21:17:16 INFO  [main] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+[2026-10-09T15:47:17.106Z] 2026-10-09 21:17:16 INFO  [main] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+[2026-10-09T15:47:17.361Z] 2026-10-09 21:17:17 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+[2026-10-09T15:47:17.616Z] 2026-10-09 21:17:17 INFO  [main] o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoints beneath base path '/actuator'
+[2026-10-09T15:47:17.616Z] 2026-10-09 21:17:17 INFO  [main] c.b.service.DashboardServiceTest - Started DashboardServiceTest in 0.917 seconds (process running for 7.311)
+[2026-10-09T15:47:17.869Z] [INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.211 s -- in com.bloodbank.service.DashboardServiceTest
+[2026-10-09T15:47:17.869Z] [INFO] Running com.bloodbank.service.DonorServiceTest
+[2026-10-09T15:47:17.869Z] 2026-10-09 21:17:17 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.DonorServiceTest]: DonorServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:17.869Z] 2026-10-09 21:17:17 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.DonorServiceTest
+[2026-10-09T15:47:17.869Z] [INFO] Running com.bloodbank.service.DonorServiceTest$Update
+[2026-10-09T15:47:17.869Z] 2026-10-09 21:17:17 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.DonorServiceTest$Update]: Update does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:17.869Z] 2026-10-09 21:17:17 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.DonorServiceTest$Update
+[2026-10-09T15:47:18.124Z] [INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.047 s -- in com.bloodbank.service.DonorServiceTest$Update
+[2026-10-09T15:47:18.124Z] [INFO] Running com.bloodbank.service.DonorServiceTest$Create
+[2026-10-09T15:47:18.124Z] 2026-10-09 21:17:17 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.DonorServiceTest$Create]: Create does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:18.124Z] 2026-10-09 21:17:17 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.DonorServiceTest$Create
+[2026-10-09T15:47:18.124Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in com.bloodbank.service.DonorServiceTest$Create
+[2026-10-09T15:47:18.124Z] [INFO] Running com.bloodbank.service.DonorServiceTest$Search
+[2026-10-09T15:47:18.124Z] 2026-10-09 21:17:17 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.DonorServiceTest$Search]: Search does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:18.124Z] 2026-10-09 21:17:17 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.DonorServiceTest$Search
+[2026-10-09T15:47:18.124Z] [INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.127 s -- in com.bloodbank.service.DonorServiceTest$Search
+[2026-10-09T15:47:18.124Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.204 s -- in com.bloodbank.service.DonorServiceTest
+[2026-10-09T15:47:18.124Z] [INFO] Running com.bloodbank.service.MatchingServiceTest
+[2026-10-09T15:47:18.380Z] [INFO] Running com.bloodbank.service.MatchingServiceTest$EdgeCases
+[2026-10-09T15:47:18.380Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in com.bloodbank.service.MatchingServiceTest$EdgeCases
+[2026-10-09T15:47:18.380Z] [INFO] Running com.bloodbank.service.MatchingServiceTest$Ranking
+[2026-10-09T15:47:18.380Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in com.bloodbank.service.MatchingServiceTest$Ranking
+[2026-10-09T15:47:18.380Z] [INFO] Running com.bloodbank.service.MatchingServiceTest$Predicates
+[2026-10-09T15:47:18.380Z] [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in com.bloodbank.service.MatchingServiceTest$Predicates
+[2026-10-09T15:47:18.380Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.265 s -- in com.bloodbank.service.MatchingServiceTest
+[2026-10-09T15:47:18.380Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest
+[2026-10-09T15:47:18.380Z] 2026-10-09 21:17:18 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest]: RequestWorkflowTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:18.380Z] 2026-10-09 21:17:18 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest
+[2026-10-09T15:47:18.380Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$Search
+[2026-10-09T15:47:18.380Z] 2026-10-09 21:17:18 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$Search]: Search does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:18.380Z] 2026-10-09 21:17:18 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$Search
+[2026-10-09T15:47:18.632Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.082 s -- in com.bloodbank.service.RequestWorkflowTest$Search
+[2026-10-09T15:47:18.632Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$RejectionReason
+[2026-10-09T15:47:18.632Z] 2026-10-09 21:17:18 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$RejectionReason]: RejectionReason does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:18.632Z] 2026-10-09 21:17:18 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$RejectionReason
+[2026-10-09T15:47:18.632Z] [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in com.bloodbank.service.RequestWorkflowTest$RejectionReason
+[2026-10-09T15:47:18.632Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$StateMachine
+[2026-10-09T15:47:18.632Z] 2026-10-09 21:17:18 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$StateMachine]: StateMachine does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:18.632Z] 2026-10-09 21:17:18 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$StateMachine
+[2026-10-09T15:47:18.632Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.097 s -- in com.bloodbank.service.RequestWorkflowTest$StateMachine
+[2026-10-09T15:47:18.632Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$MatchValidity
+[2026-10-09T15:47:18.632Z] 2026-10-09 21:17:18 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$MatchValidity]: MatchValidity does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:18.632Z] 2026-10-09 21:17:18 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$MatchValidity
+[2026-10-09T15:47:18.632Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.041 s -- in com.bloodbank.service.RequestWorkflowTest$MatchValidity
+[2026-10-09T15:47:18.632Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$RoleGuards
+[2026-10-09T15:47:18.632Z] 2026-10-09 21:17:18 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$RoleGuards]: RoleGuards does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:18.632Z] 2026-10-09 21:17:18 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$RoleGuards
+[2026-10-09T15:47:18.885Z] [INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.071 s -- in com.bloodbank.service.RequestWorkflowTest$RoleGuards
+[2026-10-09T15:47:18.885Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$IllegalTransitions
+[2026-10-09T15:47:18.885Z] 2026-10-09 21:17:18 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$IllegalTransitions]: IllegalTransitions does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:18.885Z] 2026-10-09 21:17:18 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$IllegalTransitions
+[2026-10-09T15:47:18.885Z] [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.048 s -- in com.bloodbank.service.RequestWorkflowTest$IllegalTransitions
+[2026-10-09T15:47:18.885Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$LegalTransitions
+[2026-10-09T15:47:18.885Z] 2026-10-09 21:17:18 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$LegalTransitions]: LegalTransitions does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:18.885Z] 2026-10-09 21:17:18 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$LegalTransitions
+[2026-10-09T15:47:18.885Z] [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.053 s -- in com.bloodbank.service.RequestWorkflowTest$LegalTransitions
+[2026-10-09T15:47:18.885Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$Creation
+[2026-10-09T15:47:18.885Z] 2026-10-09 21:17:18 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$Creation]: Creation does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:18.885Z] 2026-10-09 21:17:18 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$Creation
+[2026-10-09T15:47:18.885Z] [INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in com.bloodbank.service.RequestWorkflowTest$Creation
+[2026-10-09T15:47:18.885Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.458 s -- in com.bloodbank.service.RequestWorkflowTest
+[2026-10-09T15:47:18.885Z] [INFO] Running com.bloodbank.domain.CompatibilityMatrixTest
+[2026-10-09T15:47:18.885Z] [INFO] Running com.bloodbank.domain.CompatibilityMatrixTest$Parsing
+[2026-10-09T15:47:18.885Z] [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.bloodbank.domain.CompatibilityMatrixTest$Parsing
+[2026-10-09T15:47:18.885Z] [INFO] Running com.bloodbank.domain.CompatibilityMatrixTest$Rules
+[2026-10-09T15:47:18.885Z] [INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in com.bloodbank.domain.CompatibilityMatrixTest$Rules
+[2026-10-09T15:47:18.885Z] [INFO] Running com.bloodbank.domain.CompatibilityMatrixTest$UniversalGroups
+[2026-10-09T15:47:18.885Z] [INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.bloodbank.domain.CompatibilityMatrixTest$UniversalGroups
+[2026-10-09T15:47:18.885Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.054 s -- in com.bloodbank.domain.CompatibilityMatrixTest
+[2026-10-09T15:47:18.885Z] [INFO] Running com.bloodbank.domain.DonorEligibilityTest
+[2026-10-09T15:47:18.885Z] [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in com.bloodbank.domain.DonorEligibilityTest
+[2026-10-09T15:47:19.141Z] [INFO] 
+[2026-10-09T15:47:19.141Z] [INFO] Results:
+[2026-10-09T15:47:19.141Z] [INFO] 
+[2026-10-09T15:47:19.141Z] [INFO] Tests run: 178, Failures: 0, Errors: 0, Skipped: 0
+[2026-10-09T15:47:19.141Z] [INFO] 
+[2026-10-09T15:47:19.141Z] [INFO] ------------------------------------------------------------------------
+[2026-10-09T15:47:19.141Z] [INFO] BUILD SUCCESS
+[2026-10-09T15:47:19.141Z] [INFO] ------------------------------------------------------------------------
+[2026-10-09T15:47:19.141Z] [INFO] Total time:  11.058 s
+[2026-10-09T15:47:19.141Z] [INFO] Finished at: 2026-10-09T21:17:18+05:30
+[2026-10-09T15:47:19.141Z] [INFO] ------------------------------------------------------------------------
+Post stage
+[Pipeline] junit
+[2026-10-09T15:47:19.193Z] Recording test results
+[2026-10-09T15:47:19.227Z] [Checks API] No suitable checks publisher found.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Package)
+[Pipeline] sh
+[2026-10-09T15:47:19.622Z] + mvn -B -ntp package -DskipTests
+[2026-10-09T15:47:20.182Z] [INFO] Scanning for projects...
+[2026-10-09T15:47:20.437Z] [INFO] Loaded 24038 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[2026-10-09T15:47:20.693Z] [INFO] 
+[2026-10-09T15:47:20.693Z] [INFO] -------------------< com.bloodbank:bloodbank-portal >-------------------
+[2026-10-09T15:47:20.693Z] [INFO] Building Blood Bank Donor Matching Portal 1.0.0
+[2026-10-09T15:47:20.693Z] [INFO]   from pom.xml
+[2026-10-09T15:47:20.693Z] [INFO] --------------------------------[ war ]---------------------------------
+[2026-10-09T15:47:20.693Z] [INFO] Loaded 74 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[2026-10-09T15:47:22.054Z] [INFO] 
+[2026-10-09T15:47:22.054Z] [INFO] --- resources:3.3.1:resources (default-resources) @ bloodbank-portal ---
+[2026-10-09T15:47:22.054Z] [INFO] Copying 1 resource from src/main/resources to target/classes
+[2026-10-09T15:47:22.054Z] [INFO] Copying 13 resources from src/main/resources to target/classes
+[2026-10-09T15:47:22.054Z] [INFO] 
+[2026-10-09T15:47:22.054Z] [INFO] --- compiler:3.13.0:compile (default-compile) @ bloodbank-portal ---
+[2026-10-09T15:47:22.054Z] [INFO] Nothing to compile - all classes are up to date.
+[2026-10-09T15:47:22.054Z] [INFO] 
+[2026-10-09T15:47:22.054Z] [INFO] --- resources:3.3.1:testResources (default-testResources) @ bloodbank-portal ---
+[2026-10-09T15:47:22.054Z] [INFO] Copying 1 resource from src/test/resources to target/test-classes
+[2026-10-09T15:47:22.054Z] [INFO] 
+[2026-10-09T15:47:22.054Z] [INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ bloodbank-portal ---
+[2026-10-09T15:47:22.054Z] [INFO] Nothing to compile - all classes are up to date.
+[2026-10-09T15:47:22.054Z] [INFO] 
+[2026-10-09T15:47:22.054Z] [INFO] --- surefire:3.2.5:test (default-test) @ bloodbank-portal ---
+[2026-10-09T15:47:22.054Z] [INFO] Tests are skipped.
+[2026-10-09T15:47:22.054Z] [INFO] 
+[2026-10-09T15:47:22.054Z] [INFO] --- war:3.4.0:war (default-war) @ bloodbank-portal ---
+[2026-10-09T15:47:22.308Z] [INFO] Packaging webapp
+[2026-10-09T15:47:22.308Z] [INFO] Assembling webapp [bloodbank-portal] in [/Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/target/bloodbank]
+[2026-10-09T15:47:22.308Z] [INFO] Processing war project
+[2026-10-09T15:47:22.564Z] [INFO] Building war: /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/target/bloodbank.war
+[2026-10-09T15:47:23.125Z] [INFO] 
+[2026-10-09T15:47:23.125Z] [INFO] --- spring-boot:3.3.5:repackage (repackage) @ bloodbank-portal ---
+[2026-10-09T15:47:23.125Z] [INFO] Loaded 50 auto-discovered prefixes for remote repository ow2-snapshot (prefixes-ow2-snapshot.txt)
+[2026-10-09T15:47:24.051Z] [INFO] Replacing main artifact /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/target/bloodbank.war with repackaged archive, adding nested dependencies in BOOT-INF/.
+[2026-10-09T15:47:24.051Z] [INFO] The original artifact has been renamed to /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/target/bloodbank.war.original
+[2026-10-09T15:47:24.051Z] [INFO] ------------------------------------------------------------------------
+[2026-10-09T15:47:24.051Z] [INFO] BUILD SUCCESS
+[2026-10-09T15:47:24.051Z] [INFO] ------------------------------------------------------------------------
+[2026-10-09T15:47:24.051Z] [INFO] Total time:  3.725 s
+[2026-10-09T15:47:24.051Z] [INFO] Finished at: 2026-10-09T21:17:23+05:30
+[2026-10-09T15:47:24.051Z] [INFO] ------------------------------------------------------------------------
+[Pipeline] sh
+[2026-10-09T15:47:24.356Z] + ls -lh target/bloodbank.war
+[2026-10-09T15:47:24.356Z] -rw-r--r--@ 1 ayushmayekar  staff    54M Feb  1  1980 target/bloodbank.war
+Post stage
+[Pipeline] archiveArtifacts
+[2026-10-09T15:47:24.402Z] Archiving artifacts
+[2026-10-09T15:47:24.404Z] Recording fingerprints
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy to Tomcat)
+[Pipeline] sh
+[2026-10-09T15:47:24.904Z] + set -e
+[2026-10-09T15:47:24.904Z] + APP_PORT=9090
+[2026-10-09T15:47:24.904Z] + APP_CONTAINER=bloodbank-app
+[2026-10-09T15:47:24.904Z] + APP_VOLUME=bloodbank-data
+[2026-10-09T15:47:24.904Z] + TOMCAT_IMAGE=tomcat:10.1-jdk21-temurin
+[2026-10-09T15:47:24.904Z] + SPRING_PROFILE=
+[2026-10-09T15:47:24.904Z] + bash scripts/deploy-tomcat.sh target/bloodbank.war
+[2026-10-09T15:47:24.904Z] ==> Deploying bloodbank.war ( 54M) to Tomcat
+[2026-10-09T15:47:24.904Z] ==>   image      tomcat:10.1-jdk21-temurin
+[2026-10-09T15:47:24.904Z] ==>   container  bloodbank-app
+[2026-10-09T15:47:24.904Z] ==>   port       9090 -> 8080
+[2026-10-09T15:47:24.904Z] ==>   volume     bloodbank-data -> /opt/bloodbank/data
+[2026-10-09T15:47:24.904Z] ==> Removing the existing container
+[2026-10-09T15:47:25.459Z]   ok   container started: bloodbank-app Up Less than a second 0.0.0.0:9090->8080/tcp
+[2026-10-09T15:47:25.459Z] ==> Waiting for the application to answer on http://localhost:9090/actuator/health
+[2026-10-09T15:47:35.374Z]   ok   healthy after ~4s: {"status":"UP","groups":["liveness","readiness"]}
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Health Check)
+[Pipeline] sh
+[2026-10-09T15:47:35.802Z] + bash scripts/health-check.sh http://localhost:9090
+[2026-10-09T15:47:35.802Z] ==> Health checking http://localhost:9090
+[2026-10-09T15:47:35.802Z]   ok   actuator health status => UP
+[2026-10-09T15:47:35.802Z]   ok   unauthenticated API call is rejected => 401
+[2026-10-09T15:47:35.802Z]   ok   unauthenticated portal page redirects => 302
+[2026-10-09T15:47:36.057Z]   ok   login page is reachable => 200
+[2026-10-09T15:47:36.311Z]   ok   donor registry reachable => 21 donors
+[2026-10-09T15:47:36.311Z]   ok   no incompatible donor in a B+ shortlist => 0
+[2026-10-09T15:47:36.311Z]   ok   STAFF fulfilling a request is refused => 403
+[2026-10-09T15:47:36.562Z]   ok   ADMIN fulfilling a NEW request is refused => 409
+[2026-10-09T15:47:36.817Z]   ok   dashboard reports all eight blood groups => 8
+[2026-10-09T15:47:36.817Z] 
+[2026-10-09T15:47:36.817Z] HEALTH CHECK PASSED - http://localhost:9090 is up and behaving correctly.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (UI Test (quality gate))
+[Pipeline] sh
+[2026-10-09T15:47:37.232Z] + set -e
+[2026-10-09T15:47:37.232Z] + rm -rf target/screenshots
+[2026-10-09T15:47:37.232Z] + mvn -B -ntp -P ui-tests verify -Dapp.base.url=http://localhost:9090 -Dselenium.headless=true
+[2026-10-09T15:47:37.793Z] [INFO] Scanning for projects...
+[2026-10-09T15:47:37.793Z] [INFO] Loaded 24038 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[2026-10-09T15:47:38.047Z] [INFO] 
+[2026-10-09T15:47:38.047Z] [INFO] -------------------< com.bloodbank:bloodbank-portal >-------------------
+[2026-10-09T15:47:38.047Z] [INFO] Building Blood Bank Donor Matching Portal 1.0.0
+[2026-10-09T15:47:38.047Z] [INFO]   from pom.xml
+[2026-10-09T15:47:38.047Z] [INFO] --------------------------------[ war ]---------------------------------
+[2026-10-09T15:47:38.047Z] [INFO] Loaded 74 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[2026-10-09T15:47:39.409Z] [INFO] 
+[2026-10-09T15:47:39.409Z] [INFO] --- resources:3.3.1:resources (default-resources) @ bloodbank-portal ---
+[2026-10-09T15:47:39.409Z] [INFO] Copying 1 resource from src/main/resources to target/classes
+[2026-10-09T15:47:39.409Z] [INFO] Copying 13 resources from src/main/resources to target/classes
+[2026-10-09T15:47:39.409Z] [INFO] 
+[2026-10-09T15:47:39.409Z] [INFO] --- compiler:3.13.0:compile (default-compile) @ bloodbank-portal ---
+[2026-10-09T15:47:39.409Z] [INFO] Nothing to compile - all classes are up to date.
+[2026-10-09T15:47:39.409Z] [INFO] 
+[2026-10-09T15:47:39.409Z] [INFO] --- build-helper:3.6.0:add-test-source (add-integration-test-source) @ bloodbank-portal ---
+[2026-10-09T15:47:39.409Z] [INFO] Test Source directory: /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/src/it/java added.
+[2026-10-09T15:47:39.409Z] [INFO] 
+[2026-10-09T15:47:39.409Z] [INFO] --- resources:3.3.1:testResources (default-testResources) @ bloodbank-portal ---
+[2026-10-09T15:47:39.409Z] [INFO] Copying 1 resource from src/test/resources to target/test-classes
+[2026-10-09T15:47:39.409Z] [INFO] 
+[2026-10-09T15:47:39.409Z] [INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ bloodbank-portal ---
+[2026-10-09T15:47:39.409Z] [INFO] Recompiling the module because of changed source code.
+[2026-10-09T15:47:39.409Z] [INFO] Compiling 15 source files with javac [debug parameters release 21] to target/test-classes
+[2026-10-09T15:47:41.294Z] [INFO] 
+[2026-10-09T15:47:41.294Z] [INFO] --- surefire:3.2.5:test (default-test) @ bloodbank-portal ---
+[2026-10-09T15:47:41.294Z] [INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[2026-10-09T15:47:41.294Z] [INFO] 
+[2026-10-09T15:47:41.294Z] [INFO] -------------------------------------------------------
+[2026-10-09T15:47:41.294Z] [INFO]  T E S T S
+[2026-10-09T15:47:41.294Z] [INFO] -------------------------------------------------------
+[2026-10-09T15:47:41.851Z] [INFO] Running com.bloodbank.web.SecurityRoleTest
+[2026-10-09T15:47:41.851Z] 21:17:41.723 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.bloodbank.web.SecurityRoleTest]: SecurityRoleTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:42.107Z] 21:17:41.836 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.web.SecurityRoleTest
+[2026-10-09T15:47:42.107Z] [INFO] Running com.bloodbank.web.SecurityRoleTest$StatusCodeContract
+[2026-10-09T15:47:42.107Z] 21:17:41.918 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.bloodbank.web.SecurityRoleTest$StatusCodeContract]: StatusCodeContract does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:42.107Z] 21:17:41.922 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.web.SecurityRoleTest$StatusCodeContract
+[2026-10-09T15:47:42.359Z] 
+[2026-10-09T15:47:42.359Z]   .   ____          _            __ _ _
+[2026-10-09T15:47:42.359Z]  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+[2026-10-09T15:47:42.359Z] ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+[2026-10-09T15:47:42.359Z]  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+[2026-10-09T15:47:42.359Z]   '  |____| .__|_| |_|_| |_\__, | / / / /
+[2026-10-09T15:47:42.359Z]  =========|_|==============|___/=/_/_/_/
+[2026-10-09T15:47:42.359Z] 
+[2026-10-09T15:47:42.359Z]  :: Spring Boot ::                (v3.3.5)
+[2026-10-09T15:47:42.359Z] 
+[2026-10-09T15:47:42.359Z] 2026-10-09 21:17:42 INFO  [main] com.bloodbank.web.SecurityRoleTest - Starting SecurityRoleTest using Java 21.0.12 with PID 78595 (started by ayushmayekar in /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline)
+[2026-10-09T15:47:42.359Z] 2026-10-09 21:17:42 INFO  [main] com.bloodbank.web.SecurityRoleTest - The following 1 profile is active: "test"
+[2026-10-09T15:47:42.919Z] 2026-10-09 21:17:42 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[2026-10-09T15:47:42.919Z] 2026-10-09 21:17:42 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 34 ms. Found 2 JPA repository interfaces.
+[2026-10-09T15:47:43.479Z] 2026-10-09 21:17:43 INFO  [main] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+[2026-10-09T15:47:43.735Z] 2026-10-09 21:17:43 INFO  [main] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.3.Final
+[2026-10-09T15:47:43.735Z] 2026-10-09 21:17:43 INFO  [main] o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+[2026-10-09T15:47:43.735Z] 2026-10-09 21:17:43 INFO  [main] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+[2026-10-09T15:47:43.735Z] 2026-10-09 21:17:43 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+[2026-10-09T15:47:43.989Z] 2026-10-09 21:17:43 INFO  [main] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:bloodbank-test user=SA
+[2026-10-09T15:47:43.989Z] 2026-10-09 21:17:43 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+[2026-10-09T15:47:44.550Z] 2026-10-09 21:17:44 INFO  [main] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+[2026-10-09T15:47:44.550Z] 2026-10-09 21:17:44 INFO  [main] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+[2026-10-09T15:47:44.804Z] 2026-10-09 21:17:44 INFO  [main] o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+[2026-10-09T15:47:46.155Z] 2026-10-09 21:17:45 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+[2026-10-09T15:47:46.155Z] 2026-10-09 21:17:46 INFO  [main] o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoints beneath base path '/actuator'
+[2026-10-09T15:47:46.716Z] 2026-10-09 21:17:46 INFO  [main] o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+[2026-10-09T15:47:46.716Z] 2026-10-09 21:17:46 INFO  [main] o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+[2026-10-09T15:47:46.716Z] 2026-10-09 21:17:46 INFO  [main] o.s.t.w.s.TestDispatcherServlet - Completed initialization in 1 ms
+[2026-10-09T15:47:46.716Z] 2026-10-09 21:17:46 INFO  [main] com.bloodbank.web.SecurityRoleTest - Started SecurityRoleTest in 4.637 seconds (process running for 5.429)
+[2026-10-09T15:47:46.971Z] OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[2026-10-09T15:47:46.971Z] WARNING: A Java agent has been loaded dynamically (/Users/ayushmayekar/.m2/repository/net/bytebuddy/byte-buddy-agent/1.14.19/byte-buddy-agent-1.14.19.jar)
+[2026-10-09T15:47:46.971Z] WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+[2026-10-09T15:47:46.971Z] WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+[2026-10-09T15:47:46.971Z] WARNING: Dynamic loading of agents will be disallowed by default in a future release
+[2026-10-09T15:47:48.852Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.404 s -- in com.bloodbank.web.SecurityRoleTest$StatusCodeContract
+[2026-10-09T15:47:48.852Z] [INFO] Running com.bloodbank.web.SecurityRoleTest$ApiChain
+[2026-10-09T15:47:48.852Z] 2026-10-09 21:17:48 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.web.SecurityRoleTest$ApiChain]: ApiChain does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:48.852Z] 2026-10-09 21:17:48 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.web.SecurityRoleTest$ApiChain
+[2026-10-09T15:47:48.852Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.269 s -- in com.bloodbank.web.SecurityRoleTest$ApiChain
+[2026-10-09T15:47:48.852Z] [INFO] Running com.bloodbank.web.SecurityRoleTest$BrowserChain
+[2026-10-09T15:47:48.852Z] 2026-10-09 21:17:48 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.web.SecurityRoleTest$BrowserChain]: BrowserChain does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:48.852Z] 2026-10-09 21:17:48 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.web.SecurityRoleTest$BrowserChain
+[2026-10-09T15:47:48.852Z] 2026-10-09 21:17:48 WARN  [main] o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/donors' (previous null). Performing MatchableHandlerMapping lookup. This is logged once only at WARN level, and every time at TRACE.
+[2026-10-09T15:47:49.410Z] [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.510 s -- in com.bloodbank.web.SecurityRoleTest$BrowserChain
+[2026-10-09T15:47:49.410Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.508 s -- in com.bloodbank.web.SecurityRoleTest
+[2026-10-09T15:47:49.410Z] [INFO] Running com.bloodbank.BloodBankApplicationTest
+[2026-10-09T15:47:49.410Z] 2026-10-09 21:17:49 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.BloodBankApplicationTest]: BloodBankApplicationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:49.410Z] 2026-10-09 21:17:49 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.BloodBankApplicationTest
+[2026-10-09T15:47:49.410Z] [INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in com.bloodbank.BloodBankApplicationTest
+[2026-10-09T15:47:49.410Z] [INFO] Running com.bloodbank.service.DashboardServiceTest
+[2026-10-09T15:47:49.410Z] 2026-10-09 21:17:49 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.DashboardServiceTest]: DashboardServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:49.410Z] 2026-10-09 21:17:49 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.DashboardServiceTest
+[2026-10-09T15:47:49.410Z] 
+[2026-10-09T15:47:49.410Z]   .   ____          _            __ _ _
+[2026-10-09T15:47:49.410Z]  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+[2026-10-09T15:47:49.410Z] ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+[2026-10-09T15:47:49.410Z]  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+[2026-10-09T15:47:49.410Z]   '  |____| .__|_| |_|_| |_\__, | / / / /
+[2026-10-09T15:47:49.410Z]  =========|_|==============|___/=/_/_/_/
+[2026-10-09T15:47:49.410Z] 
+[2026-10-09T15:47:49.410Z]  :: Spring Boot ::                (v3.3.5)
+[2026-10-09T15:47:49.410Z] 
+[2026-10-09T15:47:49.410Z] 2026-10-09 21:17:49 INFO  [main] c.b.service.DashboardServiceTest - Starting DashboardServiceTest using Java 21.0.12 with PID 78595 (started by ayushmayekar in /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline)
+[2026-10-09T15:47:49.410Z] 2026-10-09 21:17:49 INFO  [main] c.b.service.DashboardServiceTest - The following 1 profile is active: "test"
+[2026-10-09T15:47:49.410Z] 2026-10-09 21:17:49 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[2026-10-09T15:47:49.410Z] 2026-10-09 21:17:49 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 7 ms. Found 2 JPA repository interfaces.
+[2026-10-09T15:47:49.660Z] 2026-10-09 21:17:49 INFO  [main] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+[2026-10-09T15:47:49.660Z] 2026-10-09 21:17:49 INFO  [main] o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+[2026-10-09T15:47:49.660Z] 2026-10-09 21:17:49 INFO  [main] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+[2026-10-09T15:47:49.660Z] 2026-10-09 21:17:49 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Starting...
+[2026-10-09T15:47:49.660Z] 2026-10-09 21:17:49 INFO  [main] com.zaxxer.hikari.pool.HikariPool - HikariPool-2 - Added connection conn10: url=jdbc:h2:mem:bloodbank-test user=SA
+[2026-10-09T15:47:49.660Z] 2026-10-09 21:17:49 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Start completed.
+[2026-10-09T15:47:49.660Z] 2026-10-09 21:17:49 INFO  [main] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+[2026-10-09T15:47:49.660Z] 2026-10-09 21:17:49 INFO  [main] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+[2026-10-09T15:47:50.221Z] 2026-10-09 21:17:49 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+[2026-10-09T15:47:50.221Z] 2026-10-09 21:17:49 INFO  [main] o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoints beneath base path '/actuator'
+[2026-10-09T15:47:50.221Z] 2026-10-09 21:17:50 INFO  [main] c.b.service.DashboardServiceTest - Started DashboardServiceTest in 0.973 seconds (process running for 8.954)
+[2026-10-09T15:47:50.476Z] [INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.271 s -- in com.bloodbank.service.DashboardServiceTest
+[2026-10-09T15:47:50.476Z] [INFO] Running com.bloodbank.service.DonorServiceTest
+[2026-10-09T15:47:50.476Z] 2026-10-09 21:17:50 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.DonorServiceTest]: DonorServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:50.476Z] 2026-10-09 21:17:50 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.DonorServiceTest
+[2026-10-09T15:47:50.476Z] [INFO] Running com.bloodbank.service.DonorServiceTest$Update
+[2026-10-09T15:47:50.476Z] 2026-10-09 21:17:50 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.DonorServiceTest$Update]: Update does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:50.476Z] 2026-10-09 21:17:50 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.DonorServiceTest$Update
+[2026-10-09T15:47:50.476Z] [INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.045 s -- in com.bloodbank.service.DonorServiceTest$Update
+[2026-10-09T15:47:50.476Z] [INFO] Running com.bloodbank.service.DonorServiceTest$Create
+[2026-10-09T15:47:50.476Z] 2026-10-09 21:17:50 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.DonorServiceTest$Create]: Create does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:50.476Z] 2026-10-09 21:17:50 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.DonorServiceTest$Create
+[2026-10-09T15:47:50.731Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in com.bloodbank.service.DonorServiceTest$Create
+[2026-10-09T15:47:50.731Z] [INFO] Running com.bloodbank.service.DonorServiceTest$Search
+[2026-10-09T15:47:50.731Z] 2026-10-09 21:17:50 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.DonorServiceTest$Search]: Search does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:50.731Z] 2026-10-09 21:17:50 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.DonorServiceTest$Search
+[2026-10-09T15:47:50.731Z] [INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.127 s -- in com.bloodbank.service.DonorServiceTest$Search
+[2026-10-09T15:47:50.731Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.201 s -- in com.bloodbank.service.DonorServiceTest
+[2026-10-09T15:47:50.731Z] [INFO] Running com.bloodbank.service.MatchingServiceTest
+[2026-10-09T15:47:50.987Z] [INFO] Running com.bloodbank.service.MatchingServiceTest$EdgeCases
+[2026-10-09T15:47:50.987Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in com.bloodbank.service.MatchingServiceTest$EdgeCases
+[2026-10-09T15:47:50.987Z] [INFO] Running com.bloodbank.service.MatchingServiceTest$Ranking
+[2026-10-09T15:47:50.987Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in com.bloodbank.service.MatchingServiceTest$Ranking
+[2026-10-09T15:47:50.987Z] [INFO] Running com.bloodbank.service.MatchingServiceTest$Predicates
+[2026-10-09T15:47:50.987Z] [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in com.bloodbank.service.MatchingServiceTest$Predicates
+[2026-10-09T15:47:50.987Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.304 s -- in com.bloodbank.service.MatchingServiceTest
+[2026-10-09T15:47:50.987Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest
+[2026-10-09T15:47:50.987Z] 2026-10-09 21:17:50 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest]: RequestWorkflowTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:50.987Z] 2026-10-09 21:17:50 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest
+[2026-10-09T15:47:50.987Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$Search
+[2026-10-09T15:47:50.987Z] 2026-10-09 21:17:50 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$Search]: Search does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:50.987Z] 2026-10-09 21:17:50 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$Search
+[2026-10-09T15:47:51.242Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.075 s -- in com.bloodbank.service.RequestWorkflowTest$Search
+[2026-10-09T15:47:51.242Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$RejectionReason
+[2026-10-09T15:47:51.242Z] 2026-10-09 21:17:51 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$RejectionReason]: RejectionReason does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:51.242Z] 2026-10-09 21:17:51 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$RejectionReason
+[2026-10-09T15:47:51.242Z] [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in com.bloodbank.service.RequestWorkflowTest$RejectionReason
+[2026-10-09T15:47:51.242Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$StateMachine
+[2026-10-09T15:47:51.242Z] 2026-10-09 21:17:51 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$StateMachine]: StateMachine does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:51.242Z] 2026-10-09 21:17:51 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$StateMachine
+[2026-10-09T15:47:51.242Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.092 s -- in com.bloodbank.service.RequestWorkflowTest$StateMachine
+[2026-10-09T15:47:51.242Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$MatchValidity
+[2026-10-09T15:47:51.242Z] 2026-10-09 21:17:51 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$MatchValidity]: MatchValidity does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:51.242Z] 2026-10-09 21:17:51 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$MatchValidity
+[2026-10-09T15:47:51.242Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.044 s -- in com.bloodbank.service.RequestWorkflowTest$MatchValidity
+[2026-10-09T15:47:51.242Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$RoleGuards
+[2026-10-09T15:47:51.242Z] 2026-10-09 21:17:51 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$RoleGuards]: RoleGuards does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:51.242Z] 2026-10-09 21:17:51 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$RoleGuards
+[2026-10-09T15:47:51.495Z] [INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.073 s -- in com.bloodbank.service.RequestWorkflowTest$RoleGuards
+[2026-10-09T15:47:51.495Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$IllegalTransitions
+[2026-10-09T15:47:51.495Z] 2026-10-09 21:17:51 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$IllegalTransitions]: IllegalTransitions does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:51.495Z] 2026-10-09 21:17:51 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$IllegalTransitions
+[2026-10-09T15:47:51.495Z] [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.051 s -- in com.bloodbank.service.RequestWorkflowTest$IllegalTransitions
+[2026-10-09T15:47:51.495Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$LegalTransitions
+[2026-10-09T15:47:51.495Z] 2026-10-09 21:17:51 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$LegalTransitions]: LegalTransitions does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:51.495Z] 2026-10-09 21:17:51 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$LegalTransitions
+[2026-10-09T15:47:51.495Z] [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.047 s -- in com.bloodbank.service.RequestWorkflowTest$LegalTransitions
+[2026-10-09T15:47:51.495Z] [INFO] Running com.bloodbank.service.RequestWorkflowTest$Creation
+[2026-10-09T15:47:51.495Z] 2026-10-09 21:17:51 INFO  [main] o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.bloodbank.service.RequestWorkflowTest$Creation]: Creation does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+[2026-10-09T15:47:51.495Z] 2026-10-09 21:17:51 INFO  [main] o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.bloodbank.BloodBankApplication for test class com.bloodbank.service.RequestWorkflowTest$Creation
+[2026-10-09T15:47:51.495Z] [INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in com.bloodbank.service.RequestWorkflowTest$Creation
+[2026-10-09T15:47:51.495Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.447 s -- in com.bloodbank.service.RequestWorkflowTest
+[2026-10-09T15:47:51.495Z] [INFO] Running com.bloodbank.domain.CompatibilityMatrixTest
+[2026-10-09T15:47:51.495Z] [INFO] Running com.bloodbank.domain.CompatibilityMatrixTest$Parsing
+[2026-10-09T15:47:51.495Z] [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.bloodbank.domain.CompatibilityMatrixTest$Parsing
+[2026-10-09T15:47:51.495Z] [INFO] Running com.bloodbank.domain.CompatibilityMatrixTest$Rules
+[2026-10-09T15:47:51.495Z] [INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.bloodbank.domain.CompatibilityMatrixTest$Rules
+[2026-10-09T15:47:51.495Z] [INFO] Running com.bloodbank.domain.CompatibilityMatrixTest$UniversalGroups
+[2026-10-09T15:47:51.495Z] [INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.bloodbank.domain.CompatibilityMatrixTest$UniversalGroups
+[2026-10-09T15:47:51.495Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.055 s -- in com.bloodbank.domain.CompatibilityMatrixTest
+[2026-10-09T15:47:51.495Z] [INFO] Running com.bloodbank.domain.DonorEligibilityTest
+[2026-10-09T15:47:51.495Z] [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.bloodbank.domain.DonorEligibilityTest
+[2026-10-09T15:47:51.746Z] [INFO] 
+[2026-10-09T15:47:51.746Z] [INFO] Results:
+[2026-10-09T15:47:51.746Z] [INFO] 
+[2026-10-09T15:47:51.746Z] [INFO] Tests run: 178, Failures: 0, Errors: 0, Skipped: 0
+[2026-10-09T15:47:51.746Z] [INFO] 
+[2026-10-09T15:47:51.746Z] [INFO] 
+[2026-10-09T15:47:51.746Z] [INFO] --- war:3.4.0:war (default-war) @ bloodbank-portal ---
+[2026-10-09T15:47:51.746Z] [INFO] Packaging webapp
+[2026-10-09T15:47:51.746Z] [INFO] Assembling webapp [bloodbank-portal] in [/Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/target/bloodbank]
+[2026-10-09T15:47:51.746Z] [INFO] Processing war project
+[2026-10-09T15:47:51.746Z] [INFO] Building war: /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/target/bloodbank.war
+[2026-10-09T15:47:52.671Z] [INFO] 
+[2026-10-09T15:47:52.671Z] [INFO] --- spring-boot:3.3.5:repackage (repackage) @ bloodbank-portal ---
+[2026-10-09T15:47:52.671Z] [INFO] Loaded 50 auto-discovered prefixes for remote repository ow2-snapshot (prefixes-ow2-snapshot.txt)
+[2026-10-09T15:47:53.596Z] [INFO] Replacing main artifact /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/target/bloodbank.war with repackaged archive, adding nested dependencies in BOOT-INF/.
+[2026-10-09T15:47:53.596Z] [INFO] The original artifact has been renamed to /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/target/bloodbank.war.original
+[2026-10-09T15:47:53.596Z] [INFO] 
+[2026-10-09T15:47:53.596Z] [INFO] --- failsafe:3.2.5:integration-test (default) @ bloodbank-portal ---
+[2026-10-09T15:47:53.851Z] [INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[2026-10-09T15:47:53.851Z] [INFO] 
+[2026-10-09T15:47:53.851Z] [INFO] -------------------------------------------------------
+[2026-10-09T15:47:53.851Z] [INFO]  T E S T S
+[2026-10-09T15:47:53.851Z] [INFO] -------------------------------------------------------
+[2026-10-09T15:47:54.106Z] [INFO] Running com.bloodbank.ui.J2DonorSearchIT
+[2026-10-09T15:47:56.609Z] Oct 09, 2026 9:17:56 PM org.openqa.selenium.devtools.CdpVersionFinder findNearestMatch
+[2026-10-09T15:47:56.609Z] WARNING: Unable to find CDP implementation matching 154
+[2026-10-09T15:47:56.609Z] Oct 09, 2026 9:17:56 PM org.openqa.selenium.chromium.ChromiumDriver lambda$new$5
+[2026-10-09T15:47:56.609Z] WARNING: Unable to find version of CDP to use for 154.0.8037.99. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.25.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+[2026-10-09T15:47:57.533Z] FAILURE captured: /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/target/screenshots/J2DonorSearchIT.filtersByBloodGroup.png
+[2026-10-09T15:47:57.533Z] FAILURE url:      http://localhost:9090/donors?group=O-&city=
+[2026-10-09T15:47:57.533Z] FAILURE in J2DonorSearchIT.filtersByBloodGroup - evidence under /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/target/screenshots
+[2026-10-09T15:48:00.040Z] [ERROR] Tests run: 4, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 5.606 s <<< FAILURE! -- in com.bloodbank.ui.J2DonorSearchIT
+[2026-10-09T15:48:00.040Z] [ERROR] com.bloodbank.ui.J2DonorSearchIT.filtersByBloodGroup -- Time elapsed: 1.137 s <<< ERROR!
+[2026-10-09T15:48:00.040Z] org.openqa.selenium.StaleElementReferenceException: 
+[2026-10-09T15:48:00.040Z] stale element reference: stale element not found
+[2026-10-09T15:48:00.040Z]   (Session info: chrome=154.0.8037.99)
+[2026-10-09T15:48:00.040Z] For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#stale-element-reference-exception
+[2026-10-09T15:48:00.040Z] Build info: version: '4.25.0', revision: '8a8aea2337'
+[2026-10-09T15:48:00.040Z] System info: os.name: 'Mac OS X', os.arch: 'aarch64', os.version: '27.0', java.version: '21.0.12'
+[2026-10-09T15:48:00.040Z] Driver info: org.openqa.selenium.chrome.ChromeDriver
+[2026-10-09T15:48:00.040Z] Command: [2706b2068a898309fa40bce365c57ce7, getElementText {id=f.38A77219B79A9D4948F9FA6AE5C3E96E.d.63DBA98B33CF0AD227A4F3930257E44E.e.54}]
+[2026-10-09T15:48:00.040Z] Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 154.0.8037.99, chrome: {chromedriverVersion: 154.0.8037.92 (334b65d254cc..., userDataDir: /var/folders/9b/87_d8hyd7mq...}, fedcm:accounts: true, goog:chromeOptions: {debuggerAddress: localhost:65448}, goog:processID: 78710, networkConnectionEnabled: false, pageLoadStrategy: normal, platformName: mac, proxy: Proxy(), se:cdp: ws://localhost:65448/devtoo..., se:cdpVersion: 154.0.8037.99, setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:cmtgKey: true, webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:extension:minPinLength: true, webauthn:extension:prf: true, webauthn:virtualAuthenticators: true}
+[2026-10-09T15:48:00.040Z] Element: [[ChromeDriver: chrome on mac (2706b2068a898309fa40bce365c57ce7)] -> css selector: [data-testid^='donor-row-'] .bb-group]
+[2026-10-09T15:48:00.040Z] Session ID: 2706b2068a898309fa40bce365c57ce7
+[2026-10-09T15:48:00.040Z] 	at java.base/jdk.internal.reflect.DirectConstructorHandleAccessor.newInstance(DirectConstructorHandleAccessor.java:62)
+[2026-10-09T15:48:00.040Z] 	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:502)
+[2026-10-09T15:48:00.040Z] 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:486)
+[2026-10-09T15:48:00.040Z] 	at org.openqa.selenium.remote.ErrorCodec.decode(ErrorCodec.java:167)
+[2026-10-09T15:48:00.040Z] 	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:138)
+[2026-10-09T15:48:00.040Z] 	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:50)
+[2026-10-09T15:48:00.040Z] 	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:190)
+[2026-10-09T15:48:00.040Z] 	at org.openqa.selenium.remote.service.DriverCommandExecutor.invokeExecute(DriverCommandExecutor.java:216)
+[2026-10-09T15:48:00.040Z] 	at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:174)
+[2026-10-09T15:48:00.040Z] 	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:545)
+[2026-10-09T15:48:00.040Z] 	at org.openqa.selenium.remote.RemoteWebElement.execute(RemoteWebElement.java:223)
+[2026-10-09T15:48:00.040Z] 	at org.openqa.selenium.remote.RemoteWebElement.getText(RemoteWebElement.java:191)
+[2026-10-09T15:48:00.040Z] 	at com.bloodbank.ui.J2DonorSearchIT.lambda$filtersByBloodGroup$1(J2DonorSearchIT.java:41)
+[2026-10-09T15:48:00.040Z] 	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+[2026-10-09T15:48:00.040Z] 	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1708)
+[2026-10-09T15:48:00.040Z] 	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+[2026-10-09T15:48:00.040Z] 	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+[2026-10-09T15:48:00.040Z] 	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:575)
+[2026-10-09T15:48:00.041Z] 	at java.base/java.util.stream.AbstractPipeline.evaluateToArrayNode(AbstractPipeline.java:260)
+[2026-10-09T15:48:00.041Z] 	at java.base/java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:616)
+[2026-10-09T15:48:00.041Z] 	at java.base/java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:622)
+[2026-10-09T15:48:00.041Z] 	at java.base/java.util.stream.ReferencePipeline.toList(ReferencePipeline.java:627)
+[2026-10-09T15:48:00.041Z] 	at com.bloodbank.ui.J2DonorSearchIT.filtersByBloodGroup(J2DonorSearchIT.java:41)
+[2026-10-09T15:48:00.041Z] 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+[2026-10-09T15:48:00.041Z] 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+[2026-10-09T15:48:00.041Z] 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+[2026-10-09T15:48:00.041Z] 
+[2026-10-09T15:48:00.041Z] [INFO] Running com.bloodbank.ui.J4MatchAndRoleGuardIT
+[2026-10-09T15:48:00.597Z] Oct 09, 2026 9:18:00 PM org.openqa.selenium.devtools.CdpVersionFinder findNearestMatch
+[2026-10-09T15:48:00.597Z] WARNING: Unable to find CDP implementation matching 154
+[2026-10-09T15:48:00.597Z] Oct 09, 2026 9:18:00 PM org.openqa.selenium.chromium.ChromiumDriver lambda$new$5
+[2026-10-09T15:48:00.597Z] WARNING: Unable to find version of CDP to use for 154.0.8037.99. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.25.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+[2026-10-09T15:48:01.955Z] FAILURE captured: /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/target/screenshots/J4MatchAndRoleGuardIT.staffIsRefusedTheFulfilAction.png
+[2026-10-09T15:48:01.955Z] FAILURE url:      http://localhost:9090/requests/97
+[2026-10-09T15:48:01.955Z] FAILURE in J4MatchAndRoleGuardIT.staffIsRefusedTheFulfilAction - evidence under /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/target/screenshots
+[2026-10-09T15:48:06.102Z] [ERROR] Tests run: 3, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 5.650 s <<< FAILURE! -- in com.bloodbank.ui.J4MatchAndRoleGuardIT
+[2026-10-09T15:48:06.102Z] [ERROR] com.bloodbank.ui.J4MatchAndRoleGuardIT.staffIsRefusedTheFulfilAction -- Time elapsed: 1.207 s <<< FAILURE!
+[2026-10-09T15:48:06.102Z] org.opentest4j.AssertionFailedError: 
+[2026-10-09T15:48:06.102Z] [AC-07.4: a STAFF user must not be offered the fulfil action] 
+[2026-10-09T15:48:06.102Z] Expecting value to be false but was true
+[2026-10-09T15:48:06.102Z] 	at java.base/jdk.internal.reflect.DirectConstructorHandleAccessor.newInstance(DirectConstructorHandleAccessor.java:62)
+[2026-10-09T15:48:06.102Z] 	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:502)
+[2026-10-09T15:48:06.102Z] 	at com.bloodbank.ui.J4MatchAndRoleGuardIT.staffIsRefusedTheFulfilAction(J4MatchAndRoleGuardIT.java:84)
+[2026-10-09T15:48:06.102Z] 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+[2026-10-09T15:48:06.102Z] 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+[2026-10-09T15:48:06.102Z] 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+[2026-10-09T15:48:06.102Z] 
+[2026-10-09T15:48:06.102Z] [INFO] Running com.bloodbank.ui.J1DonorRegistrationIT
+[2026-10-09T15:48:06.664Z] Oct 09, 2026 9:18:06 PM org.openqa.selenium.devtools.CdpVersionFinder findNearestMatch
+[2026-10-09T15:48:06.664Z] WARNING: Unable to find CDP implementation matching 154
+[2026-10-09T15:48:06.664Z] Oct 09, 2026 9:18:06 PM org.openqa.selenium.chromium.ChromiumDriver lambda$new$5
+[2026-10-09T15:48:06.664Z] WARNING: Unable to find version of CDP to use for 154.0.8037.99. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.25.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+[2026-10-09T15:48:13.181Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.634 s -- in com.bloodbank.ui.J1DonorRegistrationIT
+[2026-10-09T15:48:13.181Z] [INFO] Running com.bloodbank.ui.J3RequestAndDashboardIT
+[2026-10-09T15:48:14.542Z] Oct 09, 2026 9:18:14 PM org.openqa.selenium.devtools.CdpVersionFinder findNearestMatch
+[2026-10-09T15:48:14.542Z] WARNING: Unable to find CDP implementation matching 154
+[2026-10-09T15:48:14.542Z] Oct 09, 2026 9:18:14 PM org.openqa.selenium.chromium.ChromiumDriver lambda$new$5
+[2026-10-09T15:48:14.542Z] WARNING: Unable to find version of CDP to use for 154.0.8037.99. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.25.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+[2026-10-09T15:48:18.691Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.232 s -- in com.bloodbank.ui.J3RequestAndDashboardIT
+[2026-10-09T15:48:18.691Z] [INFO] Running com.bloodbank.ui.J5FulfilAndEligibilityIT
+[2026-10-09T15:48:19.613Z] Oct 09, 2026 9:18:19 PM org.openqa.selenium.devtools.CdpVersionFinder findNearestMatch
+[2026-10-09T15:48:19.613Z] WARNING: Unable to find CDP implementation matching 154
+[2026-10-09T15:48:19.613Z] Oct 09, 2026 9:18:19 PM org.openqa.selenium.chromium.ChromiumDriver lambda$new$5
+[2026-10-09T15:48:19.613Z] WARNING: Unable to find version of CDP to use for 154.0.8037.99. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.25.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+[2026-10-09T15:48:34.428Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.67 s -- in com.bloodbank.ui.J5FulfilAndEligibilityIT
+[2026-10-09T15:48:34.428Z] [INFO] 
+[2026-10-09T15:48:34.428Z] [INFO] Results:
+[2026-10-09T15:48:34.428Z] [INFO] 
+[2026-10-09T15:48:34.428Z] [ERROR] Failures: 
+[2026-10-09T15:48:34.428Z] [ERROR]   J4MatchAndRoleGuardIT.staffIsRefusedTheFulfilAction:84 [AC-07.4: a STAFF user must not be offered the fulfil action] 
+[2026-10-09T15:48:34.428Z] Expecting value to be false but was true
+[2026-10-09T15:48:34.428Z] [ERROR] Errors: 
+[2026-10-09T15:48:34.428Z] [ERROR]   J2DonorSearchIT.filtersByBloodGroup:41->lambda$filtersByBloodGroup$1:41 » StaleElementReference stale element reference: stale element not found
+[2026-10-09T15:48:34.428Z]   (Session info: chrome=154.0.8037.99)
+[2026-10-09T15:48:34.428Z] For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#stale-element-reference-exception
+[2026-10-09T15:48:34.428Z] Build info: version: '4.25.0', revision: '8a8aea2337'
+[2026-10-09T15:48:34.428Z] System info: os.name: 'Mac OS X', os.arch: 'aarch64', os.version: '27.0', java.version: '21.0.12'
+[2026-10-09T15:48:34.428Z] Driver info: org.openqa.selenium.chrome.ChromeDriver
+[2026-10-09T15:48:34.428Z] Command: [2706b2068a898309fa40bce365c57ce7, getElementText {id=f.38A77219B79A9D4948F9FA6AE5C3E96E.d.63DBA98B33CF0AD227A4F3930257E44E.e.54}]
+[2026-10-09T15:48:34.428Z] Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 154.0.8037.99, chrome: {chromedriverVersion: 154.0.8037.92 (334b65d254cc..., userDataDir: /var/folders/9b/87_d8hyd7mq...}, fedcm:accounts: true, goog:chromeOptions: {debuggerAddress: localhost:65448}, goog:processID: 78710, networkConnectionEnabled: false, pageLoadStrategy: normal, platformName: mac, proxy: Proxy(), se:cdp: ws://localhost:65448/devtoo..., se:cdpVersion: 154.0.8037.99, setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:cmtgKey: true, webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:extension:minPinLength: true, webauthn:extension:prf: true, webauthn:virtualAuthenticators: true}
+[2026-10-09T15:48:34.428Z] Element: [[ChromeDriver: chrome on mac (2706b2068a898309fa40bce365c57ce7)] -> css selector: [data-testid^='donor-row-'] .bb-group]
+[2026-10-09T15:48:34.428Z] Session ID: 2706b2068a898309fa40bce365c57ce7
+[2026-10-09T15:48:34.428Z] [INFO] 
+[2026-10-09T15:48:34.428Z] [ERROR] Tests run: 16, Failures: 1, Errors: 1, Skipped: 0
+[2026-10-09T15:48:34.428Z] [INFO] 
+[2026-10-09T15:48:34.428Z] [INFO] 
+[2026-10-09T15:48:34.428Z] [INFO] --- failsafe:3.2.5:verify (default) @ bloodbank-portal ---
+[2026-10-09T15:48:34.428Z] [INFO] ------------------------------------------------------------------------
+[2026-10-09T15:48:34.428Z] [ERROR] BUILD FAILURE
+[2026-10-09T15:48:34.428Z] [INFO] ------------------------------------------------------------------------
+[2026-10-09T15:48:34.428Z] [INFO] Total time:  54.694 s
+[2026-10-09T15:48:34.428Z] [INFO] Finished at: 2026-10-09T21:18:32+05:30
+[2026-10-09T15:48:34.428Z] [INFO] ------------------------------------------------------------------------
+[2026-10-09T15:48:34.428Z] [ERROR] Failed to execute goal org.apache.maven.plugins:maven-failsafe-plugin:3.2.5:verify (default) on project bloodbank-portal: There are test failures.
+[2026-10-09T15:48:34.428Z] [ERROR] 
+[2026-10-09T15:48:34.428Z] [ERROR] Please refer to /Users/ayushmayekar/.jenkins-bloodbank/workspace/bloodbank-pipeline/target/failsafe-reports for the individual test results.
+[2026-10-09T15:48:34.428Z] [ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[2026-10-09T15:48:34.428Z] [ERROR] -> [Help 1]
+[2026-10-09T15:48:34.428Z] [ERROR] 
+[2026-10-09T15:48:34.428Z] [ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[2026-10-09T15:48:34.428Z] [ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[2026-10-09T15:48:34.428Z] [ERROR] 
+[2026-10-09T15:48:34.428Z] [ERROR] For more information about the errors and possible solutions, please read the following articles:
+[2026-10-09T15:48:34.428Z] [ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+Post stage
+[Pipeline] junit
+[2026-10-09T15:48:34.498Z] Recording test results
+[2026-10-09T15:48:34.530Z] [Checks API] No suitable checks publisher found.
+[Pipeline] archiveArtifacts
+[2026-10-09T15:48:34.568Z] Archiving artifacts
+[Pipeline] echo
+[2026-10-09T15:48:34.614Z] QUALITY GATE FAILED - a user journey is broken.
+[Pipeline] echo
+[2026-10-09T15:48:34.635Z] Nothing after this stage runs: no image is published and no container is replaced.
+[Pipeline] sh
+[2026-10-09T15:48:34.917Z] + ls -1 target/screenshots
+[2026-10-09T15:48:34.917Z] + sed 's/^/  screenshot: /'
+[2026-10-09T15:48:34.917Z]   screenshot: J2DonorSearchIT.filtersByBloodGroup.html
+[2026-10-09T15:48:34.917Z]   screenshot: J2DonorSearchIT.filtersByBloodGroup.png
+[2026-10-09T15:48:34.917Z]   screenshot: J2DonorSearchIT.filtersByBloodGroup.txt
+[2026-10-09T15:48:34.917Z]   screenshot: J4MatchAndRoleGuardIT.staffIsRefusedTheFulfilAction.html
+[2026-10-09T15:48:34.917Z]   screenshot: J4MatchAndRoleGuardIT.staffIsRefusedTheFulfilAction.png
+[2026-10-09T15:48:34.917Z]   screenshot: J4MatchAndRoleGuardIT.staffIsRefusedTheFulfilAction.txt
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Promote)
+Stage "Promote" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+[2026-10-09T15:48:35.227Z] Build #9 finished with status FAILURE
+[Pipeline] echo
+[2026-10-09T15:48:35.253Z] FAILURE - collecting diagnostics
+[Pipeline] sh
+[2026-10-09T15:48:35.538Z] + docker logs --tail 100 bloodbank-app
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.568 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version name:   Apache Tomcat/10.1.60
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.571 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          Sep 9 2026 22:35:59 UTC
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.571 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version number: 10.1.60.0
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.572 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Linux
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.572 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            6.10.14-linuxkit
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.572 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          aarch64
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.572 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             /opt/java/openjdk
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.572 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           21.0.12.1+1-LTS
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.572 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Eclipse Adoptium
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.572 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         /usr/local/tomcat
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.572 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         /usr/local/tomcat
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.580 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=/usr/local/tomcat/conf/logging.properties
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.580 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.580 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djdk.tls.ephemeralDHKeySize=2048
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.580 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.protocol.handler.pkgs=org.apache.catalina.webresources
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.580 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dsun.io.useCanonCaches=false
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.580 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.580 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.lang=ALL-UNNAMED
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.580 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.581 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.io=ALL-UNNAMED
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.581 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util=ALL-UNNAMED
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.581 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.581 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.581 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=/usr/local/tomcat
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.581 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=/usr/local/tomcat
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.581 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=/usr/local/tomcat/temp
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.588 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent Loaded Apache Tomcat Native library [2.0.16] using APR version [1.7.6].
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.599 INFO [main] org.apache.catalina.core.AprLifecycleListener.initializeSSL OpenSSL successfully initialized [OpenSSL 3.5.5 27 Jan 2026]
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.805 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-8080"]
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.822 INFO [main] org.apache.catalina.startup.Catalina.load Server initialization in [364] milliseconds
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.851 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service [Catalina]
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.851 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet engine: [Apache Tomcat/10.1.60]
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:25.870 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Deploying web application archive [/usr/local/tomcat/webapps/ROOT.war]
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:27.613 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+[2026-10-09T15:48:35.538Z] 
+[2026-10-09T15:48:35.538Z]   .   ____          _            __ _ _
+[2026-10-09T15:48:35.538Z]  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+[2026-10-09T15:48:35.538Z] ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+[2026-10-09T15:48:35.538Z]  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+[2026-10-09T15:48:35.538Z]   '  |____| .__|_| |_|_| |_\__, | / / / /
+[2026-10-09T15:48:35.538Z]  =========|_|==============|___/=/_/_/_/
+[2026-10-09T15:48:35.538Z] 
+[2026-10-09T15:48:35.538Z]  :: Spring Boot ::                (v3.3.5)
+[2026-10-09T15:48:35.538Z] 
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:28 INFO  [main] com.bloodbank.BloodBankApplication - Starting BloodBankApplication v1.0.0 using Java 21.0.12.1 with PID 1 (/usr/local/tomcat/webapps/ROOT/WEB-INF/classes started by root in /usr/local/tomcat)
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:28 INFO  [main] com.bloodbank.BloodBankApplication - No active profile set, falling back to 1 default profile: "default"
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:28 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:28 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 39 ms. Found 2 JPA repository interfaces.
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:29 INFO  [main] o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1217 ms
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:29 INFO  [main] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:29 INFO  [main] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.3.Final
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:29 INFO  [main] o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:30 INFO  [main] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:30 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:30 INFO  [main] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:file:/opt/bloodbank/data/bloodbank user=SA
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:30 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:31 INFO  [main] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:31 INFO  [main] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:31 INFO  [main] o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:32 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:33 INFO  [main] o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoints beneath base path '/actuator'
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:33 INFO  [main] com.bloodbank.BloodBankApplication - Started BloodBankApplication in 5.874 seconds (process running for 8.343)
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:33 INFO  [main] com.bloodbank.config.DataSeeder - Database already contains 21 donors; skipping seed
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:33.703 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Deployment of web application archive [/usr/local/tomcat/webapps/ROOT.war] has finished in [7,833] ms
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:33.708 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
+[2026-10-09T15:48:35.538Z] 09-Oct-2026 15:47:33.727 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [7903] milliseconds
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:33 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+[2026-10-09T15:48:35.538Z] 2026-10-09 15:47:33 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 0 ms
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE

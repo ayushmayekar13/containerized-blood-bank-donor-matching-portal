@@ -1,0 +1,11 @@
+build #9  status=FAILED  total=93.9s
+  Declarative: Checkout SCM    SUCCESS       0.2s
+  Checkout                     SUCCESS       1.1s
+  Build                        SUCCESS       3.0s
+  Unit Test                    SUCCESS      12.2s
+  Package                      SUCCESS       5.3s
+  Deploy to Tomcat             SUCCESS      10.8s
+  Health Check                 SUCCESS       1.4s
+  UI Test (quality gate)       FAILED       58.1s
+  Promote                      FAILED        0.1s
+  Declarative: Post Actions    SUCCESS       0.4s
