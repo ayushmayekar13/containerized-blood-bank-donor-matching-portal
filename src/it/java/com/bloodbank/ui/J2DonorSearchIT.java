@@ -30,18 +30,29 @@ class J2DonorSearchIT extends BaseJourney {
         select("filter-group", "O-");
         click("search-submit");
 
-        // Wait for the filtered page before reading anything from it. Clicking
-        // Search is a full navigation, and reading elements located before it
-        // completed is how this test previously threw StaleElementReference in
-        // Jenkins - a flaky failure in a test whose subject was never timing.
+        // Wait for the filtered table to be VISIBLE, not merely present. Clicking
+        // Search is a full navigation, and this journey previously failed twice
+        // in Jenkins for two different timing reasons: once with
+        // StaleElementReference from reading while the old DOM was being
+        // replaced, and once with an empty badge value, because getText() on a
+        // present-but-not-yet-painted element returns "" in headless Chrome.
         wait.until(org.openqa.selenium.support.ui.ExpectedConditions
-                .presenceOfElementLocated(testId("donor-table")));
+                .visibilityOfElementLocated(testId("donor-table")));
 
         // Read the group badge of every row rather than trusting the filter: the
         // assertion must be about what the user sees, not about the query string.
+        //
+        // textContent rather than getText(): getText() returns only *rendered*
+        // text, so it depends on paint timing, while textContent is read
+        // straight from the DOM and is what the markup actually says.
         var shownGroups = driver.findElements(
                 org.openqa.selenium.By.cssSelector("[data-testid^='donor-row-'] .bb-group"))
-                .stream().map(e -> e.getText().trim()).distinct().toList();
+                .stream()
+                .map(e -> e.getAttribute("textContent"))
+                .filter(java.util.Objects::nonNull)
+                .map(String::trim)
+                .distinct()
+                .toList();
 
         assertThat(shownGroups)
                 .as("only O- donors may be listed when filtering by O-")
