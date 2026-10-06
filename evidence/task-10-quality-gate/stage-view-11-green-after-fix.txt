@@ -1,0 +1,11 @@
+build #11  status=SUCCESS  total=211.9s
+  Declarative: Checkout SCM    SUCCESS       0.7s
+  Checkout                     SUCCESS       2.5s
+  Build                        SUCCESS      11.2s
+  Unit Test                    SUCCESS      47.7s
+  Package                      SUCCESS      13.4s
+  Deploy to Tomcat             SUCCESS      29.7s
+  Health Check                 SUCCESS       4.9s
+  UI Test (quality gate)       SUCCESS      98.1s
+  Promote                      SUCCESS       0.1s
+  Declarative: Post Actions    SUCCESS       0.5s

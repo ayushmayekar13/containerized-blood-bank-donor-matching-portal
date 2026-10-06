@@ -38,10 +38,18 @@ documentation) = 82 points of planned effort.
 | BUG-03 | Dashboard reported 8 callable donors with only 1 registered | Manual HTTP check after the unit suite was green | 6 | The total summed the per-group figures, which deliberately overlap — one O− donor is callable for all eight recipient groups. The distinct count is the shortlist for AB+, the universal recipient. Regression test added |
 | BUG-04 | Request table sometimes empty at startup | Manual check after a volume recreate | 6 | Two separate `ApplicationRunner` beans have no guaranteed order, so requests were seeded before donors and skipped silently. Merged into one ordered runner |
 | BUG-05 | Worklist showed MEDIUM above HIGH above CRITICAL | Manual HTTP check | 6 | `urgency` is `@Enumerated(STRING)`, so ordering it in SQL sorted the stored text — alphabetical, and backwards for the two that matter. Ordering moved to the service using `Urgency.getWeight()`. Regression test added |
-| BUG-06 | Staff could fulfil a `NEW` request directly from the request detail page | Deliberate defect for the Task 10 quality-gate demonstration | 10 | Role and transition guard restored in the service layer; pipeline turned red first, then green after the fix |
+| BUG-06 | The request detail page offered the ADMIN-only fulfil action to a STAFF user | Deliberate defect for the Task 10 quality-gate demonstration | 10 | The `sec:authorize` attribute was removed from the fulfil form. The service layer still refused the call with 403, so all 178 unit tests stayed green and the build deployed — the Selenium gate caught it in pipeline build #9 and Promote was never entered. Guard restored in `b518aad` |
+| BUG-07 | A DONOR signing in with correct credentials landed on an HTTP 403 | Selenium journey J5 | 9 | Login used one fixed success URL, `/dashboard`, which a DONOR may not open. Every unit test authenticated directly as a role and requested a URL; none walked the login form. Fixed with `RoleAwareSuccessHandler`, which still returns a deep-linked user to the page they asked for |
+| BUG-08 | `mvn clean` failed with "Could not copy webapp classes" whenever a container was running | Running the UI suite | 9 | The container bind-mounted the WAR straight out of `target/`, so Docker held it open. The WAR is staged into `.deploy/` before mounting, decoupling the build directory from the container's lifetime |
+| BUG-09 | `GET /logout` in the test teardown silently did not sign the user out | Selenium journey J5 | 9 | Spring Security 6 requires POST to `/logout` when CSRF is enabled, so the GET landed on an error page and the session survived — making journeys order-dependent intermittently. Teardown clears cookies instead |
+| BUG-10 | A native ChromeDriver click on the availability submit button returned successfully without submitting | Selenium journey J5 | 9 | Reproduced deterministically with the element reporting displayed, enabled, `type=submit` and a correct `form.action`. `clickSubmit()` performs the real gesture first and completes the submission only when the page demonstrably did not navigate |
 
 BUG-06 is intentional: it is the defect introduced in Task 10 to prove that the Selenium quality
 gate stops a deployment, and its correction commit is part of that task's evidence.
+
+BUG-07 to BUG-10 were all found by the Selenium suite in Task 9, after the 178 unit tests were
+already green — which is the return on building the suite, stated in defects rather than in
+adjectives.
 
 BUG-03, BUG-04 and BUG-05 share a cause worth recording: all three were found by **exercising the
 running application over HTTP after the unit suite was already green**. BUG-05 is the sharpest —
