@@ -160,3 +160,89 @@ repository is pushed and `REPO_URL` becomes a GitHub URL.
 **Lesson.** A script that has to run on the machine the project is demonstrated on is constrained by
 *that* machine's shell. `#!/usr/bin/env bash` on macOS means bash 3.2 unless a newer bash is
 explicitly installed and first on `PATH`.
+
+---
+
+## T-09 — `mvn clean` failed with "Could not copy webapp classes" whenever a container was running
+
+**Task 9.** The build failed in the WAR plugin, but only when the application container was up.
+
+**Cause.** `scripts/deploy-tomcat.sh` bind-mounted the WAR **straight out of `target/`**. Docker held
+that file open for as long as the container existed, so `mvn clean` could not remove the directory.
+
+**Fix.** The WAR is copied into `.deploy/ROOT.war` and *that* is mounted. The build directory is the
+build's to delete; the deployed artefact is a snapshot that stays put until the next deployment.
+
+**Lesson.** Bind-mounting a build output ties the build directory to the container's lifetime. Stage
+the artefact somewhere the build does not own.
+
+---
+
+## T-10 — The hardened image could not open its own database (BUG-11)
+
+**Task 11.** After switching the container to run as uid 999, H2 failed at startup:
+
+```
+java.nio.file.AccessDeniedException: /opt/bloodbank/data/bloodbank.mv.db
+```
+
+**Diagnosis.** `docker exec … ls -ld /opt/bloodbank/data` showed the directory owned by `root`, even
+though the Dockerfile `chown`s it to `bloodbank`.
+
+**Cause.** A **named volume keeps the ownership it was created with**. This volume was first created
+by the earlier root-running Tomcat deployment from Task 8, and mounting it shadows the image's own
+directory. Docker only copies the image directory's ownership into a **fresh** volume — so nothing in
+a Dockerfile can repair a volume that already exists.
+
+**Fix.** `docker/entrypoint.sh` starts as root solely to correct the ownership when it is wrong, then
+drops privileges with `setpriv` and `exec`s Tomcat. This is the pattern the official `postgres` and
+`mysql` images use, and it makes the image self-healing on any host.
+
+**Why `setpriv` and not `su`.** `setpriv` execs the target process directly, so Tomcat stays PID 1 and
+receives `SIGTERM` from `docker stop`. With `su`, the shell becomes PID 1, signals are not forwarded,
+and every stop would hit the ten-second timeout and kill the JVM instead of letting it shut down.
+
+---
+
+## T-11 — A Selenium journey that failed three times, for three different reasons
+
+**Tasks 9–12.** `J2DonorSearchIT.filtersByBloodGroup` is the single most instructive failure in the
+project, because each fix revealed the next problem underneath.
+
+| Attempt | Symptom | Cause | Fix |
+|---|---|---|---|
+| 1 | `StaleElementReference` | Read elements immediately after clicking *Search*, which is a full navigation | Wait for the results table before reading |
+| 2 | Blood-group badges came back **empty**, though the archived page source showed ten correctly labelled rows | `getText()` returns only **rendered** text, so it depends on paint timing; in headless Chrome an element can be present and located while its text is still empty | Wait for **visibility** rather than presence, and read `textContent` |
+| 3 | The badge list came back **empty entirely** | **The wait was already satisfied before the click.** The unfiltered list shown before clicking *Search* has the same results table, so `visibilityOfElementLocated` returned instantly against the **old** page, and the read then raced the navigation | `clickSubmit()`, which waits for the old `<body>` to go **stale** — the only reliable signal that the navigation actually happened |
+
+**The lesson, which is worth stating plainly:** *waiting for a condition that is already true is not
+waiting at all.* After an action that replaces the page, wait for something about the **old** page to
+become false — staleness — before waiting for anything about the new one.
+
+An assertion was also added that the result list is non-empty. The original assertion,
+`containsExactly("O-")`, passes vacuously on an empty list in some phrasings and fails with a
+confusing message in others; asserting non-emptiness first makes the real failure obvious.
+
+---
+
+## T-12 — ChromeDriver reported a successful click that submitted nothing (BUG-10)
+
+**Task 9.** The donor availability toggle never took effect, with no exception from Selenium.
+
+**Diagnosis.** Instrumented the journey to print the element's state and the result of the click:
+
+```
+DIAG btn: displayed=true enabled=true tag=button type=submit
+          formAction=http://localhost:9091/me/availability
+DIAG native click returned
+DIAG after native: state=You are currently available   <- unchanged
+```
+
+`form.requestSubmit()` on the same element worked every time.
+
+**Fix.** `clickSubmit()` performs the real user gesture first, then completes the submission
+programmatically **only if** the page demonstrably did not navigate — detected by staleness of the old
+`<body>`, not by a timer. The outcome is deterministic and the form is submitted exactly once.
+
+**Lesson.** A click that returns without error has not necessarily done anything. Where the result of
+a click is a navigation, assert the navigation rather than trusting the click.

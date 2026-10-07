@@ -28,14 +28,19 @@ class J2DonorSearchIT extends BaseJourney {
 
         open("/donors");
         select("filter-group", "O-");
-        click("search-submit");
 
-        // Wait for the filtered table to be VISIBLE, not merely present. Clicking
-        // Search is a full navigation, and this journey previously failed twice
-        // in Jenkins for two different timing reasons: once with
-        // StaleElementReference from reading while the old DOM was being
-        // replaced, and once with an empty badge value, because getText() on a
-        // present-but-not-yet-painted element returns "" in headless Chrome.
+        // clickSubmit, not click: it waits for the OLD page to go stale before
+        // returning, which is the only reliable signal that the navigation has
+        // actually happened.
+        //
+        // This journey failed three times in Jenkins, each for a different
+        // timing reason, and the third is the instructive one. Waiting for the
+        // results table to be visible looks correct but is not: the unfiltered
+        // list showing before the click ALSO has that table, so the wait was
+        // satisfied instantly by the old page and the read then raced the
+        // navigation. Waiting for a condition that was already true is not
+        // waiting at all.
+        clickSubmit("search-submit");
         wait.until(org.openqa.selenium.support.ui.ExpectedConditions
                 .visibilityOfElementLocated(testId("donor-table")));
 
@@ -54,6 +59,9 @@ class J2DonorSearchIT extends BaseJourney {
                 .distinct()
                 .toList();
 
+        assertThat(shownGroups)
+                .as("the filtered page must actually list some donors")
+                .isNotEmpty();
         assertThat(shownGroups)
                 .as("only O- donors may be listed when filtering by O-")
                 .containsExactly("O-");
