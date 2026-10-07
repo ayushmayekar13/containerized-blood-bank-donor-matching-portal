@@ -1,0 +1,14 @@
+pipeline build #15  status=SUCCESS  total=101.3s
+
+STAGE                                STATUS         TIME
+Declarative: Checkout SCM            SUCCESS        0.3s
+Checkout                             SUCCESS        1.1s
+Build                                SUCCESS        3.2s
+Unit Test                            SUCCESS       11.0s
+Package                              SUCCESS        4.4s
+Deploy to Tomcat                     SUCCESS        7.9s
+Health Check                         SUCCESS        1.4s
+UI Test (quality gate)               SUCCESS       43.7s
+Promote: image, registry, deploy     SUCCESS       24.9s
+Post-deploy verification             SUCCESS        1.4s
+Declarative: Post Actions            SUCCESS        0.4s

@@ -1,0 +1,21 @@
+# Registry evidence - versioned images published by the pipeline
+
+$ curl -s http://localhost:5001/v2/_catalog
+{"repositories":["bloodbank"]}
+
+
+$ curl -s http://localhost:5001/v2/bloodbank/tags/list
+{"name":"bloodbank","tags":["latest","1","15"]}
+
+
+$ docker ps --filter name=bloodbank --format 'table {{.Names}}	{{.Image}}	{{.Status}}'
+NAMES                IMAGE                         STATUS
+bloodbank-app        localhost:5001/bloodbank:15   Up 21 seconds (healthy)
+bloodbank-registry   registry:2                    Up 6 minutes
+
+$ docker inspect bloodbank-app --format '{{.Config.Image}} / {{json .Config.Labels}}'
+localhost:5001/bloodbank:15
+15 c2b890a
+
+$ curl -s -u admin:*** http://localhost:9090/actuator/info
+
