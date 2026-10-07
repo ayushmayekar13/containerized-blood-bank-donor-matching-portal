@@ -55,6 +55,11 @@ pipeline {
             description: 'Spring profile to activate in the deployed container. Empty is the default production-like profile; "local" enables the H2 console and debug logging.'
         )
         booleanParam(
+            name: 'PUBLISH_IMAGE',
+            defaultValue: true,
+            description: 'Build a versioned image, publish it to the registry and deploy a fresh container from it. Off gives a build-and-test-only run, which is what a pull-request build would want.'
+        )
+        booleanParam(
             name: 'RUN_UI_TESTS',
             defaultValue: true,
             description: 'Run the Selenium journeys as a blocking quality gate. This exists so a deployment can be inspected by hand without the browser suite running - NOT as a way to make a red build go green. Turning it off is recorded in the build parameters of every build that did so.'
@@ -74,6 +79,8 @@ pipeline {
         APP_CONTAINER = 'bloodbank-app'
         APP_VOLUME    = 'bloodbank-data'
         TOMCAT_IMAGE  = "${params.TOMCAT_IMAGE}"
+        IMAGE_NAME    = 'bloodbank'
+        REGISTRY_PORT = '5001'
         SPRING_PROFILE = "${params.SPRING_PROFILE}"
         // Maven in CI: batch mode and no transfer progress, so the captured
         // console log is readable evidence rather than pages of download bars.
@@ -226,12 +233,54 @@ pipeline {
             }
         }
 
-        /* Everything below this point is promotion, and is therefore
-         * unreachable while the gate above is red. */
-        stage('Promote') {
+        /* ------------------------------------------------------------------
+         * PROMOTION (Task 12) - unreachable while the gate above is red.
+         *
+         * Build a versioned image, publish it to the registry, and deploy a
+         * fresh container FROM THE REGISTRY. The last part matters: deploying
+         * the local image that was just built would hide a broken push until
+         * the first attempted rollback, which is the worst possible moment to
+         * discover it.
+         * ------------------------------------------------------------------ */
+        stage('Promote: image, registry, deploy') {
+            when { expression { return params.PUBLISH_IMAGE } }
             steps {
-                echo "Quality gate passed - build #${env.BUILD_NUMBER} is promotable."
-                echo 'Task 12 extends this stage into: build a versioned image, push it to the registry, and deploy a fresh container from it.'
+                // The image is tagged with the Jenkins build number, which is
+                // monotonic and unique. That tag is immutable and is what the
+                // Task 14 rollback pins to; `latest` moves alongside it and is
+                // a convenience only.
+                sh '''
+                    set -e
+                    REGISTRY_PORT="${REGISTRY_PORT}" \
+                    APP_PORT="${APP_PORT}" \
+                    APP_CONTAINER="${APP_CONTAINER}" \
+                    APP_VOLUME="${APP_VOLUME}" \
+                    bash scripts/release.sh "${BUILD_NUMBER}"
+                '''
+            }
+            post {
+                success {
+                    sh '''
+                        echo "--- registry catalogue ---"
+                        curl -fsS "http://localhost:${REGISTRY_PORT}/v2/_catalog"
+                        echo
+                        echo "--- published tags ---"
+                        curl -fsS "http://localhost:${REGISTRY_PORT}/v2/${IMAGE_NAME}/tags/list"
+                        echo
+                        echo "--- running container ---"
+                        docker ps --filter "name=${APP_CONTAINER}" --format "  {{.Names}}  {{.Image}}  {{.Status}}"
+                    '''
+                }
+            }
+        }
+
+        stage('Post-deploy verification') {
+            when { expression { return params.PUBLISH_IMAGE && params.RUN_HEALTH_CHECK } }
+            steps {
+                // The health check runs a second time, against the container
+                // that was actually deployed from the registry. The earlier run
+                // verified the build; this one verifies the release.
+                sh 'bash scripts/health-check.sh "http://localhost:${APP_PORT}"'
             }
         }
     }
