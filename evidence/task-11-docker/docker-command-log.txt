@@ -1,0 +1,300 @@
+Docker container lifecycle - Blood Bank Donor Matching Portal
+Ayush Mayekar · 23102A0018 · Task 11
+Recorded: 2026-10-09 21:43:52 IST
+Host: Darwin 27.0.0 arm64 · Docker: Docker version 28.1.1, build 4eba377
+
+============================================================================
+  1. BUILD - multi-stage: Maven builds the WAR, only Tomcat ships
+============================================================================
+
+$ docker build --build-arg BUILD_NUMBER=local --build-arg GIT_COMMIT=195621b --build-arg BUILD_DATE=2026-10-09T16:13:52Z -t bloodbank:latest /Users/ayushmayekar/code/College/devops_project
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 5.50kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/maven:3.9-eclipse-temurin-21
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/tomcat:10.1-jdk21-temurin
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 1.10kB done
+#4 DONE 0.0s
+
+#5 [build 1/6] FROM docker.io/library/maven:3.9-eclipse-temurin-21@sha256:99e61abcff91a9b1333463bd8451fb18495d6eba9250ac66a338b518f8278320
+#5 resolve docker.io/library/maven:3.9-eclipse-temurin-21@sha256:99e61abcff91a9b1333463bd8451fb18495d6eba9250ac66a338b518f8278320 done
+#5 DONE 0.0s
+
+#6 [stage-1 1/7] FROM docker.io/library/tomcat:10.1-jdk21-temurin@sha256:887953afba0434879427f18d011d4df26d49e1f5c9aad18b779ed738edf22cf3
+#6 resolve docker.io/library/tomcat:10.1-jdk21-temurin@sha256:887953afba0434879427f18d011d4df26d49e1f5c9aad18b779ed738edf22cf3 done
+#6 CACHED
+
+#7 [internal] load build context
+#7 transferring context: 6.60kB done
+#7 DONE 0.0s
+
+#8 [build 3/6] COPY pom.xml .
+#8 CACHED
+
+#9 [build 2/6] WORKDIR /build
+#9 CACHED
+
+#10 [build 4/6] RUN mvn -B -ntp dependency:go-offline
+#10 CACHED
+
+#11 [build 5/6] COPY src ./src
+#11 CACHED
+
+#12 [build 6/6] RUN mvn -B -ntp clean package -DskipTests
+#12 CACHED
+
+#13 [stage-1 2/7] RUN rm -rf /usr/local/tomcat/webapps/*
+#13 DONE 0.1s
+
+#14 [stage-1 3/7] RUN mkdir -p /opt/bloodbank/data
+#14 DONE 0.1s
+
+#15 [stage-1 4/7] COPY --from=build /build/target/bloodbank.war /usr/local/tomcat/webapps/ROOT.war
+#15 DONE 0.2s
+
+#16 [stage-1 5/7] RUN groupadd --system --gid 999 bloodbank  && useradd --system --uid 999 --gid 999 --home-dir /opt/bloodbank bloodbank  && chown -R bloodbank:bloodbank /opt/bloodbank /usr/local/tomcat
+#16 DONE 1.0s
+
+#17 [stage-1 6/7] COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+#17 DONE 0.0s
+
+#18 [stage-1 7/7] RUN chmod +x /usr/local/bin/entrypoint.sh
+#18 DONE 0.1s
+
+#19 exporting to image
+#19 exporting layers
+#19 exporting layers 1.7s done
+#19 exporting manifest sha256:1909efa41aa605eb40c5fc04e209ad26936a170e2180441b1d2d4b21e4f9f139 done
+#19 exporting config sha256:793250b95bf0d3c317213a1c9dcba64a97b5932bdbd2802c3613a72fc8af8f39 done
+#19 exporting attestation manifest sha256:1f0008f5d1cf2ad1719c383a5be3db06eec7362e4e366a4debd8d2cf8e1365c8 done
+#19 exporting manifest list sha256:e40f294765053fd9f94446dac413de9e54de0223bb6f4fb69b1ed87981b7eaed done
+#19 naming to docker.io/library/bloodbank:latest done
+#19 unpacking to docker.io/library/bloodbank:latest
+#19 unpacking to docker.io/library/bloodbank:latest 0.7s done
+#19 DONE 2.5s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/ycgvfez9ftez1jdjkw1xjm4sv
+
+============================================================================
+  2. TAG - a build-number tag alongside the moving 'latest' tag
+============================================================================
+
+$ docker tag bloodbank:latest bloodbank:local
+
+============================================================================
+  3. IMAGE DETAILS - size, layers and the traceability labels
+============================================================================
+
+$ docker images bloodbank --format table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.Size}}\t{{.CreatedSince}}
+REPOSITORY   TAG       IMAGE ID       SIZE      CREATED
+bloodbank    latest    e40f29476505   1.05GB    3 seconds ago
+bloodbank    local     e40f29476505   1.05GB    3 seconds ago
+bloodbank    test      a0e2f8f15308   1.05GB    About a minute ago
+
+$ docker image inspect bloodbank:latest --format digest:   {{.Id}}
+version:  {{index .Config.Labels "org.opencontainers.image.version"}}
+revision: {{index .Config.Labels "org.opencontainers.image.revision"}}
+created:  {{index .Config.Labels "org.opencontainers.image.created"}}
+student:  {{index .Config.Labels "project.student"}} ({{index .Config.Labels "project.roll"}})
+digest:   sha256:e40f294765053fd9f94446dac413de9e54de0223bb6f4fb69b1ed87981b7eaed
+version:  local
+revision: 195621b
+created:  2026-10-09T16:13:52Z
+student:  Ayush Mayekar (23102A0018)
+
+$ docker history bloodbank:latest --format table {{.CreatedBy}}\t{{.Size}} --no-trunc=false
+CREATED BY                                      SIZE
+CMD ["catalina.sh" "run"]                       0B
+HEALTHCHECK &{["CMD-SHELL" "curl -fsS http:/…   0B
+EXPOSE map[8080/tcp:{}]                         0B
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]     0B
+RUN |3 BUILD_NUMBER=local GIT_COMMIT=195621b…   4.1kB
+COPY docker/entrypoint.sh /usr/local/bin/ent…   20.5kB
+RUN |3 BUILD_NUMBER=local GIT_COMMIT=195621b…   78.6MB
+COPY /build/target/bloodbank.war /usr/local/…   56.6MB
+VOLUME [/opt/bloodbank/data]                    0B
+RUN |3 BUILD_NUMBER=local GIT_COMMIT=195621b…   16.4kB
+ENV BLOODBANK_DB_PATH=/opt/bloodbank/data/bl…   0B
+RUN |3 BUILD_NUMBER=local GIT_COMMIT=195621b…   4.1kB
+ENV BLOODBANK_VERSION=local                     0B
+LABEL org.opencontainers.image.version=local…   0B
+ARG BUILD_DATE=2026-10-09T16:13:52Z             0B
+ARG GIT_COMMIT=195621b                          0B
+ARG BUILD_NUMBER=local                          0B
+LABEL org.opencontainers.image.title=Blood B…   0B
+CMD ["catalina.sh" "run"]                       0B
+ENTRYPOINT []                                   0B
+EXPOSE map[8080/tcp:{}]                         0B
+RUN /bin/sh -c set -eux;  nativeLines="$(cat…   4.1kB
+RUN /bin/sh -c set -eux;   savedAptMark="$(a…   23MB
+ENV TOMCAT_SHA512=aa06508300ca137a023b74b860…   0B
+ENV TOMCAT_VERSION=10.1.60                      0B
+ENV TOMCAT_MAJOR=10                             0B
+ENV LD_LIBRARY_PATH=/usr/local/tomcat/native…   0B
+ENV TOMCAT_NATIVE_LIBDIR=/usr/local/tomcat/n…   0B
+WORKDIR /usr/local/tomcat                       4.1kB
+RUN /bin/sh -c mkdir -p "$CATALINA_HOME" # b…   16.4kB
+ENV PATH=/usr/local/tomcat/bin:/opt/java/ope…   0B
+ENV CATALINA_HOME=/usr/local/tomcat             0B
+CMD ["jshell"]                                  0B
+ENTRYPOINT ["/__cacert_entrypoint.sh"]          0B
+COPY --chmod=755 entrypoint.sh /__cacert_ent…   12.3kB
+RUN /bin/sh -c set -eux;     echo "Verifying…   12.3kB
+RUN /bin/sh -c set -eux;     ARCH="$(dpkg --…   309MB
+ENV JAVA_VERSION=jdk-21.0.12.1+1                0B
+RUN /bin/sh -c set -eux;     apt-get update;…   86.9MB
+ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_AL…   0B
+ENV PATH=/opt/java/openjdk/bin:/usr/local/sb…   0B
+ENV JAVA_HOME=/opt/java/openjdk                 0B
+umoci raw add-layer --image /home/buildd/roc…   12.3kB
+umoci config --image /home/buildd/rockcraft-…   0B
+umoci config --image /home/buildd/rockcraft-…   0B
+umoci config --image /home/buildd/rockcraft-…   0B
+umoci config --image /home/buildd/rockcraft-…   0B
+umoci config --image /home/buildd/rockcraft-…   0B
+umoci raw add-layer --image /home/buildd/roc…   136MB
+
+============================================================================
+  4. RUN - create and start the container with a port map and a volume
+============================================================================
+
+$ docker rm -f bloodbank-app
+bloodbank-app
+
+$ docker volume create bloodbank-data
+bloodbank-data
+
+$ docker run -d --name bloodbank-app -p 9090:8080 -v bloodbank-data:/opt/bloodbank/data --restart unless-stopped bloodbank:latest
+74b35a9dd83eb1e5d0506dffb32bbb3c8140acc38936598cbcfc98473f2a04a4
+
+============================================================================
+  5. PORT MAPPING - host 9090 to container 8080
+============================================================================
+
+$ docker port bloodbank-app
+8080/tcp -> 0.0.0.0:9090
+
+$ docker ps --filter name=^bloodbank-app$ --format table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}
+NAMES           IMAGE              STATUS                                     PORTS
+bloodbank-app   bloodbank:latest   Up Less than a second (health: starting)   0.0.0.0:9090->8080/tcp
+
+============================================================================
+  6. WAIT FOR HEALTH - the container reports on itself
+============================================================================
+application answered after ~6s
+
+$ curl -fsS http://localhost:9090/actuator/health
+{"status":"UP","groups":["liveness","readiness"]}
+
+$ docker inspect bloodbank-app --format docker healthcheck status: {{.State.Health.Status}}
+docker healthcheck status: healthy
+
+============================================================================
+  7. LOGS - the last lines of Tomcat's own output
+============================================================================
+
+$ docker logs --tail 15 bloodbank-app
+2026-10-09 16:14:00 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-10-09 16:14:00 INFO  [main] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:file:/opt/bloodbank/data/bloodbank user=SA
+2026-10-09 16:14:00 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-10-09 16:14:00 INFO  [main] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-09 16:14:00 INFO  [main] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-09 16:14:01 INFO  [main] o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-09 16:14:01 INFO  [main] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+2026-10-09 16:14:02 INFO  [main] o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoints beneath base path '/actuator'
+2026-10-09 16:14:02 INFO  [main] com.bloodbank.BloodBankApplication - Started BloodBankApplication in 3.508 seconds (process running for 5.059)
+2026-10-09 16:14:02 INFO  [main] com.bloodbank.config.DataSeeder - Database already contains 29 donors; skipping seed
+09-Oct-2026 16:14:02.488 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Deployment of web application archive [/usr/local/tomcat/webapps/ROOT.war] has finished in [4,709] ms
+09-Oct-2026 16:14:02.490 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
+09-Oct-2026 16:14:02.514 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [4782] milliseconds
+2026-10-09 16:14:02 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-10-09 16:14:02 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+
+============================================================================
+  8. INSPECT - what the running container actually is
+============================================================================
+
+$ docker inspect bloodbank-app --format image:     {{.Config.Image}}
+state:     {{.State.Status}}  (started {{.State.StartedAt}})
+restart:   {{.HostConfig.RestartPolicy.Name}}
+ports:     {{json .NetworkSettings.Ports}}
+mounts:    {{range .Mounts}}{{.Type}} {{.Name}} -> {{.Destination}} (rw={{.RW}}){{end}}
+image:     bloodbank:latest
+state:     running  (started 2026-10-09T16:13:57.243014179Z)
+restart:   unless-stopped
+ports:     {"8080/tcp":[{"HostIp":"0.0.0.0","HostPort":"9090"}]}
+mounts:    volume bloodbank-data -> /opt/bloodbank/data (rw=true)
+
+============================================================================
+  9. PROCESS - Tomcat runs unprivileged, as PID 1
+============================================================================
+
+$ docker exec bloodbank-app sh -c ps -o uid,pid,comm -p 1
+  UID   PID COMMAND
+  999     1 java
+
+$ docker exec bloodbank-app ls -ld /opt/bloodbank/data
+drwxr-xr-x 2 bloodbank bloodbank 4096 Oct  9 14:08 /opt/bloodbank/data
+
+============================================================================
+  10. STATS - resource usage of the running container
+============================================================================
+
+$ docker stats --no-stream --format table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}} bloodbank-app
+NAME            CPU %     MEM USAGE / LIMIT     NET I/O
+bloodbank-app   0.95%     492.1MiB / 11.67GiB   2.41kB / 1.65kB
+
+============================================================================
+  11. STOP - graceful shutdown
+============================================================================
+
+$ docker stop bloodbank-app
+bloodbank-app
+stopped in 0s - a graceful SIGTERM shutdown, not a 10s timeout kill
+
+$ docker ps -a --filter name=^bloodbank-app$ --format table {{.Names}}\t{{.Status}}
+NAMES           STATUS
+bloodbank-app   Exited (143) Less than a second ago
+
+============================================================================
+  12. RESTART - the same container, started again
+============================================================================
+
+$ docker start bloodbank-app
+bloodbank-app
+
+$ curl -fsS http://localhost:9090/actuator/health
+{"status":"UP","groups":["liveness","readiness"]}
+
+============================================================================
+  13. DATA SURVIVES CONTAINER REPLACEMENT - the point of the volume
+============================================================================
+donors before destroying the container: 29
+
+$ docker rm -f bloodbank-app
+bloodbank-app
+
+$ docker run -d --name bloodbank-app -p 9090:8080 -v bloodbank-data:/opt/bloodbank/data --restart unless-stopped bloodbank:latest
+637b42a4aa6459311872aef9b7662dad943ccab9951864746c8bbfef6f498a69
+donors after a brand-new container:     29
+  ok   data survived container replacement (29 donors) - NFR-04 satisfied
+
+============================================================================
+  14. LIFECYCLE SUMMARY
+============================================================================
+image      bloodbank:latest  (also tagged bloodbank:local)
+container  bloodbank-app  running
+url        http://localhost:9090
+volume     bloodbank-data  (state outlives the container)
+commit     195621b
+
+Removing the container is deliberately NOT part of this run: the demo
+continues against it. 'docker-lifecycle.sh clean' removes it and the image.

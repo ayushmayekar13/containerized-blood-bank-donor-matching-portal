@@ -1,0 +1,77 @@
+# =============================================================================
+#  Local stack for the Blood Bank Donor Matching Portal
+#  Ayush Mayekar · 23102A0018
+#
+#      docker compose up -d        application + private registry
+#      docker compose logs -f app
+#      docker compose down         stop and remove (the volume survives)
+#      docker compose down -v      and discard the database too
+#
+#  Compose is a convenience for running the stack by hand. It is deliberately
+#  NOT what the pipeline uses: Jenkins builds a versioned image and deploys a
+#  specific tag (Task 12), and Ansible provisions the node (Tasks 13-14).
+#  Having Compose drive deployment as well would mean two definitions of "how
+#  this is deployed", which is exactly the drift this subject is about.
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # The application.
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      args:
+        BUILD_NUMBER: ${BUILD_NUMBER:-compose}
+        GIT_COMMIT: ${GIT_COMMIT:-unknown}
+        BUILD_DATE: ${BUILD_DATE:-unknown}
+    image: ${IMAGE_NAME:-bloodbank}:${IMAGE_TAG:-latest}
+    container_name: bloodbank-app
+    ports:
+      # 9090 because 8080 is already in use on this host, and Jenkins is on 8090.
+      - "${APP_PORT:-9090}:8080"
+    environment:
+      BLOODBANK_DB_PATH: /opt/bloodbank/data/bloodbank
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILE:-}
+      BLOODBANK_VERSION: ${BUILD_NUMBER:-compose}
+    volumes:
+      # Named, not a bind mount: the database must outlive the container, and a
+      # bind mount would also tie the build directory to the container's
+      # lifetime (which was defect BUG-08).
+      - bloodbank-data:/opt/bloodbank/data
+    restart: unless-stopped
+    healthcheck:
+      # Mirrors the HEALTHCHECK in the Dockerfile so `docker compose ps` reports
+      # the same truth as `docker ps`.
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
+
+  # ---------------------------------------------------------------------------
+  # Private image registry (Task 12).
+  #
+  # Local rather than Docker Hub so the demonstration needs no credentials and
+  # no internet. The Docker Hub equivalent is documented in
+  # docs/12-jenkins-docker-cd.md - the only change is the image prefix and a
+  # credential binding in Jenkins.
+  # ---------------------------------------------------------------------------
+  registry:
+    image: registry:2
+    container_name: bloodbank-registry
+    ports:
+      # 5001, because macOS reserves 5000 for AirPlay Receiver.
+      - "${REGISTRY_PORT:-5001}:5000"
+    volumes:
+      - registry-data:/var/lib/registry
+    restart: unless-stopped
+    environment:
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+
+volumes:
+  bloodbank-data:
+    name: ${APP_VOLUME:-bloodbank-data}
+  registry-data:
+    name: bloodbank-registry-data

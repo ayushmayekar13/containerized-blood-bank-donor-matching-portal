@@ -1,0 +1,55 @@
+# Keep the build context small and deterministic.
+#
+# Everything excluded here either does not belong in an image or would make the
+# build non-reproducible by letting a developer's local state leak into it.
+
+# build output - the image builds the WAR itself, from source
+target/
+.deploy/
+*.war
+*.jar
+
+# local runtime data - a developer's H2 database must never enter an image
+data/
+*.mv.db
+*.trace.db
+logs/
+*.log
+
+# version control and CI state
+.git/
+.github/
+.gitignore
+.gitattributes
+
+# IDE and OS noise
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# things that are about the project but not part of the application
+docs/
+evidence/
+jenkins/
+ansible/
+scripts/
+# ...but docker/ holds the entrypoint, which the image needs
+!docker/
+Jenkinsfile
+README.md
+CONTRIBUTING.md
+
+# test sources are not needed: the pipeline runs the tests before the image is
+# built, and shipping them would put test fixtures into the runtime image
+src/it/
+src/test/
+
+# secrets, under every name they might take
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
