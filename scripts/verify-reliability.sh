@@ -85,8 +85,16 @@ echo "$SECOND_RUN" | tail -3
 if echo "$SECOND_RUN" | grep -qE 'changed=0 '; then
   ok "IDEMPOTENT - the second run reported changed=0"
 else
-  fail "NOT idempotent - the second run reported changes:"
-  echo "$SECOND_RUN" | grep -E '^changed:|changed=' | head
+  fail "NOT idempotent - the second run reported a change. The task(s) responsible:"
+  # Name the offending task rather than only the count. A failing idempotency
+  # check that says "changed=1" and nothing else sends you back to run the
+  # playbook by hand to find out which task it was; printing the task name
+  # makes the failure diagnosable from the captured log alone.
+  echo "$SECOND_RUN" | awk '
+    /^TASK \[/ { task = $0 }
+    /^changed:/ { print "    " task }
+  '
+  echo "$SECOND_RUN" | grep -E 'changed=' | tail -1
   exit 1
 fi
 

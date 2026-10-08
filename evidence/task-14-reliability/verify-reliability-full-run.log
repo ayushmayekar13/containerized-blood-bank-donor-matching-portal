@@ -1,12 +1,12 @@
-==> current tag: 17   rollback target: 15
+==> current tag: 17   rollback target: 18
 
 ########################################################################
 #  1 / 4  PROVISION A CLEAN ENVIRONMENT
 ########################################################################
 ==> destroying the container and the local image - the registry and the data volume stay
   application containers: 0
-  local images:           3
-  registry still holds:   {"name":"bloodbank","tags":["17","latest","1","15"]}
+  local images:           4
+  registry still holds:   {"name":"bloodbank","tags":["17","18","latest","1","15"]}
   data volume:            bloodbank-data
 
 PLAY [Provision the Blood Bank Donor Matching Portal] **************************
@@ -35,14 +35,14 @@ ok: [bloodbank-node-01] => (item=docker) => {
             "which",
             "docker"
         ],
-        "delta": "0:00:00.010765",
-        "end": "2026-10-09 22:06:10.774862",
+        "delta": "0:00:00.011821",
+        "end": "2026-10-09 22:08:46.421963",
         "failed": false,
         "failed_when_result": false,
         "item": "docker",
         "msg": "",
         "rc": 0,
-        "start": "2026-10-09 22:06:10.764097",
+        "start": "2026-10-09 22:08:46.410142",
         "stderr": "",
         "stderr_lines": [],
         "stdout": "/usr/local/bin/docker",
@@ -63,14 +63,14 @@ ok: [bloodbank-node-01] => (item=curl) => {
             "which",
             "curl"
         ],
-        "delta": "0:00:00.006920",
-        "end": "2026-10-09 22:06:11.065725",
+        "delta": "0:00:00.007252",
+        "end": "2026-10-09 22:08:46.654092",
         "failed": false,
         "failed_when_result": false,
         "item": "curl",
         "msg": "",
         "rc": 0,
-        "start": "2026-10-09 22:06:11.058805",
+        "start": "2026-10-09 22:08:46.646840",
         "stderr": "",
         "stderr_lines": [],
         "stdout": "/usr/bin/curl",
@@ -129,7 +129,6 @@ ok: [bloodbank-node-01] => {
 }
 
 TASK [app : Wait for the application to answer its health endpoint] ************
-FAILED - RETRYING: [bloodbank-node-01]: app : Wait for the application to answer its health endpoint (39 retries left).
 ok: [bloodbank-node-01]
 
 TASK [app : Assert that the application reports UP] ****************************
@@ -170,7 +169,7 @@ ok: [bloodbank-node-01]
 
 TASK [Health check summary] ****************************************************
 ok: [bloodbank-node-01] => {
-    "msg": "http://localhost:9090 is healthy AND behaving correctly: authentication enforced, 18 compatible donors shortlisted for B+, role guard returns 403, dashboard reports 8 blood groups, 39 donors registered."
+    "msg": "http://localhost:9090 is healthy AND behaving correctly: authentication enforced, 19 compatible donors shortlisted for B+, role guard returns 403, dashboard reports 8 blood groups, 41 donors registered."
 }
 
 TASK [Summarise the provisioned node] ******************************************
@@ -188,14 +187,153 @@ ok: [bloodbank-node-01] => {
 PLAY RECAP *********************************************************************
 bloodbank-node-01          : ok=29   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 
-  ok   provisioned from nothing: localhost:5001/bloodbank:17, 39 donors (data survived)
+  ok   provisioned from nothing: localhost:5001/bloodbank:17, 41 donors (data survived)
 
 ########################################################################
 #  2 / 4  IDEMPOTENCY - the same run again must change nothing
 ########################################################################
 
 PLAY RECAP *********************************************************************
-bloodbank-node-01          : ok=29   changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-  FAIL NOT idempotent - the second run reported changes:
+bloodbank-node-01          : ok=29   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+  ok   IDEMPOTENT - the second run reported changed=0
+
+########################################################################
+#  3 / 4  BEHAVIOURAL HEALTH CHECK
+########################################################################
+==> Health checking http://localhost:9090
+  ok   actuator health status => UP
+  ok   unauthenticated API call is rejected => 401
+  ok   unauthenticated portal page redirects => 302
+  ok   login page is reachable => 200
+  ok   donor registry reachable => 43 donors
+  ok   no incompatible donor in a B+ shortlist => 0
+  ok   STAFF fulfilling a request is refused => 403
+  ok   ADMIN fulfilling a NEW request is refused => 409
+  ok   dashboard reports all eight blood groups => 8
+
+HEALTH CHECK PASSED - http://localhost:9090 is up and behaving correctly.
+
+########################################################################
+#  4 / 4  ROLLBACK AND RECOVERY
+########################################################################
+==> before: localhost:5001/bloodbank:17 with 43 donors
+
+PLAY [Roll back to a previously released image tag] ****************************
+
+TASK [Require an explicit rollback target] *************************************
+ok: [bloodbank-node-01] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [Record what is running now, so the rollback can be reported honestly] ****
+ok: [bloodbank-node-01]
+
+TASK [Confirm the rollback target actually exists in the registry] *************
+[WARNING]: Found variable using reserved name 'tags'.
+Origin: /Users/ayushmayekar/code/College/devops_project/ansible/rollback.yml:57:17
+
+55         url: "http://{{ registry_host }}/v2/{{ app_image_name }}/tags/list"
+56         return_content: true
+57       register: tags
+                   ^ column 17
+
+ok: [bloodbank-node-01]
+
+TASK [Announce the rollback] ***************************************************
+ok: [bloodbank-node-01] => {
+    "msg": "Rolling bloodbank-node-01 back from 'localhost:5001/bloodbank:17' to tag '18'. Data on volume bloodbank-data is untouched."
+}
+
+TASK [app : Record the image currently deployed, before changing anything] *****
+ok: [bloodbank-node-01]
+
+TASK [app : Report the current deployment] *************************************
+ok: [bloodbank-node-01] => {
+    "msg": "currently running localhost:5001/bloodbank:17"
+}
+
+TASK [app : Pull the pinned image from the registry] ***************************
+ok: [bloodbank-node-01]
+
+TASK [app : Ensure the application container is running the pinned image] ******
 changed: [bloodbank-node-01]
-bloodbank-node-01          : ok=29   changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+TASK [app : Report whether the container was replaced] *************************
+ok: [bloodbank-node-01] => {
+    "msg": "container recreated at localhost:5001/bloodbank:18"
+}
+
+TASK [app : Wait for the application to answer its health endpoint] ************
+ok: [bloodbank-node-01]
+
+TASK [app : Assert that the application reports UP] ****************************
+ok: [bloodbank-node-01] => {
+    "changed": false,
+    "msg": "http://localhost:9090 reports UP"
+}
+
+TASK [app : Read back what is actually running] ********************************
+ok: [bloodbank-node-01]
+
+TASK [app : Assert that the running container is the image that was asked for] ***
+ok: [bloodbank-node-01] => {
+    "changed": false,
+    "msg": "bloodbank-app is running localhost:5001/bloodbank:18"
+}
+
+TASK [Verify the rolled-back application behaves correctly] ********************
+included: /Users/ayushmayekar/code/College/devops_project/ansible/roles/app/tasks/health.yml for bloodbank-node-01
+
+TASK [FR-24 - an unauthenticated API call must be rejected] ********************
+ok: [bloodbank-node-01]
+
+TASK [FR-14 - a B+ shortlist must contain no incompatible donor] ***************
+ok: [bloodbank-node-01]
+
+TASK [NFR-07 - a STAFF user must not be able to fulfil a request] **************
+ok: [bloodbank-node-01]
+
+TASK [Assert the role guard refused with 403 rather than allowing the call] ****
+ok: [bloodbank-node-01] => {
+    "changed": false,
+    "msg": "role guard enforced (HTTP 403)"
+}
+
+TASK [FR-22 - the dashboard must report all eight blood groups] ****************
+ok: [bloodbank-node-01]
+
+TASK [Health check summary] ****************************************************
+ok: [bloodbank-node-01] => {
+    "msg": "http://localhost:9090 is healthy AND behaving correctly: authentication enforced, 19 compatible donors shortlisted for B+, role guard returns 403, dashboard reports 8 blood groups, 43 donors registered."
+}
+
+TASK [Confirm the rollback landed on the intended image] ***********************
+ok: [bloodbank-node-01]
+
+TASK [Confirm the data volume is still attached and untouched] *****************
+ok: [bloodbank-node-01] => {
+    "changed": false,
+    "msg": "bloodbank-data still attached - no data was touched by the rollback"
+}
+
+TASK [Rollback summary] ********************************************************
+ok: [bloodbank-node-01] => {
+    "msg": "Rolled back successfully. was: localhost:5001/bloodbank:17 | now: localhost:5001/bloodbank:18 | running: True | data volume bloodbank-data still attached and untouched."
+}
+
+PLAY RECAP *********************************************************************
+bloodbank-node-01          : ok=23   changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+==> after:  localhost:5001/bloodbank:18 with 43 donors
+  ok   ROLLED BACK to a different image with the data intact
+==> rolling forward again to 17, so the environment is left as it was found
+  ok   back on localhost:5001/bloodbank:17 with 43 donors
+
+########################################################################
+#  ALL FOUR RELIABILITY PROPERTIES VERIFIED
+########################################################################
+  1. clean provisioning   container and local image destroyed, rebuilt from the registry
+  2. idempotency          second identical run reported changed=0
+  3. health check         authentication, compatibility matrix, role guard, dashboard
+  4. rollback             17 -> 18 -> 17, data intact throughout
