@@ -39,7 +39,7 @@ import java.util.List;
  *
  * <p>Two further decisions:
  * <ol>
- *   <li><strong>{@code /actuator/health} is open on both chains.</strong> The
+ *   <li><strong>{@code /actuator/health} is open.</strong> The
  *       container {@code HEALTHCHECK}, the Ansible {@code uri} assertion and the
  *       Jenkins post-deploy check all probe it with no credentials; requiring
  *       authentication there would make the container permanently unhealthy
@@ -72,13 +72,36 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(users);
     }
 
-    /** Chain 1 — the JSON API: Basic, stateless, 401 when unauthenticated. */
+    /**
+     * Chain 1 — the machine-facing surface: the JSON API and the Actuator
+     * endpoints. Basic, stateless, 401 when unauthenticated.
+     *
+     * <p>Actuator belongs here rather than on the browser chain. It is consumed
+     * by scripts, by the container probe and by the Ansible health check, none
+     * of which can follow a redirect to an HTML login form or scrape a CSRF
+     * token. Leaving it on the browser chain meant an authenticated
+     * {@code curl} against {@code /actuator/info} received the login page with
+     * HTTP 200, which is both useless to a script and actively misleading.
+     */
     @Bean
     @Order(1)
     SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
         http
-            .securityMatcher("/api/**")
-            .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+            .securityMatcher("/api/**", "/actuator/**")
+            .authorizeHttpRequests(auth -> auth
+                // The probe stays open: the container HEALTHCHECK and the
+                // Ansible check must reach it with no credentials (FR-26).
+                .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
+                // Everything else Actuator exposes - build version, git revision,
+                // environment - is operational detail, so it is ADMIN-only rather
+                // than merely authenticated.
+                .requestMatchers("/actuator/**").hasRole("ADMIN")
+                // Everything else Actuator exposes - build version, git
+                // revision, environment - is operational detail, so it is
+                // ADMIN-only rather than merely authenticated.
+                // /api/** and /actuator/** never reach this chain - they are
+                // matched by the API chain above.
+                .anyRequest().authenticated())
             .httpBasic(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // Safe to disable only because this chain is stateless and
@@ -103,7 +126,8 @@ public class SecurityConfig {
                 // registry, workflow and reporting screens
                 .requestMatchers("/donors/**", "/requests/**", "/match", "/dashboard", "/")
                     .hasAnyRole("STAFF", "ADMIN")
-                .requestMatchers("/actuator/**").hasRole("ADMIN")
+                // /api/** and /actuator/** never reach this chain - they are
+                // matched by the API chain above.
                 .anyRequest().authenticated())
             .formLogin(form -> form
                 .loginPage("/login")

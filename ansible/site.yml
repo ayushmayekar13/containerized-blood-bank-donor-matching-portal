@@ -1,0 +1,53 @@
+---
+# =============================================================================
+#  Provision a node to run the Blood Bank Donor Matching Portal.
+#
+#      ansible-playbook site.yml                       deploy the pinned tag
+#      ansible-playbook site.yml -e app_image_tag=14   deploy a specific version
+#      ansible-playbook site.yml --check               dry run, change nothing
+#
+#  Run it twice. The second run must report changed=0, and that is the whole
+#  claim this playbook makes: the node's desired state is described here, and
+#  applying a description that already holds does nothing.
+#
+#  Ayush Mayekar · 23102A0018 · Tasks 13 and 14
+# =============================================================================
+
+- name: Provision the Blood Bank Donor Matching Portal
+  hosts: bloodbank_nodes
+  gather_facts: true
+
+  pre_tasks:
+    - name: Announce what this run intends to do
+      ansible.builtin.debug:
+        msg: >-
+          Provisioning {{ inventory_hostname }} with {{ project_description }}
+          at image tag '{{ app_image_tag }}', publishing on port {{ app_host_port }}.
+
+  roles:
+    # Order is a dependency chain, not a preference:
+    #   prereqs   - the node can run containers at all, and has somewhere to keep data
+    #   registry  - the place the application image is pulled FROM must exist first
+    #   app       - the application itself
+    - role: prereqs
+      tags: [prereqs, provision]
+    - role: registry
+      tags: [registry, provision]
+    - role: app
+      tags: [app, deploy]
+
+  tasks:
+    - name: Verify the application behaves correctly, not merely that it is up
+      ansible.builtin.include_tasks: roles/app/tasks/health.yml
+      tags: [health, verify]
+
+  post_tasks:
+    - name: Summarise the provisioned node
+      ansible.builtin.debug:
+        msg:
+          - "node:      {{ inventory_hostname }}"
+          - "image:     {{ app_image }}"
+          - "container: {{ app_container_name }} (restart={{ app_restart_policy }})"
+          - "url:       {{ app_base_url }}"
+          - "volume:    {{ app_data_volume }} -> {{ app_data_path }}"
+          - "registry:  {{ registry_host }}"

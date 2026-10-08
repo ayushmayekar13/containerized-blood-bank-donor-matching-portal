@@ -1,0 +1,143 @@
+
+PLAY [Provision the Blood Bank Donor Matching Portal] **************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [bloodbank-node-01]
+
+TASK [Announce what this run intends to do] ************************************
+ok: [bloodbank-node-01] => {
+    "msg": "Provisioning bloodbank-node-01 with Containerized Blood Bank Donor Matching Portal at image tag '15', publishing on port 9090."
+}
+
+TASK [prereqs : Check that every required command is present on the node] ******
+ok: [bloodbank-node-01] => (item=docker)
+ok: [bloodbank-node-01] => (item=curl)
+
+TASK [prereqs : Fail with an actionable message if anything is missing] ********
+ok: [bloodbank-node-01] => (item=docker) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "item": {
+        "ansible_loop_var": "item",
+        "changed": false,
+        "changed_when_result": false,
+        "cmd": [
+            "which",
+            "docker"
+        ],
+        "delta": "0:00:00.005026",
+        "end": "2026-10-09 21:55:06.158899",
+        "failed": false,
+        "failed_when_result": false,
+        "item": "docker",
+        "msg": "",
+        "rc": 0,
+        "start": "2026-10-09 21:55:06.153873",
+        "stderr": "",
+        "stderr_lines": [],
+        "stdout": "/usr/local/bin/docker",
+        "stdout_lines": [
+            "/usr/local/bin/docker"
+        ]
+    },
+    "msg": "docker is present"
+}
+ok: [bloodbank-node-01] => (item=curl) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "item": {
+        "ansible_loop_var": "item",
+        "changed": false,
+        "changed_when_result": false,
+        "cmd": [
+            "which",
+            "curl"
+        ],
+        "delta": "0:00:00.004659",
+        "end": "2026-10-09 21:55:06.370433",
+        "failed": false,
+        "failed_when_result": false,
+        "item": "curl",
+        "msg": "",
+        "rc": 0,
+        "start": "2026-10-09 21:55:06.365774",
+        "stderr": "",
+        "stderr_lines": [],
+        "stdout": "/usr/bin/curl",
+        "stdout_lines": [
+            "/usr/bin/curl"
+        ]
+    },
+    "msg": "curl is present"
+}
+
+TASK [prereqs : Check that the Docker daemon is responding, not merely installed] ***
+ok: [bloodbank-node-01]
+
+TASK [prereqs : Report what the node is] ***************************************
+ok: [bloodbank-node-01] => {
+    "msg": "bloodbank-node-01: docker 28.1.1, Docker Desktop, 8 CPU, 11.7 GiB RAM, 13 container(s) present"
+}
+
+TASK [prereqs : Ensure the application data volume exists] *********************
+ok: [bloodbank-node-01]
+
+TASK [prereqs : Ensure the registry data volume exists] ************************
+ok: [bloodbank-node-01]
+
+TASK [registry : Ensure the registry container is running] *********************
+ok: [bloodbank-node-01]
+
+TASK [registry : Wait for the registry API to answer] **************************
+ok: [bloodbank-node-01]
+
+TASK [registry : Report what the registry holds] *******************************
+ok: [bloodbank-node-01]
+
+TASK [registry : Show the catalogue] *******************************************
+ok: [bloodbank-node-01] => {
+    "msg": "registry at localhost:5001 holds: bloodbank"
+}
+
+TASK [app : Record the image currently deployed, before changing anything] *****
+ok: [bloodbank-node-01]
+
+TASK [app : Report the current deployment] *************************************
+ok: [bloodbank-node-01] => {
+    "msg": "currently running tomcat:10.1-jdk21-temurin"
+}
+
+TASK [app : Pull the pinned image from the registry] ***************************
+ok: [bloodbank-node-01]
+
+TASK [app : Ensure the application container is running the pinned image] ******
+changed: [bloodbank-node-01]
+
+TASK [app : Report whether the container was replaced] *************************
+ok: [bloodbank-node-01] => {
+    "msg": "container recreated at localhost:5001/bloodbank:15"
+}
+
+TASK [app : Wait for the application to answer its health endpoint] ************
+ok: [bloodbank-node-01]
+
+TASK [app : Assert that the application reports UP] ****************************
+ok: [bloodbank-node-01] => {
+    "changed": false,
+    "msg": "http://localhost:9090 reports UP"
+}
+
+TASK [app : Assert that the deployed version is the one that was asked for] ****
+[ERROR]: Task failed: Action failed: A 'failed_when' expression evaluated to 'True'.
+Origin: /Users/ayushmayekar/code/College/devops_project/ansible/roles/app/tasks/main.yml:84:3
+
+82     success_msg: "{{ app_base_url }} reports UP"
+83
+84 - name: Assert that the deployed version is the one that was asked for
+     ^ column 3
+
+fatal: [bloodbank-node-01]: FAILED! => {"cache_control": "no-cache, no-store, max-age=0, must-revalidate", "changed": false, "changed_when_result": false, "connection": "close", "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\"/>\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>\n  <title>Sign in · Blood Bank Portal</title>\n  <link rel=\"stylesheet\" href=\"/css/bootstrap.min.css\"/>\n  <link rel=\"stylesheet\" href=\"/css/app.css\"/>\n</head>\n<body>\n<main class=\"bb-login\">\n  <div class=\"bb-login-head\">\n    <h1><span style=\"color:#b3202e\">&#10084;</span> Blood Bank Donor Matching Portal</h1>\n    <p class=\"text-muted mb-0\">Sign in to continue</p>\n  </div>\n\n  <div class=\"card bb-card card-body\">\n    \n    \n\n    <form action=\"/login\" method=\"post\" data-testid=\"login-form\"><input type=\"hidden\" name=\"_csrf\" value=\"7zpoS9GseBYwwB-9ecMbLpdlp2-GzU29rxA2WK8fRCGOwLL82gwJfLCbTCcd-X2OSu4vTKBVig61rCmQnSZSYc0odxbq8oGe\"/>\n      <div class=\"mb-3\">\n        <label class=\"form-label\" for=\"username\">Username</label>\n        <input class=\"form-control\" id=\"username\" name=\"username\" type=\"text\"\n               autocomplete=\"username\" required autofocus data-testid=\"login-username\"/>\n      </div>\n      <div class=\"mb-3\">\n        <label class=\"form-label\" for=\"password\">Password</label>\n        <input class=\"form-control\" id=\"password\" name=\"password\" type=\"password\"\n               autocomplete=\"current-password\" required data-testid=\"login-password\"/>\n      </div>\n      <button class=\"btn bb-btn-primary w-100\" type=\"submit\" data-testid=\"login-submit\">Sign in</button>\n    </form>\n  </div>\n\n  <!--\n    The demonstration accounts are listed on the page on purpose: the role-based\n    workflow is the behaviour under examination, and an examiner should be able to\n    switch roles without being told passwords out of band. These credentials are\n    valid only against this locally deployed instance.\n  -->\n  <div class=\"card bb-card card-body mt-3\">\n    <h2 class=\"h6 text-uppercase text-muted mb-2\">Demonstration accounts</h2>\n    <table class=\"table table-sm bb-cred-table mb-0\">\n      <thead>\n        <tr><th>Username</th><th>Password</th><th>Role</th><th>May</th></tr>\n      </thead>\n      <tbody>\n        <tr data-testid=\"account-admin\">\n          <td><code>admin</code></td>\n          <td><code>********</code></td>\n          <td><span class=\"badge bb-role text-dark border\">ADMIN</span></td>\n          <td class=\"text-muted\">\n            <span>everything, including fulfil and reject</span>\n            \n            \n          </td>\n        </tr>\n        <tr data-testid=\"account-staff\">\n          <td><code>staff</code></td>\n          <td><code>Staff@123</code></td>\n          <td><span class=\"badge bb-role text-dark border\">STAFF</span></td>\n          <td class=\"text-muted\">\n            \n            <span>donors, requests, assign a matched donor</span>\n            \n          </td>\n        </tr>\n        <tr data-testid=\"account-donor\">\n          <td><code>donor</code></td>\n          <td><code>Donor@123</code></td>\n          <td><span class=\"badge bb-role text-dark border\">DONOR</span></td>\n          <td class=\"text-muted\">\n            \n            \n            <span>own profile and availability only</span>\n          </td>\n        </tr>\n      </tbody>\n    </table>\n  </div>\n\n  <p class=\"text-center text-muted mt-3 mb-0\" style=\"font-size:.85rem\">\n    Ayush Mayekar &middot; 23102A0018 &middot; BE CMPN A &middot; DevOps\n  </p>\n</main>\n</body>\n</html>\n", "content_language": "en-US", "content_type": "text/html;charset=UTF-8", "cookies": {"JSESSIONID": "14EC7F32286611CB36C587E7B07C174E"}, "cookies_string": "JSESSIONID=14EC7F32286611CB36C587E7B07C174E", "date": "Fri, 09 Oct 2026 16:25:16 GMT", "elapsed": 0, "expires": "0", "failed_when_result": true, "msg": "OK (unknown bytes)", "pragma": "no-cache", "redirected": true, "status": 200, "transfer_encoding": "chunked", "url": "http://localhost:9090/login", "x_content_type_options": "nosniff", "x_frame_options": "SAMEORIGIN", "x_xss_protection": "0"}
+
+PLAY RECAP *********************************************************************
+bloodbank-node-01          : ok=19   changed=1    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+

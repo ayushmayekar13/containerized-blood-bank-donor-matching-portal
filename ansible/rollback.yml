@@ -1,0 +1,103 @@
+---
+# =============================================================================
+#  Roll the Blood Bank Donor Matching Portal back to a previous image tag.
+#
+#      ansible-playbook rollback.yml -e rollback_to=14
+#
+#  A rollback here is a RE-DEPLOY of an earlier immutable tag, not a restore
+#  from a backup and not a rebuild. Three properties of the design make that
+#  possible, and each was established deliberately in an earlier task:
+#
+#    - images are tagged with the build number and never overwritten (Task 12),
+#      so an earlier version still exists and still has a name;
+#    - the registry retains them on a volume, so they survive a restart;
+#    - all state lives on a separate volume (Task 11), so replacing the
+#      container does not touch the data.
+#
+#  The consequence worth saying out loud: rollback uses exactly the same
+#  mechanism as deployment, with a different tag. A recovery path that differs
+#  from the normal path is one that has never really been tested, because it is
+#  only exercised during incidents.
+# =============================================================================
+
+- name: Roll back to a previously released image tag
+  hosts: bloodbank_nodes
+  gather_facts: false
+
+  vars:
+    # No default on purpose. A rollback must name its target: silently rolling
+    # back to "whatever seems reasonable" during an incident is how the wrong
+    # version ends up in production.
+    rollback_to: ""
+
+  pre_tasks:
+    - name: Require an explicit rollback target
+      ansible.builtin.assert:
+        that:
+          - rollback_to | length > 0
+        fail_msg: >-
+          Specify the tag to roll back to, for example:
+          ansible-playbook rollback.yml -e rollback_to=14
+          Available tags: curl -s http://{{ registry_host }}/v2/{{ app_image_name }}/tags/list
+
+    - name: Record what is running now, so the rollback can be reported honestly
+      community.docker.docker_container_info:
+        name: "{{ app_container_name }}"
+      register: before
+      failed_when: false
+      changed_when: false
+
+    - name: Confirm the rollback target actually exists in the registry
+      # Checked BEFORE the running container is touched. Discovering that the
+      # target tag is missing after the current container has been removed
+      # would turn a rollback into an outage.
+      ansible.builtin.uri:
+        url: "http://{{ registry_host }}/v2/{{ app_image_name }}/tags/list"
+        return_content: true
+      register: tags
+      changed_when: false
+      failed_when: rollback_to not in (tags.json.tags | default([]))
+
+    - name: Announce the rollback
+      ansible.builtin.debug:
+        msg: >-
+          Rolling {{ inventory_hostname }} back from
+          '{{ before.container.Config.Image | default('nothing') }}'
+          to tag '{{ rollback_to }}'.
+          Data on volume {{ app_data_volume }} is untouched.
+
+  roles:
+    # The same role as a normal deployment, with the tag overridden. Using a
+    # different code path for recovery would mean the recovery path is only
+    # exercised during incidents, which is the worst time to find out it is
+    # broken.
+    - role: app
+      vars:
+        app_image_tag: "{{ rollback_to }}"
+
+  tasks:
+    - name: Verify the rolled-back application behaves correctly
+      ansible.builtin.include_tasks: roles/app/tasks/health.yml
+      vars:
+        app_image_tag: "{{ rollback_to }}"
+
+  post_tasks:
+    - name: Confirm the rollback landed on the intended version
+      ansible.builtin.uri:
+        url: "{{ app_base_url }}/actuator/info"
+        url_username: "{{ demo_admin_user }}"
+        url_password: "{{ demo_admin_pass }}"
+        force_basic_auth: true
+        return_content: true
+      register: info
+      changed_when: false
+      failed_when: info.json.app.version != rollback_to
+
+    - name: Rollback summary
+      ansible.builtin.debug:
+        msg: >-
+          Rolled back successfully.
+          was: {{ before.container.Config.Image | default('nothing') }} |
+          now: {{ registry_host }}/{{ app_image_name }}:{{ rollback_to }} |
+          reported version: {{ info.json.app.version }} |
+          health: UP | data volume: {{ app_data_volume }} (untouched)

@@ -148,8 +148,18 @@ class SecurityRoleTest {
         @Test
         @DisplayName("a STAFF user may not read the Actuator endpoints beyond health")
         void staffCannotReadActuator() throws Exception {
-            mvc.perform(get("/actuator/info").with(user("staff").roles("STAFF")))
+            // Basic credentials, because Actuator is matched by the API chain:
+            // it is consumed by scripts and probes, not by browsers.
+            mvc.perform(get("/actuator/info").with(httpBasic("staff", "test-staff")))
                .andExpect(status().isForbidden());
+        }
+
+        @Test
+        @DisplayName("an ADMIN may read /actuator/info over Basic, which is how Ansible verifies the deployed version")
+        void adminCanReadActuatorInfoOverBasic() throws Exception {
+            mvc.perform(get("/actuator/info").with(httpBasic("admin", "test-admin")))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.app.roll").value("23102A0018"));
         }
     }
 

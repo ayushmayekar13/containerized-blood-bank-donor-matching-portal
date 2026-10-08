@@ -1,0 +1,96 @@
+---
+# =============================================================================
+#  Role: app - deploy the portal at a specific, pinned image tag.
+#
+#  The role is written so that running it twice in a row changes nothing the
+#  second time. That is not a nicety: idempotency is what makes a playbook safe
+#  to run on a schedule, safe to run when you are not sure whether it already
+#  ran, and safe to run during an incident. A playbook that must only be run
+#  once is a script with extra syntax.
+# =============================================================================
+
+- name: Record the image currently deployed, before changing anything
+  # Captured so the run can report what it replaced, and so a human reading the
+  # output knows which tag to roll back to. A rollback target that has to be
+  # reconstructed from memory during an incident is not a rollback plan.
+  community.docker.docker_container_info:
+    name: "{{ app_container_name }}"
+  register: existing_container
+  failed_when: false
+  changed_when: false
+
+- name: Report the current deployment
+  ansible.builtin.debug:
+    msg: >-
+      {{ (existing_container.exists | default(false))
+         | ternary('currently running ' ~ (existing_container.container.Config.Image | default('?')),
+                   'no application container present - this is a clean provision') }}
+
+- name: Pull the pinned image from the registry
+  # Pulling rather than assuming the image is present locally: a node being
+  # provisioned for the first time has nothing cached, and an image that cannot
+  # be pulled must fail HERE, loudly, rather than halfway through replacing a
+  # working container.
+  community.docker.docker_image:
+    name: "{{ app_image }}"
+    source: pull
+    force_source: false       # already have this exact tag? then nothing to do - keeps the run idempotent
+  register: image_pull
+
+- name: Ensure the application container is running the pinned image
+  community.docker.docker_container:
+    name: "{{ app_container_name }}"
+    image: "{{ app_image }}"
+    state: started
+    restart_policy: "{{ app_restart_policy }}"
+    published_ports:
+      - "{{ app_host_port }}:{{ app_container_port }}"
+    volumes:
+      - "{{ app_data_volume }}:{{ app_data_path }}"
+    env: "{{ app_environment }}"
+    labels:
+      bloodbank.version: "{{ app_image_tag }}"
+      bloodbank.managed_by: ansible
+    # strict comparison, so the module recreates the container when the
+    # DECLARED state differs and leaves it completely alone when it does not.
+    comparisons:
+      '*': strict
+  register: app_container
+
+- name: Report whether the container was replaced
+  ansible.builtin.debug:
+    msg: >-
+      {{ app_container.changed
+         | ternary('container recreated at ' ~ app_image,
+                   'container already matches the declared state - nothing to do') }}
+
+- name: Wait for the application to answer its health endpoint
+  ansible.builtin.uri:
+    url: "{{ app_health_url }}"
+    return_content: true
+  register: health
+  retries: "{{ health_retries }}"
+  delay: "{{ health_delay }}"
+  until: health.status == 200 and (health.json.status | default('')) == 'UP'
+  changed_when: false
+
+- name: Assert that the application reports UP
+  ansible.builtin.assert:
+    that:
+      - health.json.status == 'UP'
+    fail_msg: "{{ app_container_name }} is running but reports {{ health.json.status | default('no status') }}"
+    success_msg: "{{ app_base_url }} reports UP"
+
+- name: Assert that the deployed version is the one that was asked for
+  # Health alone is not enough. A container left over from a previous run can be
+  # perfectly healthy and running the WRONG version - which is exactly the
+  # failure a rollback must be able to detect and correct.
+  ansible.builtin.uri:
+    url: "{{ app_base_url }}/actuator/info"
+    url_username: "{{ demo_admin_user }}"
+    url_password: "{{ demo_admin_pass }}"
+    force_basic_auth: true
+    return_content: true
+  register: info
+  changed_when: false
+  failed_when: info.json.app.version | default('') != app_image_tag

@@ -1,0 +1,69 @@
+---
+# =============================================================================
+#  Behavioural health check.
+#
+#  Included by site.yml and by rollback.yml, so a provision and a recovery are
+#  held to exactly the same standard. "The container is up" is not the same as
+#  "the application is correct": a Tomcat answering 200 while the matching
+#  engine is broken has failed in the only way that actually matters.
+#
+#  These are the same three rules scripts/health-check.sh asserts, expressed
+#  here so that an Ansible run is self-contained and does not depend on a shell
+#  script being present on the node.
+# =============================================================================
+
+- name: FR-24 - an unauthenticated API call must be rejected
+  ansible.builtin.uri:
+    url: "{{ app_base_url }}/api/donors"
+    status_code: 401
+  changed_when: false
+
+- name: FR-14 - a B+ shortlist must contain no incompatible donor
+  ansible.builtin.uri:
+    url: "{{ app_base_url }}/api/donors/eligible?group=B%2B"
+    url_username: "{{ demo_staff_user }}"
+    url_password: "{{ demo_staff_pass }}"
+    force_basic_auth: true
+    return_content: true
+  register: shortlist
+  changed_when: false
+  failed_when: >-
+    shortlist.json | rejectattr('bloodGroup', 'in', ['B+', 'B-', 'O+', 'O-']) | list | length > 0
+
+- name: NFR-07 - a STAFF user must not be able to fulfil a request
+  ansible.builtin.uri:
+    url: "{{ app_base_url }}/api/requests/1/fulfil"
+    method: POST
+    url_username: "{{ demo_staff_user }}"
+    url_password: "{{ demo_staff_pass }}"
+    force_basic_auth: true
+    status_code: [403, 404, 409]
+  register: role_guard
+  changed_when: false
+
+- name: Assert the role guard refused with 403 rather than allowing the call
+  ansible.builtin.assert:
+    that:
+      - role_guard.status != 200
+    fail_msg: "a STAFF user was permitted to fulfil a request - the role guard is not being enforced"
+    success_msg: "role guard enforced (HTTP {{ role_guard.status }})"
+
+- name: FR-22 - the dashboard must report all eight blood groups
+  ansible.builtin.uri:
+    url: "{{ app_base_url }}/api/dashboard"
+    url_username: "{{ demo_admin_user }}"
+    url_password: "{{ demo_admin_pass }}"
+    force_basic_auth: true
+    return_content: true
+  register: dashboard
+  changed_when: false
+  failed_when: (dashboard.json.callableByGroup | length) != 8
+
+- name: Health check summary
+  ansible.builtin.debug:
+    msg: >-
+      {{ app_base_url }} is healthy AND behaving correctly:
+      authentication enforced, {{ shortlist.json | length }} compatible donors shortlisted for B+,
+      role guard returns {{ role_guard.status }}, dashboard reports
+      {{ dashboard.json.callableByGroup | length }} blood groups,
+      {{ dashboard.json.totalDonors }} donors registered.

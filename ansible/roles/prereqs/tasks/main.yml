@@ -1,0 +1,68 @@
+---
+# =============================================================================
+#  Role: prereqs - assert that the target node can run the application at all.
+#
+#  Every task here CHECKS rather than installs. Installing Docker from a
+#  playbook on macOS would mean driving a GUI installer, which cannot be done
+#  honestly, so the role fails with an actionable message instead of pretending.
+#
+#  That is the right behaviour regardless of platform: a provisioning run that
+#  silently installs a container runtime on a machine that did not have one is
+#  not provisioning, it is a surprise. On a Linux fleet these `assert` tasks
+#  would become `package:` tasks, and nothing else in the playbook would change.
+# =============================================================================
+
+- name: Check that every required command is present on the node
+  ansible.builtin.command: "which {{ item }}"
+  register: command_check
+  changed_when: false          # a check never changes anything - this is what keeps the run idempotent
+  failed_when: false
+  loop: "{{ required_commands }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: Fail with an actionable message if anything is missing
+  ansible.builtin.assert:
+    that:
+      - item.rc == 0
+    fail_msg: >-
+      '{{ item.item }}' is not available on {{ inventory_hostname }}.
+      Install it before provisioning: on macOS use Docker Desktop or
+      'brew install {{ item.item }}'; on Debian/Ubuntu use
+      'apt-get install -y {{ item.item }}'.
+    success_msg: "{{ item.item }} is present"
+  loop: "{{ command_check.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+
+- name: Check that the Docker daemon is responding, not merely installed
+  community.docker.docker_host_info:
+  register: docker_host
+  # A failure here means the CLI exists but the daemon is unreachable, which is
+  # a completely different problem from Docker not being installed - and it was
+  # a real one during this project, when the daemon stopped answering while
+  # containers kept running.
+  failed_when: docker_host is failed
+
+- name: Report what the node is
+  ansible.builtin.debug:
+    msg: >-
+      {{ inventory_hostname }}: docker {{ docker_host.host_info.ServerVersion }},
+      {{ docker_host.host_info.OperatingSystem }},
+      {{ docker_host.host_info.NCPU }} CPU,
+      {{ (docker_host.host_info.MemTotal / 1024 / 1024 / 1024) | round(1) }} GiB RAM,
+      {{ docker_host.host_info.Containers }} container(s) present
+
+- name: Ensure the application data volume exists
+  # The database lives here and must outlive every container. Creating it
+  # explicitly - rather than letting `docker run` create it implicitly - means
+  # the volume's existence is part of the node's declared state, so a node that
+  # has been provisioned always has somewhere for its data to go.
+  community.docker.docker_volume:
+    name: "{{ app_data_volume }}"
+    state: present
+
+- name: Ensure the registry data volume exists
+  community.docker.docker_volume:
+    name: "{{ registry_data_volume }}"
+    state: present

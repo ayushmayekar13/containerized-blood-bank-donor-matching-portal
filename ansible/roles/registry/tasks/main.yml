@@ -1,0 +1,53 @@
+---
+# =============================================================================
+#  Role: registry - the private image registry the node pulls from.
+#
+#  Provisioned before the application for a simple reason: the application's
+#  image is identified by a registry URL, so a node whose registry is not
+#  running cannot deploy at all. Ordering the roles this way makes that
+#  dependency explicit instead of leaving it to chance.
+# =============================================================================
+
+- name: Ensure the registry container is running
+  community.docker.docker_container:
+    name: "{{ registry_container_name }}"
+    image: "{{ registry_image }}"
+    state: started
+    restart_policy: "{{ app_restart_policy }}"
+    published_ports:
+      - "{{ registry_host_port }}:{{ registry_container_port }}"
+    volumes:
+      - "{{ registry_data_volume }}:/var/lib/registry"
+    env:
+      # Needed so an image can be deleted from the registry - without it even
+      # the API's delete endpoint returns 405, which is a confusing way to
+      # discover a storage setting.
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+    # Without this, Ansible reports "changed" on every run whenever Docker
+    # reports any difference at all, including ones it introduced itself. The
+    # module compares declared state against actual state and only acts on a
+    # real difference, which is what makes the second run report changed=0.
+    comparisons:
+      '*': strict
+  register: registry_container
+
+- name: Wait for the registry API to answer
+  ansible.builtin.uri:
+    url: "http://{{ registry_host }}/v2/"
+    status_code: [200, 401]
+  register: registry_api
+  retries: 20
+  delay: 2
+  until: registry_api is succeeded
+  changed_when: false
+
+- name: Report what the registry holds
+  ansible.builtin.uri:
+    url: "http://{{ registry_host }}/v2/_catalog"
+    return_content: true
+  register: registry_catalog
+  changed_when: false
+
+- name: Show the catalogue
+  ansible.builtin.debug:
+    msg: "registry at {{ registry_host }} holds: {{ registry_catalog.json.repositories | default([]) | join(', ') or '(empty)' }}"

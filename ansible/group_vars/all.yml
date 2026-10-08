@@ -1,0 +1,85 @@
+# =============================================================================
+#  Configuration specification for the Blood Bank Donor Matching Portal.
+#
+#  This file IS the Task 13 deliverable: every prerequisite the application
+#  needs on a target node, stated once, in one place, as data rather than as
+#  prose in a runbook. The roles read these values and nothing else; no task in
+#  any role contains a literal port, path or image name.
+#
+#  Override any of them without editing this file:
+#      ansible-playbook site.yml -e app_image_tag=14
+# =============================================================================
+
+# ---- identity ---------------------------------------------------------------
+project_name: bloodbank
+project_description: Containerized Blood Bank Donor Matching Portal
+
+# ---- packages the node must have -------------------------------------------
+# Deliberately short. The application ships as a container, so the node needs a
+# container runtime and the tools to probe it - not a JDK, not Maven, not
+# Tomcat. That is the practical benefit of containerising: the list of things
+# that must be true about a server shrinks to almost nothing.
+required_commands:
+  - docker
+  - curl
+
+# ---- users and groups -------------------------------------------------------
+# The application runs as this uid inside the container. Pinned rather than
+# left to the next free number, because the entrypoint compares the data
+# volume's ownership against it (see BUG-11).
+app_uid: 999
+app_gid: 999
+
+# ---- folders and files ------------------------------------------------------
+app_data_volume: bloodbank-data            # H2 database; must outlive the container
+app_data_path: /opt/bloodbank/data         # where the volume is mounted inside the container
+registry_data_volume: bloodbank-registry-data
+
+# ---- ports ------------------------------------------------------------------
+# 8080 is occupied on this host and macOS reserves 5000 for AirPlay Receiver,
+# which is why neither default is used.
+app_host_port: 9090
+app_container_port: 8080
+registry_host_port: 5001
+registry_container_port: 5000
+
+# ---- images and versions ----------------------------------------------------
+registry_host: "localhost:{{ registry_host_port }}"
+app_image_name: "{{ project_name }}"
+# The tag to deploy. An explicit version, never "latest": a node provisioned
+# from "latest" cannot be rolled back, because nothing records what it was
+# running before.
+app_image_tag: "15"
+app_image: "{{ registry_host }}/{{ app_image_name }}:{{ app_image_tag }}"
+registry_image: "registry:2"
+
+# ---- containers -------------------------------------------------------------
+app_container_name: bloodbank-app
+registry_container_name: bloodbank-registry
+app_restart_policy: unless-stopped         # NFR-03: survive a crash and a reboot
+
+# ---- application environment ------------------------------------------------
+# Every value is explicitly a string. Docker environment variables are strings
+# by definition, and community.docker refuses a templated value that resolves to
+# a number rather than silently stringifying it - which is the right call, since
+# YAML would otherwise turn "8080" into an integer and "true" into a boolean
+# depending only on how the value happened to be written.
+app_environment:
+  BLOODBANK_DB_PATH: "{{ app_data_path }}/bloodbank"
+  SERVER_PORT: "{{ app_container_port | string }}"
+  BLOODBANK_VERSION: "{{ app_image_tag | string }}"
+
+# ---- health -----------------------------------------------------------------
+app_base_url: "http://localhost:{{ app_host_port }}"
+app_health_url: "{{ app_base_url }}/actuator/health"
+health_retries: 40
+health_delay: 3
+
+# ---- demonstration credentials (local deployment only) ----------------------
+# Used by the behavioural health check to assert the role guard. In any real
+# deployment these would come from Ansible Vault; the playbook reads them as
+# variables precisely so that swapping in a vault file changes nothing else.
+demo_staff_user: staff
+demo_staff_pass: Staff@123
+demo_admin_user: admin
+demo_admin_pass: Admin@123
