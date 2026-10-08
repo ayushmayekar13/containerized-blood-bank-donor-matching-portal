@@ -1,0 +1,126 @@
+########################################################################
+#  TASK 14 - RELIABILITY EVIDENCE
+#  Ayush Mayekar · 23102A0018 · 2026-10-09 22:01:44 IST
+########################################################################
+
+STATE BEFORE ROLLBACK
+  running image: localhost:5001/bloodbank:17
+  donors:        39
+  registry tags: {"name":"bloodbank","tags":["17","latest","1","15"]}
+
+########################################################################
+#  ROLLBACK: 17 -> 15
+########################################################################
+
+PLAY [Roll back to a previously released image tag] ****************************
+
+TASK [Require an explicit rollback target] *************************************
+ok: [bloodbank-node-01] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [Record what is running now, so the rollback can be reported honestly] ****
+ok: [bloodbank-node-01]
+
+TASK [Confirm the rollback target actually exists in the registry] *************
+[WARNING]: Found variable using reserved name 'tags'.
+Origin: /Users/ayushmayekar/code/College/devops_project/ansible/rollback.yml:57:17
+
+55         url: "http://{{ registry_host }}/v2/{{ app_image_name }}/tags/list"
+56         return_content: true
+57       register: tags
+                   ^ column 17
+
+ok: [bloodbank-node-01]
+
+TASK [Announce the rollback] ***************************************************
+ok: [bloodbank-node-01] => {
+    "msg": "Rolling bloodbank-node-01 back from 'localhost:5001/bloodbank:17' to tag '15'. Data on volume bloodbank-data is untouched."
+}
+
+TASK [app : Record the image currently deployed, before changing anything] *****
+ok: [bloodbank-node-01]
+
+TASK [app : Report the current deployment] *************************************
+ok: [bloodbank-node-01] => {
+    "msg": "currently running localhost:5001/bloodbank:17"
+}
+
+TASK [app : Pull the pinned image from the registry] ***************************
+ok: [bloodbank-node-01]
+
+TASK [app : Ensure the application container is running the pinned image] ******
+changed: [bloodbank-node-01]
+
+TASK [app : Report whether the container was replaced] *************************
+ok: [bloodbank-node-01] => {
+    "msg": "container recreated at localhost:5001/bloodbank:15"
+}
+
+TASK [app : Wait for the application to answer its health endpoint] ************
+ok: [bloodbank-node-01]
+
+TASK [app : Assert that the application reports UP] ****************************
+ok: [bloodbank-node-01] => {
+    "changed": false,
+    "msg": "http://localhost:9090 reports UP"
+}
+
+TASK [app : Read back what is actually running] ********************************
+ok: [bloodbank-node-01]
+
+TASK [app : Assert that the running container is the image that was asked for] ***
+ok: [bloodbank-node-01] => {
+    "changed": false,
+    "msg": "bloodbank-app is running localhost:5001/bloodbank:15"
+}
+
+TASK [Verify the rolled-back application behaves correctly] ********************
+included: /Users/ayushmayekar/code/College/devops_project/ansible/roles/app/tasks/health.yml for bloodbank-node-01
+
+TASK [FR-24 - an unauthenticated API call must be rejected] ********************
+ok: [bloodbank-node-01]
+
+TASK [FR-14 - a B+ shortlist must contain no incompatible donor] ***************
+ok: [bloodbank-node-01]
+
+TASK [NFR-07 - a STAFF user must not be able to fulfil a request] **************
+ok: [bloodbank-node-01]
+
+TASK [Assert the role guard refused with 403 rather than allowing the call] ****
+ok: [bloodbank-node-01] => {
+    "changed": false,
+    "msg": "role guard enforced (HTTP 403)"
+}
+
+TASK [FR-22 - the dashboard must report all eight blood groups] ****************
+ok: [bloodbank-node-01]
+
+TASK [Health check summary] ****************************************************
+ok: [bloodbank-node-01] => {
+    "msg": "http://localhost:9090 is healthy AND behaving correctly: authentication enforced, 18 compatible donors shortlisted for B+, role guard returns 403, dashboard reports 8 blood groups, 39 donors registered."
+}
+
+TASK [Confirm the rollback landed on the intended image] ***********************
+ok: [bloodbank-node-01]
+
+TASK [Confirm the data volume is still attached and untouched] *****************
+ok: [bloodbank-node-01] => {
+    "changed": false,
+    "msg": "bloodbank-data still attached - no data was touched by the rollback"
+}
+
+TASK [Rollback summary] ********************************************************
+ok: [bloodbank-node-01] => {
+    "msg": "Rolled back successfully. was: localhost:5001/bloodbank:17 | now: localhost:5001/bloodbank:15 | running: True | data volume bloodbank-data still attached and untouched."
+}
+
+PLAY RECAP *********************************************************************
+bloodbank-node-01          : ok=23   changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+STATE AFTER ROLLBACK
+  running image: localhost:5001/bloodbank:15
+  donors:        39
+  health:        {"status":"UP","groups":["liveness","readiness"]}

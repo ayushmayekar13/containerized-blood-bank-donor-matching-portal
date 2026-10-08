@@ -1,0 +1,179 @@
+
+PLAY [Provision the Blood Bank Donor Matching Portal] **************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [bloodbank-node-01]
+
+TASK [Announce what this run intends to do] ************************************
+ok: [bloodbank-node-01] => {
+    "msg": "Provisioning bloodbank-node-01 with Containerized Blood Bank Donor Matching Portal at image tag '17', publishing on port 9090."
+}
+
+TASK [prereqs : Check that every required command is present on the node] ******
+ok: [bloodbank-node-01] => (item=docker)
+ok: [bloodbank-node-01] => (item=curl)
+
+TASK [prereqs : Fail with an actionable message if anything is missing] ********
+ok: [bloodbank-node-01] => (item=docker) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "item": {
+        "ansible_loop_var": "item",
+        "changed": false,
+        "changed_when_result": false,
+        "cmd": [
+            "which",
+            "docker"
+        ],
+        "delta": "0:00:00.004143",
+        "end": "2026-10-09 22:02:30.319764",
+        "failed": false,
+        "failed_when_result": false,
+        "item": "docker",
+        "msg": "",
+        "rc": 0,
+        "start": "2026-10-09 22:02:30.315621",
+        "stderr": "",
+        "stderr_lines": [],
+        "stdout": "/usr/local/bin/docker",
+        "stdout_lines": [
+            "/usr/local/bin/docker"
+        ]
+    },
+    "msg": "docker is present"
+}
+ok: [bloodbank-node-01] => (item=curl) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "item": {
+        "ansible_loop_var": "item",
+        "changed": false,
+        "changed_when_result": false,
+        "cmd": [
+            "which",
+            "curl"
+        ],
+        "delta": "0:00:00.003995",
+        "end": "2026-10-09 22:02:30.506768",
+        "failed": false,
+        "failed_when_result": false,
+        "item": "curl",
+        "msg": "",
+        "rc": 0,
+        "start": "2026-10-09 22:02:30.502773",
+        "stderr": "",
+        "stderr_lines": [],
+        "stdout": "/usr/bin/curl",
+        "stdout_lines": [
+            "/usr/bin/curl"
+        ]
+    },
+    "msg": "curl is present"
+}
+
+TASK [prereqs : Check that the Docker daemon is responding, not merely installed] ***
+ok: [bloodbank-node-01]
+
+TASK [prereqs : Report what the node is] ***************************************
+ok: [bloodbank-node-01] => {
+    "msg": "bloodbank-node-01: docker 28.1.1, Docker Desktop, 8 CPU, 11.7 GiB RAM, 13 container(s) present"
+}
+
+TASK [prereqs : Ensure the application data volume exists] *********************
+ok: [bloodbank-node-01]
+
+TASK [prereqs : Ensure the registry data volume exists] ************************
+ok: [bloodbank-node-01]
+
+TASK [registry : Ensure the registry container is running] *********************
+ok: [bloodbank-node-01]
+
+TASK [registry : Wait for the registry API to answer] **************************
+ok: [bloodbank-node-01]
+
+TASK [registry : Report what the registry holds] *******************************
+ok: [bloodbank-node-01]
+
+TASK [registry : Show the catalogue] *******************************************
+ok: [bloodbank-node-01] => {
+    "msg": "registry at localhost:5001 holds: bloodbank"
+}
+
+TASK [app : Record the image currently deployed, before changing anything] *****
+ok: [bloodbank-node-01]
+
+TASK [app : Report the current deployment] *************************************
+ok: [bloodbank-node-01] => {
+    "msg": "currently running localhost:5001/bloodbank:17"
+}
+
+TASK [app : Pull the pinned image from the registry] ***************************
+ok: [bloodbank-node-01]
+
+TASK [app : Ensure the application container is running the pinned image] ******
+ok: [bloodbank-node-01]
+
+TASK [app : Report whether the container was replaced] *************************
+ok: [bloodbank-node-01] => {
+    "msg": "container already matches the declared state - nothing to do"
+}
+
+TASK [app : Wait for the application to answer its health endpoint] ************
+ok: [bloodbank-node-01]
+
+TASK [app : Assert that the application reports UP] ****************************
+ok: [bloodbank-node-01] => {
+    "changed": false,
+    "msg": "http://localhost:9090 reports UP"
+}
+
+TASK [app : Read back what is actually running] ********************************
+ok: [bloodbank-node-01]
+
+TASK [app : Assert that the running container is the image that was asked for] ***
+ok: [bloodbank-node-01] => {
+    "changed": false,
+    "msg": "bloodbank-app is running localhost:5001/bloodbank:17"
+}
+
+TASK [Verify the application behaves correctly, not merely that it is up] ******
+included: /Users/ayushmayekar/code/College/devops_project/ansible/roles/app/tasks/health.yml for bloodbank-node-01
+
+TASK [FR-24 - an unauthenticated API call must be rejected] ********************
+ok: [bloodbank-node-01]
+
+TASK [FR-14 - a B+ shortlist must contain no incompatible donor] ***************
+ok: [bloodbank-node-01]
+
+TASK [NFR-07 - a STAFF user must not be able to fulfil a request] **************
+ok: [bloodbank-node-01]
+
+TASK [Assert the role guard refused with 403 rather than allowing the call] ****
+ok: [bloodbank-node-01] => {
+    "changed": false,
+    "msg": "role guard enforced (HTTP 403)"
+}
+
+TASK [FR-22 - the dashboard must report all eight blood groups] ****************
+ok: [bloodbank-node-01]
+
+TASK [Health check summary] ****************************************************
+ok: [bloodbank-node-01] => {
+    "msg": "http://localhost:9090 is healthy AND behaving correctly: authentication enforced, 18 compatible donors shortlisted for B+, role guard returns 403, dashboard reports 8 blood groups, 39 donors registered."
+}
+
+TASK [Summarise the provisioned node] ******************************************
+ok: [bloodbank-node-01] => {
+    "msg": [
+        "node:      bloodbank-node-01",
+        "image:     localhost:5001/bloodbank:17",
+        "container: bloodbank-app (restart=unless-stopped)",
+        "url:       http://localhost:9090",
+        "volume:    bloodbank-data -> /opt/bloodbank/data",
+        "registry:  localhost:5001"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+bloodbank-node-01          : ok=29   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

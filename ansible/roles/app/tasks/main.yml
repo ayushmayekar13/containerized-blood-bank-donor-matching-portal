@@ -81,16 +81,36 @@
     fail_msg: "{{ app_container_name }} is running but reports {{ health.json.status | default('no status') }}"
     success_msg: "{{ app_base_url }} reports UP"
 
-- name: Assert that the deployed version is the one that was asked for
-  # Health alone is not enough. A container left over from a previous run can be
-  # perfectly healthy and running the WRONG version - which is exactly the
-  # failure a rollback must be able to detect and correct.
-  ansible.builtin.uri:
-    url: "{{ app_base_url }}/actuator/info"
-    url_username: "{{ demo_admin_user }}"
-    url_password: "{{ demo_admin_pass }}"
-    force_basic_auth: true
-    return_content: true
-  register: info
+- name: Read back what is actually running
+  community.docker.docker_container_info:
+    name: "{{ app_container_name }}"
+  register: deployed
   changed_when: false
-  failed_when: info.json.app.version | default('') != app_image_tag
+
+- name: Assert that the running container is the image that was asked for
+  # Health alone is not enough: a container left over from a previous run can be
+  # perfectly healthy and running the WRONG version, which is exactly the
+  # failure a rollback must detect and correct.
+  #
+  # The check reads the container's image reference rather than asking the
+  # application what version it thinks it is. That distinction was found the
+  # hard way during the first rollback test: rolling back to an older tag
+  # deployed an image that predated the Actuator security fix, so
+  # /actuator/info redirected to a login page and the verification failed even
+  # though the rollback had worked perfectly.
+  #
+  # The principle is general - verify a deployment using facts the DEPLOYER
+  # owns, not features of the artefact being deployed. An older release cannot
+  # be expected to support a newer introspection endpoint, and a rollback that
+  # can only verify versions newer than the bug it is escaping is useless
+  # precisely when it is needed.
+  ansible.builtin.assert:
+    that:
+      - deployed.exists
+      - deployed.container.Config.Image == app_image
+      - deployed.container.State.Running
+    fail_msg: >-
+      expected {{ app_image }} but the running container is
+      '{{ deployed.container.Config.Image | default('nothing') }}'
+      (running={{ deployed.container.State.Running | default(false) }})
+    success_msg: "{{ app_container_name }} is running {{ app_image }}"

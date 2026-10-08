@@ -49,7 +49,7 @@ app_image_name: "{{ project_name }}"
 # The tag to deploy. An explicit version, never "latest": a node provisioned
 # from "latest" cannot be rolled back, because nothing records what it was
 # running before.
-app_image_tag: "15"
+app_image_tag: "17"
 app_image: "{{ registry_host }}/{{ app_image_name }}:{{ app_image_tag }}"
 registry_image: "registry:2"
 

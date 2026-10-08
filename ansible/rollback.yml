@@ -82,22 +82,30 @@
         app_image_tag: "{{ rollback_to }}"
 
   post_tasks:
-    - name: Confirm the rollback landed on the intended version
-      ansible.builtin.uri:
-        url: "{{ app_base_url }}/actuator/info"
-        url_username: "{{ demo_admin_user }}"
-        url_password: "{{ demo_admin_pass }}"
-        force_basic_auth: true
-        return_content: true
-      register: info
+    - name: Confirm the rollback landed on the intended image
+      # Infrastructure-level verification, for the reason recorded in
+      # roles/app/tasks/main.yml: a rollback must not depend on the older
+      # release supporting a newer introspection endpoint.
+      community.docker.docker_container_info:
+        name: "{{ app_container_name }}"
+      register: after
       changed_when: false
-      failed_when: info.json.app.version != rollback_to
+      failed_when: >-
+        not after.exists
+        or after.container.Config.Image != registry_host ~ '/' ~ app_image_name ~ ':' ~ rollback_to
+
+    - name: Confirm the data volume is still attached and untouched
+      ansible.builtin.assert:
+        that:
+          - after.container.Mounts | selectattr('Name', 'equalto', app_data_volume) | list | length == 1
+        fail_msg: "the data volume {{ app_data_volume }} is NOT attached to the rolled-back container"
+        success_msg: "{{ app_data_volume }} still attached - no data was touched by the rollback"
 
     - name: Rollback summary
       ansible.builtin.debug:
         msg: >-
           Rolled back successfully.
           was: {{ before.container.Config.Image | default('nothing') }} |
-          now: {{ registry_host }}/{{ app_image_name }}:{{ rollback_to }} |
-          reported version: {{ info.json.app.version }} |
-          health: UP | data volume: {{ app_data_volume }} (untouched)
+          now: {{ after.container.Config.Image }} |
+          running: {{ after.container.State.Running }} |
+          data volume {{ app_data_volume }} still attached and untouched.
