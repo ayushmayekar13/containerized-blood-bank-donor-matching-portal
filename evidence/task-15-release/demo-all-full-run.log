@@ -1,0 +1,268 @@
+████████████████████████████████████████████████████████████████████████
+  CONTAINERIZED BLOOD BANK DONOR MATCHING PORTAL
+  Complete DevOps workflow · Ayush Mayekar · 23102A0018 · BE CMPN A
+  Friday 09 October 2026, 22:21 IST
+████████████████████████████████████████████████████████████████████████
+
+════════════════════════════════════════════════════════════════════════
+  STEP 1 — Preflight — can this machine build, test and deploy?
+════════════════════════════════════════════════════════════════════════
+==> Preflight for Containerized Blood Bank Donor Matching Portal
+
+==> 1. Toolchain
+  ok   Java 21 — JAVA_HOME=/opt/homebrew/opt/openjdk@21
+  ok   Maven — Apache Maven 3.10.0 (c43a36b8d67be7e0805a411bc0898af1a51f5472)
+  ok   Git — git version 2.46.0
+  ok   Docker — Docker version 28.1.1, build 4eba377
+  ok   Ansible — ansible [core 2.21.5]
+  ok   Docker daemon is running
+  ok   Google Chrome present (Selenium Manager will resolve chromedriver)
+  ok   Ansible collection community.docker installed
+
+==> 2. Ports (host 8080 is deliberately avoided — it is already in use)
+  ok   port 8090 in use by this project (java)
+  ok   port 9090 in use by this project (com.docke)
+  ok   port 5001 in use by this project (com.docke)
+
+==> 3. Docker base images
+  ok   image present: tomcat:10.1-jdk21-temurin
+  ok   image present: registry:2
+
+==> 4. Project layout
+  ok   found pom.xml
+  ok   found Dockerfile
+  ok   found Jenkinsfile
+  ok   found ansible/site.yml
+
+PREFLIGHT PASSED — this machine can build, test and deploy the project.
+
+════════════════════════════════════════════════════════════════════════
+  STEP 2 — Git — the project's history IS the project plan
+════════════════════════════════════════════════════════════════════════
+==> One tagged commit per subject task:
+    task-01   2026-09-29  Task 1: define problem, stakeholders and frozen MVP scope
+    task-02   2026-09-29  Task 2: agile plan, backlog, Kanban board, DoD and DevOps wo
+    task-03   2026-09-30  Task 3: SRS, architecture, data model, API list and local se
+    task-04   2026-09-30  Task 4: add buildable Spring Boot WAR skeleton
+    task-05   2026-10-01  Merge PR-01: donor registry and matching engine
+    task-06   2026-10-02  Merge PR-02: requests, role-based workflow, dashboard and au
+    task-07   2026-10-03  docs: document the Jenkins setup, CI job and commit-trigger 
+    task-08   2026-10-04  Task 8: pipeline as code with Tomcat deployment and paramete
+    task-09   2026-10-05  Task 9: Selenium journeys for the five critical user flows
+    task-10   2026-10-06  Task 10: document the quality gate stopping a deployment
+    task-11   2026-10-07  docs: document the image design and the recorded container l
+    task-12   2026-10-07  Task 12: end-to-end continuous deployment through a private 
+    task-13   2026-10-08  Task 13: describe the target node as Ansible configuration
+    task-14   2026-10-08  Task 14: verify provisioning, idempotency, health and rollba
+    task-15   2026-10-09  docs: lead the README with what the project actually proves
+
+==> Release tags:
+    v1.0.0
+    v1.1.0
+    v1.2.0
+    v1.3.0
+
+==> Branching, with both pull-request merges preserved by --no-ff:
+    * f1a8cc3 (HEAD -> main, tag: v1.3.0, tag: task-15) docs: lead the README with what the project actually proves
+    * 595cfea Task 15: end-to-end demonstration, report, presentation and viva guide
+    * a0808ad test: name the task responsible when the idempotency check fails
+    * 98fc09e (tag: v1.2.0, tag: task-14) Task 14: verify provisioning, idempotency, health and rollback in one command
+    * 3459737 (tag: task-13) Task 13: describe the target node as Ansible configuration
+    * a98d03f fix: move the Actuator endpoints onto the machine-facing security chain
+    * 55ce81a (tag: v1.1.0, tag: task-12) Task 12: end-to-end continuous deployment through a private registry
+    * c2b890a test: wait for the old page to go stale before reading the filtered results
+    * 50c54ec ci: publish a versioned image and deploy it from the registry
+    * eb21f54 (tag: task-11) docs: document the image design and the recorded container lifecycle
+    * 371843c Task 11: containerize the portal with a multi-stage, hardened image
+    * 195621b (tag: task-10) Task 10: document the quality gate stopping a deployment
+    * fd1b208 test: read badge text from the DOM rather than from the rendered page
+    * b518aad fix: restore the ADMIN-only guard on the fulfil action (BUG-06)
+
+  ok   every subject task is tagged => 15
+
+════════════════════════════════════════════════════════════════════════
+  STEP 3 — Build and unit tests — Maven, 179 tests
+════════════════════════════════════════════════════════════════════════
+[INFO] 
+[INFO] 
+[INFO] --- war:3.4.0:war (default-war) @ bloodbank-portal ---
+[INFO] Packaging webapp
+[INFO] Assembling webapp [bloodbank-portal] in [/Users/ayushmayekar/code/College/devops_project/target/bloodbank]
+[INFO] Processing war project
+[INFO] Building war: /Users/ayushmayekar/code/College/devops_project/target/bloodbank.war
+[INFO] 
+[INFO] --- spring-boot:3.3.5:repackage (repackage) @ bloodbank-portal ---
+[INFO] Loaded 50 auto-discovered prefixes for remote repository ow2-snapshot (prefixes-ow2-snapshot.txt)
+[INFO] Replacing main artifact /Users/ayushmayekar/code/College/devops_project/target/bloodbank.war with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to /Users/ayushmayekar/code/College/devops_project/target/bloodbank.war.original
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  10.805 s
+[INFO] Finished at: 2026-10-09T22:21:20+05:30
+[INFO] ------------------------------------------------------------------------
+  ok   artefact: bloodbank.war ( 54M)
+
+════════════════════════════════════════════════════════════════════════
+  STEP 4 — Jenkins — the full pipeline, including the Selenium quality gate
+════════════════════════════════════════════════════════════════════════
+     > git fetch --tags --force --progress -- /Users/ayushmayekar/code/College/devops_project +refs/heads/*:refs/remotes/origin/* # timeout=10
+    [Pipeline] { (Declarative: Checkout SCM)
+     > git fetch --tags --force --progress -- /Users/ayushmayekar/code/College/devops_project +refs/heads/*:refs/remotes/origin/* # timeout=10
+    [Pipeline] { (Checkout)
+    [2026-10-09T16:51:22.120Z]  > git fetch --tags --force --progress -- /Users/ayushmayekar/code/College/devops_project +refs/heads/*:refs/remotes/origin/* # timeout=10
+    [Pipeline] { (Build)
+    [2026-10-09T16:51:26.760Z] [INFO] Finished at: 2026-10-09T22:21:26+05:30
+    [Pipeline] { (Unit Test)
+    [2026-10-09T16:51:31.175Z] 2026-10-09 22:21:30 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 18 ms. Found 2 JPA repository interfaces.
+    [2026-10-09T16:51:34.323Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.892 s -- in com.bloodbank.web.SecurityRoleTest$StatusCodeContract
+    [2026-10-09T16:51:34.583Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.187 s -- in com.bloodbank.web.SecurityRoleTest$ApiChain
+    [2026-10-09T16:51:35.154Z] [INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.483 s -- in com.bloodbank.web.SecurityRoleTest$BrowserChain
+    [2026-10-09T16:51:35.154Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.717 s -- in com.bloodbank.web.SecurityRoleTest
+    [2026-10-09T16:51:35.154Z] [INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in com.bloodbank.BloodBankApplicationTest
+    [2026-10-09T16:51:35.154Z] 2026-10-09 22:21:35 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 3 ms. Found 2 JPA repository interfaces.
+    [2026-10-09T16:51:35.935Z] [INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.850 s -- in com.bloodbank.service.DashboardServiceTest
+    [2026-10-09T16:51:35.935Z] [INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.033 s -- in com.bloodbank.service.DonorServiceTest$Update
+    [2026-10-09T16:51:35.935Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.bloodbank.service.DonorServiceTest$Create
+    [2026-10-09T16:51:36.196Z] [INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.095 s -- in com.bloodbank.service.DonorServiceTest$Search
+    [2026-10-09T16:51:36.196Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.149 s -- in com.bloodbank.service.DonorServiceTest
+    [2026-10-09T16:51:36.196Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in com.bloodbank.service.MatchingServiceTest$EdgeCases
+    [2026-10-09T16:51:36.196Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.bloodbank.service.MatchingServiceTest$Ranking
+    [2026-10-09T16:51:36.196Z] [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in com.bloodbank.service.MatchingServiceTest$Predicates
+    [2026-10-09T16:51:36.196Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.167 s -- in com.bloodbank.service.MatchingServiceTest
+    [2026-10-09T16:51:36.446Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.048 s -- in com.bloodbank.service.RequestWorkflowTest$Search
+    [2026-10-09T16:51:36.446Z] [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.bloodbank.service.RequestWorkflowTest$RejectionReason
+    [2026-10-09T16:51:36.447Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.059 s -- in com.bloodbank.service.RequestWorkflowTest$StateMachine
+    [2026-10-09T16:51:36.447Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in com.bloodbank.service.RequestWorkflowTest$MatchValidity
+    [2026-10-09T16:51:36.447Z] [INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.050 s -- in com.bloodbank.service.RequestWorkflowTest$RoleGuards
+    [2026-10-09T16:51:36.447Z] [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.052 s -- in com.bloodbank.service.RequestWorkflowTest$IllegalTransitions
+    [2026-10-09T16:51:36.707Z] [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.059 s -- in com.bloodbank.service.RequestWorkflowTest$LegalTransitions
+    [2026-10-09T16:51:36.707Z] [INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in com.bloodbank.service.RequestWorkflowTest$Creation
+    [2026-10-09T16:51:36.707Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.340 s -- in com.bloodbank.service.RequestWorkflowTest
+    [2026-10-09T16:51:36.707Z] [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in com.bloodbank.domain.CompatibilityMatrixTest$Parsing
+    [2026-10-09T16:51:36.707Z] [INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.bloodbank.domain.CompatibilityMatrixTest$Rules
+    [2026-10-09T16:51:36.707Z] [INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in com.bloodbank.domain.CompatibilityMatrixTest$UniversalGroups
+    [2026-10-09T16:51:36.707Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 s -- in com.bloodbank.domain.CompatibilityMatrixTest
+    [2026-10-09T16:51:36.707Z] [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.bloodbank.domain.DonorEligibilityTest
+    [2026-10-09T16:51:36.707Z] [INFO] Tests run: 179, Failures: 0, Errors: 0, Skipped: 0
+    [2026-10-09T16:51:36.707Z] [INFO] Finished at: 2026-10-09T22:21:36+05:30
+    [Pipeline] { (Package)
+    [2026-10-09T16:51:40.567Z] [INFO] Finished at: 2026-10-09T22:21:40+05:30
+    [Pipeline] { (Deploy to Tomcat)
+    [Pipeline] { (Health Check)
+    [Pipeline] { (UI Test (quality gate))
+    [2026-10-09T16:51:53.773Z] 2026-10-09 22:21:53 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 21 ms. Found 2 JPA repository interfaces.
+    [2026-10-09T16:51:57.670Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.353 s -- in com.bloodbank.web.SecurityRoleTest$StatusCodeContract
+    [2026-10-09T16:51:57.670Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.195 s -- in com.bloodbank.web.SecurityRoleTest$ApiChain
+    [2026-10-09T16:51:58.229Z] [INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.508 s -- in com.bloodbank.web.SecurityRoleTest$BrowserChain
+    [2026-10-09T16:51:58.229Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.238 s -- in com.bloodbank.web.SecurityRoleTest
+    [2026-10-09T16:51:58.229Z] [INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in com.bloodbank.BloodBankApplicationTest
+    [2026-10-09T16:51:58.229Z] 2026-10-09 22:21:58 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 5 ms. Found 2 JPA repository interfaces.
+    [2026-10-09T16:51:59.048Z] [INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.848 s -- in com.bloodbank.service.DashboardServiceTest
+    [2026-10-09T16:51:59.048Z] [INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.033 s -- in com.bloodbank.service.DonorServiceTest$Update
+    [2026-10-09T16:51:59.048Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in com.bloodbank.service.DonorServiceTest$Create
+    [2026-10-09T16:51:59.048Z] [INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.063 s -- in com.bloodbank.service.DonorServiceTest$Search
+    [2026-10-09T16:51:59.048Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.115 s -- in com.bloodbank.service.DonorServiceTest
+    [2026-10-09T16:51:59.303Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in com.bloodbank.service.MatchingServiceTest$EdgeCases
+    [2026-10-09T16:51:59.303Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.bloodbank.service.MatchingServiceTest$Ranking
+    [2026-10-09T16:51:59.303Z] [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in com.bloodbank.service.MatchingServiceTest$Predicates
+    [2026-10-09T16:51:59.303Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.169 s -- in com.bloodbank.service.MatchingServiceTest
+    [2026-10-09T16:51:59.303Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.046 s -- in com.bloodbank.service.RequestWorkflowTest$Search
+    [2026-10-09T16:51:59.303Z] [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in com.bloodbank.service.RequestWorkflowTest$RejectionReason
+    [2026-10-09T16:51:59.303Z] [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.053 s -- in com.bloodbank.service.RequestWorkflowTest$StateMachine
+    [2026-10-09T16:51:59.303Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.025 s -- in com.bloodbank.service.RequestWorkflowTest$MatchValidity
+    [2026-10-09T16:51:59.561Z] [INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.046 s -- in com.bloodbank.service.RequestWorkflowTest$RoleGuards
+    [2026-10-09T16:51:59.561Z] [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 s -- in com.bloodbank.service.RequestWorkflowTest$IllegalTransitions
+    [2026-10-09T16:51:59.561Z] [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in com.bloodbank.service.RequestWorkflowTest$LegalTransitions
+    [2026-10-09T16:51:59.561Z] [INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.bloodbank.service.RequestWorkflowTest$Creation
+    [2026-10-09T16:51:59.561Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.273 s -- in com.bloodbank.service.RequestWorkflowTest
+    [2026-10-09T16:51:59.561Z] [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.020 s -- in com.bloodbank.domain.CompatibilityMatrixTest$Parsing
+    [2026-10-09T16:51:59.561Z] [INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in com.bloodbank.domain.CompatibilityMatrixTest$Rules
+    [2026-10-09T16:51:59.561Z] [INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in com.bloodbank.domain.CompatibilityMatrixTest$UniversalGroups
+    [2026-10-09T16:51:59.561Z] [INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.062 s -- in com.bloodbank.domain.CompatibilityMatrixTest
+    [2026-10-09T16:51:59.561Z] [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in com.bloodbank.domain.DonorEligibilityTest
+    [2026-10-09T16:51:59.561Z] [INFO] Tests run: 179, Failures: 0, Errors: 0, Skipped: 0
+    [2026-10-09T16:52:06.374Z] [INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.616 s -- in com.bloodbank.ui.J2DonorSearchIT
+    [2026-10-09T16:52:09.654Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.645 s -- in com.bloodbank.ui.J4MatchAndRoleGuardIT
+    [2026-10-09T16:52:15.169Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.656 s -- in com.bloodbank.ui.J1DonorRegistrationIT
+    [2026-10-09T16:52:18.242Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.881 s -- in com.bloodbank.ui.J3RequestAndDashboardIT
+    [2026-10-09T16:52:30.938Z] [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.55 s -- in com.bloodbank.ui.J5FulfilAndEligibilityIT
+    [2026-10-09T16:52:30.938Z] [INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0
+    [2026-10-09T16:52:30.938Z] [INFO] Finished at: 2026-10-09T22:22:30+05:30
+    [Pipeline] { (Promote: image, registry, deploy)
+    [2026-10-09T16:52:46.384Z] + echo '--- published tags ---'
+    [2026-10-09T16:52:46.384Z] --- published tags ---
+    [2026-10-09T16:52:46.384Z] + curl -fsS http://localhost:5001/v2/bloodbank/tags/list
+    [2026-10-09T16:52:46.384Z] {"name":"bloodbank","tags":["21","17","18","latest","1","15"]}
+    [Pipeline] { (Post-deploy verification)
+    [Pipeline] { (Declarative: Post Actions)
+    Finished: SUCCESS
+  ok   pipeline result => SUCCESS
+
+════════════════════════════════════════════════════════════════════════
+  STEP 5 — Registry — versioned images, which is what makes rollback possible
+════════════════════════════════════════════════════════════════════════
+    {"name":"bloodbank","tags":["21","17","18","latest","1","15"]}
+  ok   6 image versions retained - a previous version exists to roll back to
+
+════════════════════════════════════════════════════════════════════════
+  STEP 6 — Running container — what is actually serving traffic, and from which commit
+════════════════════════════════════════════════════════════════════════
+bloodbank-app  localhost:5001/bloodbank:21  Up 8 seconds (healthy)  0.0.0.0:9090->8080/tcp
+bloodbank-registry  registry:2  Up 27 minutes  0.0.0.0:5001->5000/tcp
+
+==> image provenance:
+    build 21 from commit f1a8cc3
+==> process inside the container (unprivileged, and PID 1 so it stops gracefully):
+      UID   PID COMMAND
+      999     1 java
+
+════════════════════════════════════════════════════════════════════════
+  STEP 7 — Behavioural health check — rules, not a ping
+════════════════════════════════════════════════════════════════════════
+==> Health checking http://localhost:9090
+  ok   actuator health status => UP
+  ok   unauthenticated API call is rejected => 401
+  ok   unauthenticated portal page redirects => 302
+  ok   login page is reachable => 200
+  ok   donor registry reachable => 47 donors
+  ok   no incompatible donor in a B+ shortlist => 0
+  ok   STAFF fulfilling a request is refused => 403
+  ok   ADMIN fulfilling a NEW request is refused => 409
+  ok   dashboard reports all eight blood groups => 8
+
+HEALTH CHECK PASSED - http://localhost:9090 is up and behaving correctly.
+
+════════════════════════════════════════════════════════════════════════
+  STEP 8 — Ansible — provisioning, idempotency, health and rollback
+════════════════════════════════════════════════════════════════════════
+    ok   provisioned from nothing: localhost:5001/bloodbank:17, 47 donors (data survived)
+    ok   IDEMPOTENT - the second run reported changed=0
+    ok   actuator health status => UP
+    ok   unauthenticated API call is rejected => 401
+    ok   unauthenticated portal page redirects => 302
+    ok   login page is reachable => 200
+    ok   donor registry reachable => 47 donors
+    ok   no incompatible donor in a B+ shortlist => 0
+    ok   STAFF fulfilling a request is refused => 403
+    ok   ADMIN fulfilling a NEW request is refused => 409
+    ok   dashboard reports all eight blood groups => 8
+    ok   ROLLED BACK to a different image with the data intact
+    ok   back on localhost:5001/bloodbank:17 with 47 donors
+    1. clean provisioning   container and local image destroyed, rebuilt from the registry
+    2. idempotency          second identical run reported changed=0
+    3. health check         authentication, compatibility matrix, role guard, dashboard
+    4. rollback             17 -> 21 -> 17, data intact throughout
+
+════════════════════════════════════════════════════════════════════════
+  STEP 9 — Result
+════════════════════════════════════════════════════════════════════════
+
+    application   http://localhost:9090       (admin/Admin@123, staff/Staff@123, donor/Donor@123)
+    jenkins       http://localhost:8090
+    registry      http://localhost:5001/v2/_catalog
+    health        http://localhost:9090/actuator/health
+    elapsed       151s
+
+████  COMPLETE DEVOPS WORKFLOW VERIFIED  ████
+    commit → build → unit tests → quality gate → image → registry → container → provisioned → rollback
