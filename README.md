@@ -16,6 +16,8 @@ automated DevOps pipeline.
 | **Jenkins** | http://localhost:8090 |
 | **Private registry** | http://localhost:5001/v2/_catalog |
 | **Current release** | `v1.3.0` |
+| **One-command demonstration** | `bash scripts/demo-all.sh` |
+| **Practical-day guide** | [`docs/VIVA_GUIDE.md`](docs/VIVA_GUIDE.md) |
 
 ---
 
@@ -108,7 +110,25 @@ and are not valid against anything outside this local deployment.
 | 12 | Jenkins-Docker continuous deployment | [12](docs/12-jenkins-docker-cd.md) | `evidence/task-12-registry/` |
 | 13 | Configuration management script | [13](docs/13-ansible-configuration.md) · [`ansible/`](ansible/) | `evidence/task-13-ansible/` |
 | 14 | Automated provisioning and reliability | [14](docs/14-provisioning-rollback.md) | `evidence/task-14-reliability/` |
-| 15 | Final end-to-end release and viva | [15](docs/15-final-release.md) · **[VIVA GUIDE](docs/VIVA_GUIDE.md)** · [report](docs/REPORT.md) | `evidence/` |
+| 15 | Final end-to-end release and viva | [15](docs/15-final-release.md) · **[VIVA GUIDE](docs/VIVA_GUIDE.md)** · [report](docs/REPORT.md) · [runbook](docs/RUNBOOK.md) · [slides](docs/PRESENTATION.md) | `scripts/demo-all.sh` |
+
+## What it actually proves
+
+The result worth pointing at is **pipeline build #9**. Checkout, Build, **Unit Test (179 green)**,
+Package, Deploy and the behavioural Health Check all passed — and the build still went red, because a
+browser found the request page offering an ADMIN-only action to a STAFF user. The `Promote` stage was
+never entered: no image was published and no container was replaced.
+
+That is the difference between *having tests* and *having a gate*. Evidence:
+[`evidence/task-10-quality-gate/`](evidence/task-10-quality-gate).
+
+| | |
+|---|---|
+| Tests | 179 unit + 16 Selenium journeys |
+| Commit → running, health-checked container | **~101 s** |
+| Rollback to any previous release | **< 1 min**, data intact |
+| Ansible second run | **`changed=0`** |
+| Defects found and fixed | 11, each with its cause recorded in [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
 
 ## Repository layout
 
@@ -131,7 +151,10 @@ and are not valid against anything outside this local deployment.
 ├── src/it/java/             Selenium journeys    (Failsafe — quality gate)
 ├── jenkins/                 job configuration, plugin list, setup guide
 ├── ansible/                 inventory, site.yml, rollback.yml, roles
-├── scripts/                 env.sh, preflight.sh, docker-lifecycle.sh, health-check.sh, demo-all.sh
+├── docker/entrypoint.sh     drops privileges after fixing volume ownership
+├── scripts/                 env.sh · preflight.sh · build and deploy · docker-lifecycle.sh
+│                            health-check.sh · run-ui-tests.sh · release.sh
+│                            verify-reliability.sh · demo-all.sh · jenkins-*.sh
 ├── docs/                    all 15 task documents, SRS, architecture, API, runbook, viva guide
 └── evidence/                real build logs, test reports, command logs and screenshots
 ```
