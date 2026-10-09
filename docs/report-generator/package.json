@@ -4,7 +4,9 @@
   "private": true,
   "description": "Generates the Word project report for the Containerized Blood Bank Donor Matching Portal",
   "scripts": {
-    "build": "node build.js ../../DevOps_Project_Report_23102A0018.docx"
+    "build": "npm run build:merged && npm run build:tasks",
+    "build:merged": "node build.js ../../DevOps_Project_Report_23102A0018.docx",
+    "build:tasks": "node build-tasks.js ../../task-reports"
   },
   "dependencies": {
     "docx": "^9.0.0"

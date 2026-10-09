@@ -18,6 +18,8 @@ automated DevOps pipeline.
 | **Current release** | `v1.3.0` |
 | **One-command demonstration** | `bash scripts/demo-all.sh` |
 | **Practical-day guide** | [`docs/VIVA_GUIDE.md`](docs/VIVA_GUIDE.md) |
+| **Submission report** | [`DevOps_Project_Report_23102A0018.docx`](DevOps_Project_Report_23102A0018.docx) — 45 pages, all 15 tasks |
+| **Per-task reports** | [`task-reports/`](task-reports) — one standalone document per task |
 
 ---
 

@@ -6,8 +6,20 @@ subject tasks.
 ```bash
 cd docs/report-generator
 npm install
-npm run build          # writes the .docx to the repository root
+npm run build          # both outputs
+npm run build:merged   # just the 45-page consolidated report
+npm run build:tasks    # just the fifteen per-task documents
 ```
+
+Two outputs, one source:
+
+| Command | Produces |
+|---|---|
+| `build.js` | `DevOps_Project_Report_23102A0018.docx` — 45 pages, with a title page, declaration, table of contents, seven numbered sections and three appendices |
+| `build-tasks.js` | `task-reports/Task_NN_*.docx` — fifteen standalone documents, one per task |
+
+Both read `tasks.js`, so the per-task documents and the merged report **cannot drift apart**:
+correcting a task is one edit followed by one rebuild.
 
 ## Why the report is generated rather than hand-written
 
@@ -25,7 +37,8 @@ file — and `git log` shows what changed in the report and why, exactly as it d
 |---|---|
 | `tasks.js` | The content for all 15 tasks: statement, deliverable, work done, decisions with reasoning, captured output, defects, evidence and verification commands |
 | `helpers.js` | Formatting primitives — headings, body text, bullets, code blocks, callouts and tables, plus the page geometry and colour tokens |
-| `build.js` | Assembles the document: title page, declaration, table of contents, seven numbered sections, the 15 task sections, and three appendices |
+| `build.js` | Assembles the merged report: title page, declaration, table of contents, seven numbered sections, the 15 task sections, and three appendices |
+| `build-tasks.js` | Emits one standalone document per task, each with its own title block, header and page numbering |
 
 ## Notes on the formatting
 
