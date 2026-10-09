@@ -68,6 +68,11 @@ secrets/
 ansible/*.vault
 ansible/vault_pass*
 
+# ---- Report generator ----------------------------------------------------
+docs/report-generator/node_modules/
+docs/report-generator/package-lock.json
+# ...but the generated report itself IS a submission deliverable, so it stays.
+
 # ---- Local overrides -----------------------------------------------------
 application-local.yml
 application-local.properties
