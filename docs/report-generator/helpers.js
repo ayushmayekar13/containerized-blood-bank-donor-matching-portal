@@ -142,7 +142,10 @@ function cellPara(text, o = {}) {
   return new Paragraph({
     spacing: { before: 50, after: 50, line: 252 },
     alignment: o.align,
-    children: [new TextRun({
+    // `runs` lets a caller supply already-formatted TextRuns, which is how
+    // inline markdown inside a table cell (**bold**, `code`, [links]) survives
+    // into the document instead of being printed literally.
+    children: o.runs ?? [new TextRun({
       text: String(text),
       font: o.mono ? MONO : BODY,
       size: o.mono ? 17 : (o.size ?? 19),
@@ -166,6 +169,7 @@ function table(headers, rows, widths, opts = {}) {
       shading: o.fill ? { type: ShadingType.CLEAR, fill: o.fill } : undefined,
       margins: { top: 60, bottom: 60, left: 110, right: 110 },
       children: [cellPara(spec.text, {
+        runs: spec.runs,
         bold: spec.bold ?? o.bold,
         mono: spec.mono,
         color: spec.color,

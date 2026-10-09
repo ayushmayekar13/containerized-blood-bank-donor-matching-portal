@@ -1,21 +1,16 @@
 # Task 12 — Jenkins-Docker Continuous Deployment
 
-**Project:** Containerized Blood Bank Donor Matching Portal · Ayush Mayekar · 23102A0018
-**Date:** 7 October 2026
+**Deliverable:** versioned image, registry evidence and end-to-end commit-to-container pipeline.
 
-| Required deliverable | Delivered as |
-|---|---|
-| Versioned image | `localhost:5001/bloodbank:15` — tagged with the Jenkins build number; labels carry the git revision `c2b890a` |
-| Registry evidence | [`evidence/task-12-registry/registry-evidence.txt`](../evidence/task-12-registry/registry-evidence.txt) — catalogue, tag list, running container, image labels |
-| End-to-end commit-to-container pipeline | [`stage-view-15-full-cd.txt`](../evidence/task-12-registry/stage-view-15-full-cd.txt) — 11 stages, **101 seconds**, all green |
-| Release tag | `v1.1.0` |
+**Project:** Containerized Blood Bank Donor Matching Portal · Ayush Mayekar · 23102A0018 · BE CMPN A
+**Completed:** 7 October 2026 · **Tags:** `task-12`, `v1.1.0`
 
 ---
 
 ## 1. The complete pipeline
 
 ```
-Checkout → Build → Unit Test → Package → Deploy → Health Check → ┃ UI Test ┃ → Promote → Post-deploy
+Checkout → Build → Unit Test → Package → Deploy → Health Check → ┃ UI TEST ┃ → Promote → Post-deploy
                                                                  ┗━ GATE ━┛      ↓
                                                build versioned image → push → pull back → fresh container
 ```
@@ -25,7 +20,7 @@ pipeline build #15  status=SUCCESS  total=101.3s
 
 Checkout                             SUCCESS        1.1s
 Build                                SUCCESS        3.2s
-Unit Test                            SUCCESS       11.0s     178 tests
+Unit Test                            SUCCESS       11.0s     179 tests
 Package                              SUCCESS        4.4s
 Deploy to Tomcat                     SUCCESS        7.9s
 Health Check                         SUCCESS        1.4s
@@ -38,7 +33,9 @@ Post-deploy verification             SUCCESS        1.4s
 NFR-13 — and every promotion stage sits *after* the quality gate, so none of it is reachable while a
 journey is red.
 
-## 2. The one decision in this task worth defending
+---
+
+## 2. The decision worth defending
 
 **The deployment pulls the image back out of the registry before running it.**
 
@@ -49,19 +46,21 @@ docker pull   localhost:5001/bloodbank:15     # fetch it back
 docker run -d ... localhost:5001/bloodbank:15
 ```
 
-Deleting the local image and pulling it back costs about a second and looks redundant — the image was
-just built on this machine. It is the difference between a release that is *verified* and one that is
-*assumed*:
+Deleting the local image and pulling it back costs about a second and looks redundant — the image
+was just built on this machine. It is the difference between a release that is **verified** and one
+that is **assumed**:
 
-- If the push silently failed, or the registry wrote a corrupt layer, or the tag was wrong, deploying
-  the **local** image would succeed anyway and nobody would notice.
+- If the push silently failed, or the registry wrote a corrupt layer, or the tag was wrong,
+  deploying the **local** image would succeed anyway and nobody would notice.
 - The failure would then surface at the **first attempted rollback** — when the previous tag is
   pulled and found to be missing. That is the worst possible moment to discover it.
 
-Pulling before deploying means that if the pipeline is green, the registry provably contains a usable
-image. The Task 14 rollback depends entirely on that being true.
+Pulling before deploying means that if the pipeline is green, the registry **provably** contains a
+usable image. The Task 14 rollback depends entirely on that being true.
 
-## 3. Versioning
+---
+
+## 3. Versioned images
 
 | Tag | Mutable? | Purpose |
 |---|---|---|
@@ -74,14 +73,18 @@ before. The container is additionally labelled at run time:
 ```
 $ docker inspect bloodbank-app --format '{{.Config.Image}}'
 localhost:5001/bloodbank:15
-$ docker inspect bloodbank-app --format '{{index .Config.Labels "org.opencontainers.image.version"}} {{index .Config.Labels "org.opencontainers.image.revision"}}'
+
+$ docker inspect bloodbank-app \
+    --format '{{index .Config.Labels "org.opencontainers.image.version"}} {{index .Config.Labels "org.opencontainers.image.revision"}}'
 15 c2b890a
 ```
 
 Any running container answers two questions without reference to anything else: **which build am I,
 and which commit am I?**
 
-## 4. Registry
+---
+
+## 4. The registry
 
 ```
 $ curl -s http://localhost:5001/v2/_catalog
@@ -102,7 +105,7 @@ machine. Port **5001** because macOS reserves 5000 for AirPlay Receiver. Images 
 `bloodbank-registry-data` volume, so previous versions survive a registry restart, which is what
 makes rollback possible after a reboot.
 
-### Using Docker Hub instead
+### 4.1 Using Docker Hub instead
 
 Two changes, and nothing else:
 
@@ -120,16 +123,25 @@ withCredentials([usernamePassword(credentialsId: 'dockerhub',
 ```
 
 The `credentials-binding` plugin is already installed for exactly this. The token is masked in the
-console log, and `--password-stdin` keeps it out of the process list — `docker login -p "$TOKEN"` would
-expose it to anyone able to run `ps` on the agent.
+console log, and `--password-stdin` keeps it out of the process list — `docker login -p "$TOKEN"`
+would expose it to anyone able to run `ps` on the agent.
+
+---
 
 ## 5. Why `scripts/release.sh` and not shell inside the `Jenkinsfile`
 
 The whole release is one script that the pipeline calls with the build number, and that a developer
-can run by hand with any version string. One definition of what "release" means — the same reason the
-deploy and health-check stages call the same scripts a developer uses. A release procedure that
-exists only inside a CI server is a procedure nobody can test, and nobody can run when the CI server
-is the thing that is broken.
+can run by hand with any version string:
+
+```bash
+bash scripts/release.sh 99
+```
+
+One definition of what "release" means — the same reason the deploy and health-check stages call the
+same scripts a developer uses. **A release procedure that exists only inside a CI server is a
+procedure nobody can test, and nobody can run when the CI server is the thing that is broken.**
+
+---
 
 ## 6. Data survives the upgrade
 
@@ -137,25 +149,47 @@ The container is replaced on every release and the named volume is re-attached, 
 requests persist across versions — demonstrated directly in Task 11 stage 13 (29 donors before and
 after a full container replacement). The container is disposable; the data is not.
 
-## 7. Verification
+---
 
-```bash
-# the whole thing
-bash scripts/jenkins-job.sh build bloodbank-pipeline --wait
+## 7. Decisions taken, and why
 
-# by hand, without Jenkins
-bash scripts/release.sh 99
+| Decision | Reasoning |
+|---|---|
+| The deployment pulls the image back from the registry before running it | A silently failed push would otherwise surface at the first attempted rollback — the worst possible moment. Pulling first means a green pipeline proves the registry holds a usable image |
+| The image is tagged with the Jenkins build number | Monotonic, unique and immutable. That tag is what the Task 14 rollback pins to |
+| `latest` is never deployed by anything automated | Deploying it makes rollback impossible, because nothing names the version that was running before |
+| The release is one script, called by the pipeline and runnable by hand | A release procedure that exists only inside a CI server is one nobody can test, and nobody can run when the CI server is broken |
+| A private registry rather than Docker Hub | No credentials, no rate limits, no internet dependency during the practical examination |
+| A second health check after the release | The first verified the build; this one verifies the thing actually serving traffic |
 
-# what the registry holds
-curl -s http://localhost:5001/v2/_catalog | jq
-curl -s http://localhost:5001/v2/bloodbank/tags/list | jq
+---
 
-# what is actually running, and which commit it came from
-docker ps --filter name=bloodbank-app --format '{{.Names}} {{.Image}} {{.Status}}'
-docker inspect bloodbank-app --format '{{index .Config.Labels "org.opencontainers.image.revision"}}'
-curl -s http://localhost:9090/actuator/health
+## 8. Evidence index
 
-# prove the registry is really the source: delete every local copy and redeploy
-docker rmi -f localhost:5001/bloodbank:15 bloodbank:15
-docker run -d --name test-pull -p 9099:8080 localhost:5001/bloodbank:15
-```
+| File | Shows |
+|---|---|
+| [`evidence/task-12-registry/stage-view-15-full-cd.txt`](../evidence/task-12-registry/stage-view-15-full-cd.txt) | All 11 stages green in 101 seconds |
+| [`evidence/task-12-registry/build-15-console-full-cd.log`](../evidence/task-12-registry/build-15-console-full-cd.log) | Full console of the end-to-end run |
+| [`evidence/task-12-registry/registry-evidence.txt`](../evidence/task-12-registry/registry-evidence.txt) | Catalogue, tag list, running container and image labels |
+| [`scripts/release.sh`](../scripts/release.sh) | Build, publish, pull back, deploy |
+
+---
+
+## 9. Task 12 Definition of Done
+
+| # | Criterion | Status |
+|---|---|---|
+| D3 | `mvn clean verify` green in the pipeline | Unit Test stage, 179 tests |
+| D5 | The Jenkins pipeline is green for the commit | Build #15 SUCCESS |
+| D6 | The Selenium quality gate passed before promotion | UI Test stage green, 16 journeys |
+| D7 | No credential in the `Jenkinsfile` | Local registry; Docker Hub path uses `credentials-binding` |
+| D8 | Task documentation written and committed | This document |
+| D9 | Evidence captured | `evidence/task-12-registry/` |
+| D10 | The deployed container answers its health check | Post-deploy verification stage |
+| D11 | Committed on `main` and tagged | `task-12`, `v1.1.0` |
+| D12 | Backlog updated | US-14 Done |
+
+**Outcome:** the full commit-to-container path in 101 seconds — 179 unit tests, 16 Selenium journeys
+as a blocking gate, a versioned image published to a private registry, pulled back to prove the push
+worked, and deployed as a fresh container that answers its health check. Immutable build-number tags
+are what make the Task 14 rollback possible.

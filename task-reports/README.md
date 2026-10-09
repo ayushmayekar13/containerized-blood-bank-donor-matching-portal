@@ -1,54 +1,47 @@
 # Per-task reports
 
-One standalone Word document per subject task. Each is self-contained — it carries its own title
-block, student details and page numbering — so a single task can be printed, emailed or submitted
-on its own without the other fourteen.
+One standalone Word document per subject task, **rendered from that task's own markdown document**
+in [`../docs/`](../docs). Each is self-contained — its own title block, student details, running
+header and page numbering — so a single task can be printed, emailed or submitted on its own.
 
-The consolidated version of the same material is
-[`../DevOps_Project_Report_23102A0018.docx`](../DevOps_Project_Report_23102A0018.docx) (45 pages,
-with a title page, declaration, table of contents and appendices).
+The consolidated version is [`../DevOps_Project_Report_23102A0018.docx`](../DevOps_Project_Report_23102A0018.docx)
+(~86 pages, with a title page, declaration and table of contents).
 
-| # | Document | Task | Completed | Tag |
-|---|---|---|---|---|
-| 1 | `Task_01_Problem_Definition_and_Scope.docx` | Problem Definition and Scope | 29 Sep 2026 | `task-01` |
-| 2 | `Task_02_Agile_Planning_and_DevOps_Workflow.docx` | Agile Planning and DevOps Workflow | 29 Sep 2026 | `task-02` |
-| 3 | `Task_03_Requirements_Architecture_and_Technology_Setup.docx` | Requirements, Architecture and Technology Setup | 30 Sep 2026 | `task-03` |
-| 4 | `Task_04_Git_and_GitHub_Repository_Initialization.docx` | Git and GitHub Repository Initialization | 30 Sep 2026 | `task-04` |
-| 5 | `Task_05_Feature_Development_with_Branching.docx` | Feature Development with Branching | 1 Oct 2026 | `task-05` |
-| 6 | `Task_06_MVP_Completion_and_Git_Collaboration.docx` | MVP Completion and Git Collaboration | 2 Oct 2026 | `task-06`, `v1.0.0` |
-| 7 | `Task_07_Jenkins_Installation_and_Continuous_Integration_Job.docx` | Jenkins Installation and Continuous Integration Job | 3 Oct 2026 | `task-07` |
-| 8 | `Task_08_Pipeline_as_Code_and_Server_Deployment.docx` | Pipeline as Code and Server Deployment | 4 Oct 2026 | `task-08` |
-| 9 | `Task_09_Selenium_Test_Design_and_Local_Execution.docx` | Selenium Test Design and Local Execution | 5 Oct 2026 | `task-09` |
-| 10 | `Task_10_Continuous_Testing_in_Jenkins.docx` | Continuous Testing in Jenkins | 6 Oct 2026 | `task-10` |
-| 11 | `Task_11_Docker_Image_and_Container_Lifecycle.docx` | Docker Image and Container Lifecycle | 7 Oct 2026 | `task-11` |
-| 12 | `Task_12_JenkinsDocker_Continuous_Deployment.docx` | Jenkins-Docker Continuous Deployment | 7 Oct 2026 | `task-12`, `v1.1.0` |
-| 13 | `Task_13_Configuration_Management_Script.docx` | Configuration Management Script | 8 Oct 2026 | `task-13` |
-| 14 | `Task_14_Automated_Provisioning_and_Reliability_Validation.docx` | Automated Provisioning and Reliability Validation | 8 Oct 2026 | `task-14`, `v1.2.0` |
-| 15 | `Task_15_Final_EndtoEnd_Release_Documentation_and_Viva.docx` | Final End-to-End Release, Documentation and Viva | 9 Oct 2026 | `task-15`, `v1.3.0` |
+| # | Document | Source | Tag |
+|---|---|---|---|
+| 1 | `Task_01_Problem_Definition_and_Scope.docx` | `docs/01-problem-definition.md` | `task-01` |
+| 2 | `Task_02_Agile_Planning_and_DevOps_Workflow.docx` | `docs/02-agile-planning.md` | `task-02` |
+| 3 | `Task_03_Requirements_Architecture_and_Technology_Setup.docx` | `docs/03-requirements-architecture.md` | `task-03` |
+| 4 | `Task_04_Git_and_GitHub_Repository_Initialization.docx` | `docs/04-repository-setup.md` | `task-04` |
+| 5 | `Task_05_Feature_Development_with_Branching.docx` | `docs/05-feature-branching.md` | `task-05` |
+| 6 | `Task_06_MVP_Completion_and_Git_Collaboration.docx` | `docs/06-mvp-and-conflict.md` | `task-06`, `v1.0.0` |
+| 7 | `Task_07_Jenkins_Installation_and_Continuous_Integration_Job.docx` | `docs/07-jenkins-ci.md` | `task-07` |
+| 8 | `Task_08_Pipeline_as_Code_and_Server_Deployment.docx` | `docs/08-pipeline-as-code.md` | `task-08` |
+| 9 | `Task_09_Selenium_Test_Design_and_Local_Execution.docx` | `docs/09-selenium-tests.md` | `task-09` |
+| 10 | `Task_10_Continuous_Testing_in_Jenkins.docx` | `docs/10-continuous-testing.md` | `task-10` |
+| 11 | `Task_11_Docker_Image_and_Container_Lifecycle.docx` | `docs/11-docker-lifecycle.md` | `task-11` |
+| 12 | `Task_12_JenkinsDocker_Continuous_Deployment.docx` | `docs/12-jenkins-docker-cd.md` | `task-12`, `v1.1.0` |
+| 13 | `Task_13_Configuration_Management_Script.docx` | `docs/13-ansible-configuration.md` | `task-13` |
+| 14 | `Task_14_Automated_Provisioning_and_Reliability_Validation.docx` | `docs/14-provisioning-rollback.md` | `task-14`, `v1.2.0` |
+| 15 | `Task_15_Final_EndtoEnd_Release_Documentation_and_Viva.docx` | `docs/15-final-release.md` | `task-15`, `v1.3.0` |
 
-## What each document contains
+## Structure of each document
 
 | Section | Contents |
 |---|---|
-| Title block | Task number and title, student details, completion date and the git tag that recovers that state |
-| Task statement | The subject task sheet's wording, quoted |
-| Required deliverable | The task sheet's "Deliverable:" line, quoted |
-| Work carried out | What was actually built |
-| **Decisions taken, and why** | Each decision with its reasoning — the part a viva question lands on |
-| Captured output | Real output from a run, not a reconstruction |
-| Defects found | Where the task produced one, with its cause |
-| Evidence retained | Where in the repository the proof lives |
-| Verification | The commands that reproduce the result |
+| Title block | Task number and title, the **Deliverable** quoted from the task sheet, student details, completion date and git tag |
+| 1 … N | Numbered sections covering the work, with numbered subsections |
+| Problems met and solved | Where the task hit real issues — cause, fix and the lesson |
+| Decisions taken, and why | Each decision with its reasoning — the part a viva question lands on |
+| Evidence index | File-to-evidence table pointing into `evidence/` |
+| Task N Definition of Done | Scored against the global criteria D1–D12 in `docs/definition-of-done.md` |
+| **Outcome** | A closing paragraph stating what the task actually achieved |
 
 ## Regenerating
 
-Both the fifteen documents and the merged report are generated from the **same source**,
-`docs/report-generator/tasks.js`, so they cannot drift apart — correcting a task means editing that
-one file and rebuilding both:
+These files are **generated**. Edit the markdown in `docs/`, not the `.docx`:
 
 ```bash
-cd docs/report-generator
-npm install
-node build.js       ../../DevOps_Project_Report_23102A0018.docx   # merged, 45 pages
-node build-tasks.js ../../task-reports                            # these fifteen
+bash scripts/build-final-report.sh          # rebuild the consolidated markdown
+cd docs/report-generator && npm run build   # rebuild all 16 Word documents
 ```

@@ -1,55 +1,78 @@
 # Word report generator
 
-Generates `DevOps_Project_Report_23102A0018.docx` — the submitted Word report covering all 15
-subject tasks.
+Renders the Word deliverables **from the repository's own markdown documentation**, so a `.docx`
+can never state something the repository does not.
 
 ```bash
 cd docs/report-generator
 npm install
 npm run build          # both outputs
-npm run build:merged   # just the 45-page consolidated report
-npm run build:tasks    # just the fifteen per-task documents
 ```
-
-Two outputs, one source:
 
 | Command | Produces |
 |---|---|
-| `build.js` | `DevOps_Project_Report_23102A0018.docx` — 45 pages, with a title page, declaration, table of contents, seven numbered sections and three appendices |
-| `build-tasks.js` | `task-reports/Task_NN_*.docx` — fifteen standalone documents, one per task |
+| `npm run build:merged` | `DevOps_Project_Report_23102A0018.docx` — the consolidated report, ~86 pages |
+| `npm run build:tasks` | `task-reports/Task_NN_*.docx` — fifteen standalone documents, one per task |
 
-Both read `tasks.js`, so the per-task documents and the merged report **cannot drift apart**:
-correcting a task is one edit followed by one rebuild.
+## Chain of custody
 
-## Why the report is generated rather than hand-written
+```
+docs/NN-*.md                    ← the single source: one document per task
+      ↓  scripts/build-final-report.sh
+docs/FINAL-REPORT.md            ← generated, never hand-edited
+      ↓  build.js                           ↓  build-tasks.js
+DevOps_Project_Report_*.docx              task-reports/Task_NN_*.docx
+```
 
-The same reason the Jenkins controller is bootstrapped from Groovy and the target node is described
-in `group_vars`: **a document that exists only as a binary file cannot be reviewed in a diff, and
-cannot be regenerated after an edit is lost.**
+Correcting a task is **one edit** to that task's markdown, then:
 
-Keeping the generator in the repository means a correction to one task's content is a one-line
-change to `tasks.js` followed by `npm run build`, rather than hunting through 45 pages of a Word
-file — and `git log` shows what changed in the report and why, exactly as it does for the code.
+```bash
+bash scripts/build-final-report.sh
+cd docs/report-generator && npm run build
+```
+
+Nothing downstream is maintained by hand, so the per-task documents, the merged report and the
+markdown in the repository cannot drift apart.
+
+## Document format
+
+Each task document follows the same structure, and the renderer reproduces it faithfully:
+
+| Element | Rendered as |
+|---|---|
+| `# Task N — Title` + `**Deliverable:**` | Title block with a metadata table |
+| `## N. Section`, `### N.N Subsection` | Numbered headings, picked up by the table of contents |
+| Markdown tables | Word tables with proportional column widths |
+| Fenced code blocks | Monospace, shaded, with a red left rule |
+| `> blockquote` | Indented italic with a left rule |
+| `## N. Evidence index` | File-to-evidence table |
+| `## N. Task N Definition of Done` | D1–D12 scoring table |
+| `**Outcome:** …` | Bold closing paragraph |
 
 ## Layout
 
 | File | Contains |
 |---|---|
-| `tasks.js` | The content for all 15 tasks: statement, deliverable, work done, decisions with reasoning, captured output, defects, evidence and verification commands |
-| `helpers.js` | Formatting primitives — headings, body text, bullets, code blocks, callouts and tables, plus the page geometry and colour tokens |
-| `build.js` | Assembles the merged report: title page, declaration, table of contents, seven numbered sections, the 15 task sections, and three appendices |
-| `build-tasks.js` | Emits one standalone document per task, each with its own title block, header and page numbering |
+| `md.js` | The Markdown → docx renderer: headings, lists, tables, code blocks, blockquotes, rules, and inline bold / italic / `code` / links |
+| `helpers.js` | Formatting primitives and the page geometry, colour tokens and table builder |
+| `doc.js` | Shared `Document` factory: A4 page, numbering, running header, page footer |
+| `build.js` | The consolidated report: title page, declaration, table of contents, then `FINAL-REPORT.md` |
+| `build-tasks.js` | One standalone document per task, each with its own title block and header |
 
 ## Notes on the formatting
 
-- **A4** (11906 × 16838 DXA) with 2 cm side margins; usable width 9638, tables set to 9360.
-- Tables declare both `columnWidths` and a per-cell `width` in DXA, because percentage widths
-  render incorrectly in Google Docs.
-- The table of contents is a Word field. `features: { updateFields: true }` makes Word populate it
-  on open — without it the contents page opens empty and looks broken.
-- Headings, code blocks and callouts carry `keepNext` / `keepLines` so a heading never ends a page
-  alone and a callout never splits across a page boundary.
-- Each of the 15 tasks starts on a fresh page.
+- **A4** (11906 × 16838 DXA), 2 cm side margins; usable width 9638, tables set to 9360.
+- Tables declare both `columnWidths` and a per-cell `width` in DXA, because percentage widths render
+  incorrectly in Google Docs. Column widths are proportional to content length, with an adaptive
+  minimum — a flat minimum went negative on the nine-column compatibility matrix in Task 3.
+- Table cells are rendered through the same inline parser as body text, so `**bold**` and `` `code` ``
+  inside a cell render as formatting rather than as literal characters.
+- The table of contents is a Word field. `features: { updateFields: true }` makes Word populate it on
+  open — without it the contents page opens empty and looks broken.
+- Headings, code blocks and callouts carry `keepNext` / `keepLines`, so a heading never ends a page
+  alone and a code block never splits across a page boundary.
+- Repository-relative links are flattened to their visible text: a dead hyperlink in a Word document
+  is worse than plain text. External `http(s)` links keep the URL in parentheses.
 
 ## Verifying the output
 
@@ -58,4 +81,4 @@ soffice --headless --convert-to pdf ../../DevOps_Project_Report_23102A0018.docx
 pdftoppm -jpeg -r 85 DevOps_Project_Report_23102A0018.pdf page
 ```
 
-Requires LibreOffice and Poppler (`brew install --cask libreoffice && brew install poppler`).
+Requires LibreOffice and Poppler: `brew install --cask libreoffice && brew install poppler`.

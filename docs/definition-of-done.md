@@ -3,6 +3,32 @@
 Project: Containerized Blood Bank Donor Matching Portal · Ayush Mayekar · 23102A0018
 Agreed: 29 September 2026 · Applies to every one of the 15 tasks
 
+## The twelve criteria, in short
+
+Each task document closes with a table scoring that task against these criteria by number, so the
+same bar is applied to every task and a reader can see at a glance which ones a given task was
+accountable for. The detailed checklist follows in sections 1 to 8.
+
+| # | Criterion | How it is evidenced |
+|---|---|---|
+| D1 | Every acceptance criterion of the story is met and demonstrable | An automated test, or a live demonstration |
+| D2 | Every new business rule has a passing automated test, including boundary values | Surefire / Failsafe report |
+| D3 | `mvn clean verify` is green from a clean `target/` directory | Build log |
+| D4 | Business rules live in the service layer or on a domain enum, not in a controller or template | Package structure |
+| D5 | The Jenkins pipeline is green end to end for the commit being called done | Jenkins build |
+| D6 | The Selenium quality gate passed, and a red gate would have stopped the deployment | Failsafe report published by Jenkins |
+| D7 | No hard-coded host, port, path or credential outside configuration | `scripts/env.sh`, `application.yml` |
+| D8 | The task's documentation is written and committed in the same change | `docs/NN-*.md` |
+| D9 | Evidence is captured in `evidence/task-NN-*/` | Command logs, reports, screenshots |
+| D10 | The deployed container is reachable and `/actuator/health` returns `UP` | `scripts/health-check.sh` |
+| D11 | Work reached its branch through the model in `CONTRIBUTING.md`, merged `--no-ff` | `git log --graph` |
+| D12 | The backlog item's status is updated | `docs/backlog.md` |
+
+A task that does not touch code is not expected to satisfy D2 to D7 or D10; its table records the
+criteria that genuinely applied to it, and nothing else.
+
+---
+
 A task or user story is **Done** only when *all* applicable checks below pass. "Applicable" is
 judged by the column headings: a documentation-only task is not expected to move the pipeline, but
 every task that touches code is expected to satisfy the whole list.

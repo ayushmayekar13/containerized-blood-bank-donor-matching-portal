@@ -1,18 +1,15 @@
 # Task 11 — Docker Image and Container Lifecycle
 
-**Project:** Containerized Blood Bank Donor Matching Portal · Ayush Mayekar · 23102A0018
-**Date:** 7 October 2026
+**Deliverable:** Dockerfile, image details, Docker command log and running container evidence.
 
-| Required deliverable | Delivered as |
-|---|---|
-| `Dockerfile` | [`Dockerfile`](../Dockerfile) — multi-stage, hardened, with traceability labels, plus [`docker/entrypoint.sh`](../docker/entrypoint.sh) and [`.dockerignore`](../.dockerignore) |
-| Image details | §2 and §3 — `bloodbank:latest`, 1.05 GB, OCI labels carrying build number, git revision and build date |
-| Docker command log | [`evidence/task-11-docker/docker-command-log.txt`](../evidence/task-11-docker/docker-command-log.txt) — a 300-line transcript of all 14 lifecycle stages with real output |
-| Running container evidence | §5 — `docker ps`, `docker port`, `docker inspect`, health `healthy`, and PID 1 running as uid 999 |
+**Project:** Containerized Blood Bank Donor Matching Portal · Ayush Mayekar · 23102A0018 · BE CMPN A
+**Completed:** 7 October 2026 · **Tag:** `task-11`
 
 ---
 
-## 1. Why multi-stage
+## 1. The image
+
+### 1.1 Multi-stage build
 
 | Stage | Base image | Fate |
 |---|---|---|
@@ -28,23 +25,23 @@ anyone who can pull it.
 reuses the cached dependency layer on every build where the pom has not moved — the difference
 between a ~10-second rebuild and a ~5-minute one.
 
-**`-DskipTests` is correct here, and only here.** The pipeline has already run 178 unit tests and 16
-Selenium journeys before this image is built. Re-running them inside the image build would double the
-pipeline time to prove exactly what was just proved, and would make the image build depend on a
+**`-DskipTests` is correct here, and only here.** The pipeline has already run 179 unit tests and 16
+Selenium journeys before this image is built. Re-running them inside the image build would double
+the pipeline time to prove exactly what was just proved, and would make the image build depend on a
 browser being available.
 
-## 2. Hardening, with the reason for each
+### 1.2 Hardening, with the reason for each
 
 | Measure | Reason |
 |---|---|
-| `rm -rf /usr/local/tomcat/webapps/*` | Removes the manager, host-manager, docs and examples applications. The examples webapp in particular has carried its own vulnerabilities and has no business near a deployment |
+| `rm -rf /usr/local/tomcat/webapps/*` | Removes the manager, host-manager, docs and examples applications. The examples webapp has historically carried its own vulnerabilities and has no business near a deployment |
 | Runs as **uid 999**, not root | A container escape from a root process is considerably more useful to an attacker than one from an account that owns only its own data directory |
 | JVM is **PID 1** (verified in the log) | `docker stop` delivers `SIGTERM` to Tomcat itself. Measured: **stops in under 1 second**, rather than being `SIGKILL`ed after the 10-second timeout |
 | `setpriv`, not `su` | `su` leaves a shell as PID 1 and never forwards signals — which would silently undo the point above |
-| `HEALTHCHECK` with a 60s `start-period` | The container reports its own health using the same endpoint Ansible and Jenkins probe, and a slow JVM start is not misreported as a failure |
+| `HEALTHCHECK` with a 60 s `start-period` | The container reports its own health using the same endpoint Ansible and Jenkins probe, and a slow JVM start is not misreported as a failure |
 | OCI labels + `.dockerignore` | Any running image traces back to the commit that built it; the build context excludes `target/`, local databases, `.git/` and secrets |
 
-## 3. Image details
+### 1.3 Image details
 
 ```
 $ docker images bloodbank --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.Size}}"
@@ -63,34 +60,12 @@ student:  Ayush Mayekar (23102A0018)
 `latest` moves and is a convenience only. **Deploying `latest` makes rollback impossible**, because
 nothing names the version that was running before — which is exactly what Task 14 needs.
 
-## 4. The defect this task produced — BUG-11
+---
 
-Running the hardened image against the existing volume failed:
+## 2. The container lifecycle
 
-```
-java.nio.file.AccessDeniedException: /opt/bloodbank/data/bloodbank.mv.db
-```
-
-**Cause.** A named volume keeps the ownership it was created with. This volume had first been
-created by the earlier, root-running Tomcat deployment from Task 8, so its contents were owned by
-`root`. Mounting it shadows the image's own directory — and Docker only copies the image
-directory's ownership into a **fresh** volume. **Nothing in a Dockerfile can fix a volume that
-already exists.**
-
-**Fix.** `docker/entrypoint.sh` starts as root for exactly one purpose — correcting the ownership,
-and only when it is actually wrong — then drops privileges with `setpriv` and `exec`s Tomcat. This is
-the pattern the official `postgres` and `mysql` images use. It also makes the image self-healing on
-any host, instead of depending on whoever created the volume having got it right.
-
-```
-entrypoint: data directory is owned by uid 0, expected 999 - correcting
-entrypoint: dropping privileges to bloodbank (999:999)
-```
-
-## 5. The lifecycle, as recorded
-
-`bash scripts/docker-lifecycle.sh` writes a **transcript** — each command echoed before it runs, with
-its real output — rather than a summary written afterwards. All 14 stages are in
+`bash scripts/docker-lifecycle.sh` writes a **transcript** — each command echoed before it runs,
+with its real output — rather than a summary written afterwards. All 14 stages are in
 [`evidence/task-11-docker/docker-command-log.txt`](../evidence/task-11-docker/docker-command-log.txt).
 
 | # | Stage | What it demonstrates |
@@ -110,7 +85,18 @@ its real output — rather than a summary written afterwards. All 14 stages are 
 | 13 | **Replacement** | Container destroyed and recreated — **29 donors before, 29 after** |
 | 14 | **Summary** | Image, container, URL, volume, commit |
 
-### Stage 13 is the one that matters
+### 2.1 Stage 9 — unprivileged and PID 1
+
+```
+$ docker exec bloodbank-app sh -c 'ps -o uid,pid,comm -p 1'
+  UID   PID COMMAND
+  999     1 java
+```
+
+Both facts matter. **uid 999** means a container escape yields an account that owns only its own data
+directory. **PID 1** means `docker stop` delivers SIGTERM to the JVM itself.
+
+### 2.2 Stage 13 — the one that matters
 
 ```
 donors before destroying the container: 29
@@ -124,32 +110,90 @@ The container is **disposable** and the state lives on the volume. That is preci
 recreate deployment strategy safe, and what makes the Task 14 rollback a re-deploy of a previous
 image tag rather than a restore from backup.
 
-## 6. `docker-compose.yml`
+---
+
+## 3. Problems met and solved
+
+### 3.1 BUG-11 — the hardened image could not open its own database
+
+Running the hardened image against the existing volume failed:
+
+```
+java.nio.file.AccessDeniedException: /opt/bloodbank/data/bloodbank.mv.db
+```
+
+**Diagnosis.** `docker exec … ls -ld /opt/bloodbank/data` showed the directory owned by `root`, even
+though the Dockerfile `chown`s it to `bloodbank`.
+
+**Cause.** A **named volume keeps the ownership it was created with**. This volume had first been
+created by the earlier, root-running Tomcat deployment from Task 8, and mounting it shadows the
+image's own directory. Docker only copies the image directory's ownership into a **fresh** volume —
+so **nothing in a Dockerfile can repair a volume that already exists**.
+
+**Fix.** [`docker/entrypoint.sh`](../docker/entrypoint.sh) starts as root for exactly one purpose —
+correcting the ownership, and only when it is actually wrong — then drops privileges with `setpriv`
+and `exec`s Tomcat. This is the pattern the official `postgres` and `mysql` images use, and it makes
+the image self-healing on any host instead of depending on whoever created the volume having got it
+right.
+
+```
+entrypoint: data directory is owned by uid 0, expected 999 - correcting
+entrypoint: dropping privileges to bloodbank (999:999)
+```
+
+**Why `setpriv` and not `su`.** `setpriv` execs the target process directly, so Tomcat stays PID 1
+and receives `SIGTERM` from `docker stop`. With `su`, the shell becomes PID 1, signals are not
+forwarded, and every stop would hit the ten-second timeout and kill the JVM.
+
+---
+
+## 4. `docker-compose.yml`
 
 Runs the application plus the private registry for local use. It is deliberately **not** what the
 pipeline uses — Jenkins builds a versioned image and deploys a specific tag (Task 12), and Ansible
 provisions the node (Tasks 13–14). Letting Compose drive deployment as well would create two
 definitions of "how this is deployed", which is the drift this subject is about.
 
-## 7. Verification
+---
 
-```bash
-# the whole lifecycle, re-recorded
-bash scripts/docker-lifecycle.sh all
-cat evidence/task-11-docker/docker-command-log.txt
+## 5. Decisions taken, and why
 
-# individual facts
-docker ps --filter name=bloodbank-app --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
-docker inspect bloodbank-app --format '{{.State.Health.Status}}'       # healthy
-docker exec bloodbank-app sh -c 'ps -o uid,pid,comm -p 1'              # 999  1  java
-docker image inspect bloodbank:latest --format '{{json .Config.Labels}}'
+| Decision | Reasoning |
+|---|---|
+| Multi-stage build | A single-stage image would ship Maven, the toolchain, the source tree and every dependency — bigger image, bigger attack surface, source handed to anyone who can pull it |
+| `pom.xml` copied and dependencies resolved before `src/` | The pom changes rarely and the source constantly, so Docker reuses the cached layer — a 10-second rebuild instead of 5 minutes |
+| The JVM is PID 1, achieved with `setpriv` rather than `su` | `docker stop` sends SIGTERM to PID 1. With `su`, a shell becomes PID 1, signals are never forwarded, and every stop hits the timeout |
+| Runs as uid 999, not root | A container escape from root is considerably more useful to an attacker |
+| Two tags with different jobs | The build-number tag is immutable and is what a rollback pins to; deploying `latest` makes rollback impossible |
+| `-DskipTests` in the image build, and only there | The pipeline already ran 179 unit tests and 16 journeys; repeating them would double pipeline time and make the image build depend on a browser |
 
-# prove the volume claim yourself
-curl -s -u staff:Staff@123 http://localhost:9090/api/donors | jq length
-docker rm -f bloodbank-app && docker run -d --name bloodbank-app -p 9090:8080 \
-  -v bloodbank-data:/opt/bloodbank/data bloodbank:latest
-curl -s -u staff:Staff@123 http://localhost:9090/api/donors | jq length   # same number
+---
 
-# the local stack
-docker compose up -d && docker compose ps
-```
+## 6. Evidence index
+
+| File | Shows |
+|---|---|
+| [`evidence/task-11-docker/docker-command-log.txt`](../evidence/task-11-docker/docker-command-log.txt) | A 300-line transcript of all 14 lifecycle stages with real output |
+| [`Dockerfile`](../Dockerfile) | Multi-stage build, hardening, OCI labels |
+| [`docker/entrypoint.sh`](../docker/entrypoint.sh) | Volume-ownership correction and privilege drop |
+| [`.dockerignore`](../.dockerignore) | What is kept out of the build context, and why |
+| [`docker-compose.yml`](../docker-compose.yml) | The local stack: application plus registry |
+
+---
+
+## 7. Task 11 Definition of Done
+
+| # | Criterion | Status |
+|---|---|---|
+| D3 | The image builds from a clean context | Multi-stage build, `BUILD SUCCESS` |
+| D7 | No hard-coded host, port, path or credential | Environment variables at `docker run` |
+| D8 | Task documentation written and committed | This document |
+| D9 | Evidence captured | `evidence/task-11-docker/docker-command-log.txt` |
+| D10 | The container reports healthy and answers `/actuator/health` | `docker inspect` → `healthy` |
+| D11 | Committed on `main` per the branching model | `task-11` |
+| D12 | Backlog updated with BUG-11 | `docs/backlog.md` |
+
+**Outcome:** a 1.05 GB runtime image that carries no build toolchain, runs unprivileged as uid 999
+with the JVM as PID 1 so it stops gracefully in under a second, and reports its own health. The full
+lifecycle is recorded as a transcript rather than a summary, and stage 13 proves the container is
+disposable: destroyed and recreated with all 29 donors intact.

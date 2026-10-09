@@ -1,313 +1,230 @@
 # Task 2 — Agile Planning and DevOps Workflow
 
-**Project:** Containerized Blood Bank Donor Matching Portal · Ayush Mayekar · 23102A0018
-**Date:** 29 September 2026
+**Deliverable:** backlog, task board, sprint plan, Definition of Done and DevOps workflow diagram.
 
-This task converts the frozen scope from [Task 1](01-problem-definition.md) into an executable
-agile plan: user stories with acceptance criteria, a prioritised product backlog, a 15-task
-Kanban/Scrum plan, a Definition of Done, and the DevOps lifecycle workflow this project follows
-from development through to operations.
-
-Companion documents: [backlog.md](backlog.md) · [kanban.md](kanban.md) ·
-[definition-of-done.md](definition-of-done.md) ·
-[DevOps lifecycle diagram](diagrams/devops-lifecycle.md)
+**Project:** Containerized Blood Bank Donor Matching Portal · Ayush Mayekar · 23102A0018 · BE CMPN A
+**Completed:** 29 September 2026 · **Tag:** `task-02`
 
 ---
 
 ## 1. Agile approach used
 
-A single-developer **Kanban-flavoured Scrum**: the 15 tasks of the subject task sheet are treated
-as the sprint backlog of one 11-day release sprint (29 Sep → 9 Oct 2026), pulled through a
-five-column Kanban board with a **work-in-progress limit of 1** (one task finished, committed and
-tagged before the next is started). Each task is a vertical slice that ends in working,
-committed software or an executable automation asset — never a document alone where code was
-possible.
+A single-developer **Kanban-flavoured Scrum**. The 15 tasks of the subject task sheet are treated as
+the sprint backlog of one 11-day release sprint (29 September – 9 October 2026), pulled through a
+five-column board with a **work-in-progress limit of 1**.
 
 | Ceremony | How it is done here | Evidence |
 |---|---|---|
-| Backlog refinement | Stories written with acceptance criteria before coding | `docs/backlog.md` |
-| Sprint planning | 15 tasks ordered, estimated in story points, dated | §4, §5 of this document |
-| Daily stand-up | Daily task-start note (what I did / will do / blockers) | commit log dates + `docs/kanban.md` |
-| Review / demo | Running application and pipeline at each tagged task | `task-01 … task-15` tags |
-| Retrospective | Lessons recorded per task and consolidated | `docs/REPORT.md`, `docs/TROUBLESHOOTING.md` |
+| Backlog refinement | Stories written with acceptance criteria before coding | [`backlog.md`](backlog.md) |
+| Sprint planning | 15 tasks ordered, estimated and dated | §4 of this document |
+| Daily stand-up | Daily task-start note | [`kanban.md`](kanban.md) flow log |
+| Review / demo | Running application and pipeline at each tagged task | `task-01` … `task-15` |
+| Retrospective | Lessons recorded per task and consolidated | [`REPORT.md`](REPORT.md), [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) |
+
+---
 
 ## 2. Personas
 
-| Persona | Name used in stories | Goal |
+| Persona | Name in stories | Goal |
 |---|---|---|
-| Blood bank technician | **Staff** (`STAFF`) | Register donors fast, record requests, find a match without phoning around |
-| Medical officer | **Admin** (`ADMIN`) | Sign off outcomes, see supply vs demand at a glance, hold staff accountable |
-| Voluntary donor | **Donor** (`DONOR`) | Be contacted only when actually eligible; control own availability |
-| Platform operator | **Operator** | Deploy, upgrade and roll back the portal with no manual steps |
+| Blood bank technician | **Staff** (`STAFF`) | Register donors fast, find a match without phoning around |
+| Medical officer | **Admin** (`ADMIN`) | Sign off outcomes, see supply against demand, hold staff accountable |
+| Voluntary donor | **Donor** (`DONOR`) | Be contacted only when actually eligible |
+| Platform operator | **Operator** | Deploy, upgrade and roll back with no manual steps |
+
+---
 
 ## 3. User stories with acceptance criteria
 
-Acceptance criteria are written in Given / When / Then so they map one-to-one onto automated tests.
-`[U]` = covered by a JUnit unit test, `[S]` = covered by a Selenium journey, `[A]` = covered by an
-Ansible/health-check assertion.
+Acceptance criteria are written Given / When / Then so they map one-to-one onto automated tests.
+`[U]` unit test · `[S]` Selenium journey · `[A]` automation or health-check assertion.
 
----
+### 3.1 Epic A — Donor registry
 
-### Epic A — Donor registry
+| Story | Points | Summary |
+|---|---|---|
+| US-01 | 3 | As Staff I want to register a donor with group, contact and city, so the donor can be found later |
+| US-02 | 3 | As Staff I want to search donors by group, city and availability, so I know who to call now |
+| US-03 | 2 | As Staff I want to update a donor and record their last donation, so eligibility is automatic |
+| US-04 | 2 | As a Donor I want to see my profile and control my availability |
 
-**US-01 — Register a donor** *(3 pts, MoSCoW: Must)*
-> As **Staff**, I want to register a donor with their blood group, contact details and city, so
-> that the donor can be found later when a matching request arrives.
+Representative criteria for US-02:
 
-- AC-01.1 — Given I am signed in as Staff, when I submit a donor with a valid name, blood group,
-  10-digit phone, email and city, then the donor is saved and appears in the donor list. `[S]`
-- AC-01.2 — Given a blood group outside the eight valid ABO/Rh values, when I submit, then the
-  form is rejected with a field-level validation message and nothing is saved. `[U][S]`
-- AC-01.3 — Given a phone number that is not exactly 10 digits, when I submit, then the form is
-  rejected. `[U]`
-- AC-01.4 — Given a donor with no recorded last-donation date, when the donor is saved, then the
-  donor is treated as eligible. `[U]`
+- AC-02.1 — Given donors in several groups, when I filter by `O-`, then only `O-` donors are listed. `[U][S]`
+- AC-02.2 — Given a city filter combined with a group filter, then both apply together (logical AND). `[U]`
+- AC-02.3 — Given the "available only" filter, then donors flagged unavailable are excluded. `[U]`
+- AC-02.4 — Given no donor matches, then an explicit "no donors found" message is shown. `[S]`
 
-**US-02 — Search the donor registry** *(3 pts, Must)*
-> As **Staff**, I want to search donors by blood group, city and availability, so that I can
-> answer "who can we call right now?" in seconds instead of reading a register.
+### 3.2 Epic B — Requests and matching
 
-- AC-02.1 — Given donors in several cities and blood groups, when I filter by blood group `O-`,
-  then only `O-` donors are listed. `[U][S]`
-- AC-02.2 — Given a city filter, when combined with a blood group filter, then both are applied
-  together (logical AND). `[U]`
-- AC-02.3 — Given the "available only" filter, when applied, then donors flagged unavailable are
-  excluded. `[U]`
-- AC-02.4 — Given no donor matches, when I search, then an explicit "no donors found" message is
-  shown rather than an empty page. `[S]`
+| Story | Points | Summary |
+|---|---|---|
+| US-05 | 3 | As Staff I want to record a blood request, so it has an owner and a tracked state |
+| US-06 | 8 | As Staff I want a ranked list of compatible, eligible donors — **the core of the project** |
+| US-07 | 5 | As Admin I want only the right role to advance a request, so outcomes are accountable |
 
-**US-03 — Update a donor / record a donation** *(2 pts, Must)*
-> As **Staff**, I want to update a donor's details and record the date they last donated, so that
-> the 90-day eligibility rule is enforced automatically from then on.
+Representative criteria for US-06 and US-07:
 
-- AC-03.1 — Given an existing donor, when I change the city and save, then the change is
-  persisted and visible in the list. `[S]`
-- AC-03.2 — Given I record a last-donation date of today, then the donor is immediately excluded
-  from match shortlists. `[U]`
-- AC-03.3 — Given a last-donation date more than 90 days in the past, then the donor is eligible
-  again. `[U]`
+- AC-06.1 — Given a `B+` request, then the shortlist contains only `B+`, `B−`, `O+`, `O−`. `[U]`
+- AC-06.2 — Given all 64 recipient/donor pairs, then the verdict is correct for every one. `[U]`
+- AC-06.3 — Given a compatible donor who donated 30 days ago, then that donor is **excluded**. `[U]`
+- AC-06.7 — Given 500 donors, then the shortlist returns in under 2 seconds. `[A]`
+- **AC-07.4** — Given a `NEW` request, when **Staff** attempts to fulfil it, then it is refused. `[U][S]`
+- AC-07.5 — Given a `FULFILLED` or `REJECTED` request, then no further transition is accepted. `[U]`
 
-**US-04 — Donor views and controls their own record** *(2 pts, Should)*
-> As a **Donor**, I want to see my own profile and turn my availability off, so that I am not
-> called while I am travelling or unwell.
+### 3.3 Epic C — Visibility
 
-- AC-04.1 — Given I am signed in as Donor, when I open the portal, then I see my own record and
-  not the full registry. `[S]`
-- AC-04.2 — Given I am signed in as Donor, when I attempt to edit another donor, then the request
-  is refused with HTTP 403. `[U]`
+| Story | Points | Summary |
+|---|---|---|
+| US-08 | 3 | As Admin I want a dashboard of supply against demand with shortage flags |
+| US-09 | 3 | As Operator I want authentication with three roles, so US-07 is enforceable |
 
----
+### 3.4 Epic D — DevOps capability (the assessed epic)
 
-### Epic B — Blood requests and matching
-
-**US-05 — Record a blood request** *(3 pts, Must)*
-> As **Staff**, I want to record an incoming blood request with the patient, blood group, units,
-> hospital, city and urgency, so that the request has an owner and a tracked state.
-
-- AC-05.1 — Given valid input, when I create a request, then it is saved with status `NEW` and a
-  creation timestamp. `[U][S]`
-- AC-05.2 — Given units needed ≤ 0 or > 10, when I submit, then the form is rejected. `[U]`
-- AC-05.3 — Given a created request, then it appears on the dashboard under "open requests". `[S]`
-
-**US-06 — Get a ranked list of compatible, eligible donors** *(8 pts, Must)* — *core of the project*
-> As **Staff**, I want the portal to show me the donors who can actually give blood for this
-> request, ranked best-first, so that I stop guessing compatibility from memory.
-
-- AC-06.1 — Given a request for `B+`, then the shortlist contains only donors of groups `B+`,
-  `B-`, `O+`, `O-`, applying the standard red-cell compatibility matrix. `[U]`
-- AC-06.2 — Given the full 8 × 8 set of recipient/donor group pairs, then the engine's verdict is
-  correct for all 64 pairs. `[U]`
-- AC-06.3 — Given a compatible donor who donated 30 days ago, then that donor is **excluded** as
-  ineligible. `[U]`
-- AC-06.4 — Given a compatible donor flagged unavailable, then that donor is excluded. `[U]`
-- AC-06.5 — Given two equally compatible donors, one in the request's city and one elsewhere, then
-  the same-city donor is ranked higher. `[U]`
-- AC-06.6 — Given an exact blood-group match and a merely compatible match, then the exact match
-  ranks higher (preserves rare universal-donor stock). `[U]`
-- AC-06.7 — Given 500 donors, then the shortlist is returned in under 2 seconds. `[A]`
-- AC-06.8 — Given I open a request, when I click "Find matches", then the ranked shortlist is
-  displayed with each donor's group, city and eligibility date. `[S]`
-
-**US-07 — Role-based request status workflow** *(5 pts, Must)*
-> As **Admin**, I want only the right role to be able to advance a request, so that there is
-> accountability for every outcome.
-
-- AC-07.1 — Given a `NEW` request, when Staff assigns a matched donor, then status becomes
-  `MATCHED` and the donor is recorded against the request. `[U][S]`
-- AC-07.2 — Given a `MATCHED` request, when Admin marks it fulfilled, then status becomes
-  `FULFILLED` and the matched donor's last-donation date is set to today. `[U][S]`
-- AC-07.3 — Given a `MATCHED` or `NEW` request, when Admin rejects it with a reason, then status
-  becomes `REJECTED`. `[U]`
-- AC-07.4 — Given a `NEW` request, when **Staff** attempts to fulfil it directly, then the
-  transition is refused (illegal transition **and** insufficient role). `[U][S]`
-- AC-07.5 — Given a `FULFILLED` or `REJECTED` request, then no further transition is accepted —
-  these are terminal states. `[U]`
-- AC-07.6 — Given a Donor account, when any transition is attempted, then it is refused with
-  HTTP 403. `[U]`
-
----
-
-### Epic C — Visibility
-
-**US-08 — Summary dashboard** *(3 pts, Must)*
-> As **Admin**, I want a single screen showing donors per blood group, requests per status and
-> shortage flags, so that I can see supply against demand without running queries.
-
-- AC-08.1 — Given donors and requests exist, then the dashboard shows a count of available
-  eligible donors per blood group. `[U][S]`
-- AC-08.2 — Given requests in each state, then the dashboard shows counts for `NEW`, `MATCHED`,
-  `FULFILLED`, `REJECTED`. `[U]`
-- AC-08.3 — Given a blood group with open requests but zero eligible donors, then that group is
-  flagged as a shortage. `[U][S]`
-
-**US-09 — Authentication and roles** *(3 pts, Must)*
-> As **Operator**, I want the portal to require sign-in and separate three roles, so that the
-> workflow permissions in US-07 are enforceable.
-
-- AC-09.1 — Given I am not signed in, when I request any page except the login page and the
-  health endpoint, then I am redirected to login. `[S]`
-- AC-09.2 — Given valid credentials, when I sign in, then I land on the dashboard with my role
-  displayed. `[S]`
-- AC-09.3 — Given `/actuator/health`, then it is reachable without authentication so that
-  automated health checks and container probes work. `[A]`
-
----
-
-### Epic D — DevOps capability (the assessed epic)
-
-**US-10 — Reproducible build** *(3 pts, Must)*
-> As **Operator**, I want `mvn clean verify` on a clean checkout to produce a deployable WAR, so
-> that any machine or CI agent builds the same artefact.
-- AC-10.1 — A clean clone builds with no manual steps beyond `JAVA_HOME`. `[A]`
-- AC-10.2 — The build produces `target/bloodbank.war`, archived by CI. `[A]`
-
-**US-11 — Continuous integration on every commit** *(5 pts, Must)*
-> As **Operator**, I want Jenkins to build and unit-test automatically when I push, so that a
-> broken commit is visible within minutes.
-- AC-11.1 — A commit triggers the job (SCM polling / hook) without manual start. `[A]`
-- AC-11.2 — Unit test results are published and trend over builds. `[A]`
-
-**US-12 — Pipeline as code with deployment** *(5 pts, Must)*
-> As **Operator**, I want the pipeline defined in a `Jenkinsfile` in the repository with a
-> parameterised target environment, so that the pipeline is versioned with the code.
-- AC-12.1 — Stages: Checkout → Build → Unit Test → Package → Docker Build → Deploy → UI Test. `[A]`
-- AC-12.2 — At least one environment setting (deploy port / image tag / target host) is a build
-  parameter with a default. `[A]`
-
-**US-13 — Selenium quality gate** *(5 pts, Must)*
-> As **Operator**, I want failing UI tests to stop the deployment, so that a regression can never
-> reach the running container.
-- AC-13.1 — A deliberately introduced defect turns the pipeline red. `[A]`
-- AC-13.2 — When UI tests fail, the publish/promote stage does not execute. `[A]`
-- AC-13.3 — Failures attach a screenshot of the browser at the point of failure. `[S]`
-
-**US-14 — Containerized delivery** *(5 pts, Must)*
-> As **Operator**, I want a versioned Docker image published to a registry and a fresh container
-> deployed automatically after tests pass, so that releases are immutable and repeatable.
-- AC-14.1 — Image tagged with the build number and `latest`, pushed to the registry. `[A]`
-- AC-14.2 — The previous container is replaced by one created from the new image. `[A]`
-- AC-14.3 — Data survives container replacement (named volume). `[A]`
-
-**US-15 — Infrastructure and recovery as code** *(5 pts, Must)*
-> As **Operator**, I want the target environment described in Ansible, proved idempotent, with a
-> health check and a tested rollback, so that recovery is a routine operation.
-- AC-15.1 — A single playbook provisions prerequisites and deploys the application. `[A]`
-- AC-15.2 — A second identical run reports `changed=0`. `[A]`
-- AC-15.3 — A health check asserts the application answers correctly after provisioning. `[A]`
-- AC-15.4 — `rollback.yml` restores the previous image tag and the health check passes. `[A]`
+| Story | Points | Summary |
+|---|---|---|
+| US-10 | 3 | A reproducible Maven build producing a deployable WAR |
+| US-11 | 5 | Jenkins builds and tests automatically on commit |
+| US-12 | 5 | The pipeline is code, in a `Jenkinsfile`, with a parameterised environment |
+| US-13 | 5 | Failing UI tests stop the deployment |
+| US-14 | 5 | Versioned images in a registry, a fresh container deployed on success |
+| US-15 | 5 | The environment as code, idempotent, health-checked and roll-back-able |
 
 **Total: 64 story points across 15 stories.**
 
-## 4. 15-task Scrum/Kanban plan
+---
 
-Board columns: **Backlog → Ready → In Progress → Review/Verify → Done**. WIP limit 1 in
-*In Progress*. A task leaves *Review/Verify* only when it satisfies the
-[Definition of Done](definition-of-done.md), and leaving *Done* means committed and tagged.
+## 4. The 15-task Kanban / Scrum plan
 
-| Task | Deliverable (sprint item) | Stories | Pts | Date | Exit criterion (= tag) |
+Columns: **Backlog → Ready → In Progress → Review/Verify → Done**, WIP limit 1 in *In Progress*.
+
+| Task | Deliverable | Stories | Pts | Date | Exit |
 |---|---|---|---|---|---|
 | 1 | Problem definition and frozen scope | — | 2 | 29 Sep | `task-01` |
-| 2 | Agile plan, backlog, board, DoD, lifecycle diagram | — | 3 | 29 Sep | `task-02` |
-| 3 | SRS, architecture, data model, API list, local setup | US-10 | 5 | 30 Sep | `task-03` |
-| 4 | Repository, README, structure, templates, branch policy | US-10 | 3 | 30 Sep | `task-04` |
-| 5 | Feature 1: donor registry + matching engine (feature branch + PR) | US-01→04, US-06 | 13 | 1 Oct | `task-05` |
-| 6 | MVP completion: requests, workflow, dashboard; conflict drill | US-05, 07, 08, 09 | 14 | 2 Oct | `task-06`, `v1.0.0` |
-| 7 | Jenkins install + Maven CI job + artefact archiving | US-11 | 5 | 3 Oct | `task-07` |
-| 8 | `Jenkinsfile` + Tomcat deploy + parameterised environment | US-12 | 5 | 4 Oct | `task-08` |
-| 9 | Selenium test plan + 5 journeys run through Maven | US-13 | 5 | 5 Oct | `task-09` |
-| 10 | Selenium in Jenkins as a quality gate; defect → fix → rerun | US-13 | 5 | 6 Oct | `task-10` |
-| 11 | `Dockerfile`, image build/tag, full container lifecycle | US-14 | 4 | 7 Oct | `task-11` |
-| 12 | Jenkins → versioned image → registry → fresh container | US-14 | 5 | 7 Oct | `task-12`, `v1.1.0` |
-| 13 | Configuration specification + Ansible inventory/playbook | US-15 | 4 | 8 Oct | `task-13` |
-| 14 | Clean provisioning, idempotency, health check, rollback | US-15 | 5 | 8 Oct | `task-14`, `v1.2.0` |
-| 15 | End-to-end release, report, presentation, viva prep | all | 4 | 9 Oct | `task-15`, `v1.3.0` |
+| 2 | Agile plan, backlog, board, DoD, diagrams | — | 3 | 29 Sep | `task-02` |
+| 3 | SRS, architecture, data model, local setup | US-10 | 5 | 30 Sep | `task-03` |
+| 4 | Repository, README, templates, branch policy | US-10 | 3 | 30 Sep | `task-04` |
+| 5 | Donor registry and matching engine | US-01…04, 06 | 13 | 1 Oct | `task-05` |
+| 6 | MVP completion, conflict drill | US-05, 07, 08, 09 | 14 | 2 Oct | `task-06`, `v1.0.0` |
+| 7 | Jenkins install and CI job | US-11 | 5 | 3 Oct | `task-07` |
+| 8 | `Jenkinsfile`, Tomcat deploy, parameters | US-12 | 5 | 4 Oct | `task-08` |
+| 9 | Selenium journeys through Maven | US-13 | 5 | 5 Oct | `task-09` |
+| 10 | Quality gate, defect, correction, rerun | US-13 | 5 | 6 Oct | `task-10` |
+| 11 | Dockerfile and container lifecycle | US-14 | 4 | 7 Oct | `task-11` |
+| 12 | Versioned image → registry → container | US-14 | 5 | 7 Oct | `task-12`, `v1.1.0` |
+| 13 | Ansible specification and playbook | US-15 | 4 | 8 Oct | `task-13` |
+| 14 | Provisioning, idempotency, rollback | US-15 | 5 | 8 Oct | `task-14`, `v1.2.0` |
+| 15 | End-to-end release, report, viva prep | all | 4 | 9 Oct | `task-15`, `v1.3.0` |
 
-**Capacity check.** 82 points of planned work across 11 calendar days ⇒ a planned velocity of
-~7.5 points/day for one developer. Tasks 5 and 6 are the two largest items and are deliberately
-placed early, while the remaining tasks are automation work that builds on a stable application.
+**Capacity.** 82 points across 11 calendar days, a planned velocity of about 7.5 points a day. Tasks
+5 and 6 are the two largest items and are placed early, so the remaining tasks build on a stable
+application.
 
-### Risks on the plan
+### 4.1 Risk register
 
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
-| Jenkins/Tomcat port clash with existing services on the host | High | Medium | Ports fixed up front (Jenkins 8090, app 9090, registry 5001) and asserted by `scripts/preflight.sh` |
-| Selenium/chromedriver version drift | Medium | High | Selenium 4 Selenium Manager resolves the driver for the installed Chrome automatically |
-| Network unavailable during the demonstration | Medium | High | Local registry instead of Docker Hub; CSS/JS vendored into the WAR; all evidence pre-captured |
-| Docker image rebuild slowness blocking the pipeline | Medium | Low | Multi-stage build with a cached Maven dependency layer |
-| Scope creep in the application diluting DevOps work | Medium | High | Scope frozen in Task 1; new ideas go to the backlog's "Future" section |
+| Port clash with services already on the host | High | Medium | Ports fixed up front and asserted by `scripts/preflight.sh` |
+| Selenium / chromedriver version drift | Medium | High | Selenium Manager resolves the driver for the installed Chrome |
+| No network during the demonstration | Medium | High | Local registry, vendored CSS, all evidence pre-captured |
+| Slow image rebuilds blocking the pipeline | Medium | Low | Multi-stage build with a cached dependency layer |
+| Scope creep diluting the DevOps work | Medium | High | Scope frozen in Task 1; new ideas go to the backlog |
 
-## 5. DevOps workflow (development → operations)
+---
 
-See [diagrams/devops-lifecycle.md](diagrams/devops-lifecycle.md) for the diagrams. The workflow
-implemented by this project is:
+## 5. Definition of Done
+
+Twelve numbered criteria, D1 to D12, so that every task closes with the same bar applied and a
+reader can see which criteria a given task was accountable for. The authoritative version, with the
+detailed eight-area checklist, is [`definition-of-done.md`](definition-of-done.md).
+
+Three of them are worth drawing out:
+
+- **D6 — the Selenium quality gate passed.** Not "the tests ran", but that a red gate would have
+  stopped the deployment. Task 10 demonstrates this with a real red build.
+- **D9 — evidence is captured.** A task whose result exists only as a memory of a terminal is not
+  demonstrable in a viva.
+- **D11 — merged through the branching model.** Including the `--no-ff` requirement, so the history
+  records the shape of the work and not just its result.
+
+---
+
+## 6. DevOps workflow, development to operations
 
 ```
- PLAN      Backlog item / issue, branch named feature/<slug>
+ PLAN      Backlog item, branch named feature/<slug>
    ↓
- CODE      Local edit, unit tests red → green, conventional commit messages
+ CODE      Local edit, unit tests red → green, conventional commit
    ↓
- BUILD     Maven clean package → bloodbank.war   (Jenkins stage: Build/Package)
+ BUILD     mvn clean package → bloodbank.war
    ↓
- TEST      Surefire unit tests (fast) → Failsafe Selenium journeys (quality gate)
+ TEST      Surefire unit tests → Failsafe Selenium journeys  ← THE GATE
    ↓
- RELEASE   Versioned Docker image, tagged with build number, pushed to registry
+ RELEASE   Versioned Docker image, tagged with the build number, pushed
    ↓
- DEPLOY    Fresh container created from the new image, named volume re-attached
+ DEPLOY    Fresh container from the new image, named volume re-attached
    ↓
- OPERATE   Ansible provisions/configures the node; container restart policy
+ OPERATE   Ansible provisions and configures the node
    ↓
- MONITOR   /actuator/health probe, container health check, Jenkins build trend
+ MONITOR   /actuator/health, container health check, Jenkins trend
    ↓
  FEEDBACK  Defect or idea → new backlog item → PLAN
 ```
 
-Each arrow is automated in this project except `PLAN → CODE` (human) and `MONITOR → FEEDBACK`
-(human judgement). The gate between *TEST* and *RELEASE* is the Selenium quality gate from Task 10:
-if it is red, nothing downstream of it executes.
+Every arrow is automated except `PLAN → CODE` and `MONITOR → FEEDBACK`. The gate between **TEST**
+and **RELEASE** is the single most important edge in the diagram: when it is red, nothing
+downstream executes.
 
-### Branching and promotion model
+### 6.1 Branching and promotion model
 
 ```
-feature/<slug>  ──commits──►  PR + review  ──--no-ff merge──►  develop  ──merge──►  main ──tag──► release
+feature/<slug> ──commits──► PR + review ──merge --no-ff──► develop ──merge──► main ──tag──► vX.Y.Z
 ```
 
-- `main` — always releasable; tagged `vX.Y.Z` at each release; protected by the pipeline.
-- `develop` — integration branch where features are combined and the MVP is assembled.
-- `feature/<slug>` — one branch per user story; short-lived; merged with `--no-ff` so that the
-  merge commit permanently records the feature boundary.
-- Conventions, naming rules and the review checklist are in `CONTRIBUTING.md` (Task 4).
+`main` is always releasable · `develop` integrates features · one short-lived `feature/*` branch per
+story. Rules are in [`CONTRIBUTING.md`](../CONTRIBUTING.md).
 
-## 6. Definition of Done
+### 6.2 Diagrams
 
-Summarised here, authoritative version in [definition-of-done.md](definition-of-done.md):
+Six Mermaid diagrams are in [`diagrams/devops-lifecycle.md`](diagrams/devops-lifecycle.md): the
+implemented lifecycle with the quality gate marked, tool-chain ownership, the branching model, the
+end-to-end pipeline sequence, the request state machine, and the environment topology.
 
-1. Acceptance criteria of the story demonstrably met.
-2. Unit tests written and green; UI journey added or updated where the story touches the UI.
-3. `mvn clean verify` green from a clean target directory.
-4. No new compiler or dependency warnings introduced.
-5. Documentation updated in the same commit as the change (docs live with the code).
-6. Change committed on the correct branch with a descriptive message and merged via a reviewed PR.
-7. Pipeline green end to end, including the quality gate, for the commit being called done.
-8. Deployed container reachable and `/actuator/health` returning `UP`.
-9. Evidence (log, report or screenshot) captured under `evidence/` for the task.
-10. Task tagged `task-NN` so that the examiner can check out exactly that state.
+---
+
+## 7. Decisions taken, and why
+
+| Decision | Reasoning |
+|---|---|
+| A work-in-progress limit of 1 | One task finished, committed and tagged before the next began. That is what made "one commit per task" a natural outcome rather than something reconstructed afterwards — the git history reads as the project plan |
+| Acceptance criteria written Given/When/Then and tagged by test type | Nearly every criterion became a JUnit assertion or a Selenium step with no rewriting. The ones that could not be automated were visible as such from the start |
+| The Definition of Done includes "demonstrable live in under three minutes, with a fallback" | The subject is assessed by demonstration. A task that works but cannot be shown is not done |
+| The two largest tasks were scheduled first | Tasks 5 and 6 carry 27 of the 64 story points. Putting them early means the nine automation tasks build on a stable application rather than a moving one |
+
+---
+
+## 8. Evidence index
+
+| File | Shows |
+|---|---|
+| [`docs/02-agile-planning.md`](02-agile-planning.md) | This document — stories, criteria, sprint plan, risks |
+| [`docs/backlog.md`](backlog.md) | MoSCoW backlog, defect register, 15 future enhancements |
+| [`docs/kanban.md`](kanban.md) | Board, daily flow log, flow metrics, retrospective |
+| [`docs/definition-of-done.md`](definition-of-done.md) | D1–D12 and the detailed eight-area checklist |
+| [`docs/diagrams/devops-lifecycle.md`](diagrams/devops-lifecycle.md) | Six Mermaid diagrams |
+
+---
+
+## 9. Task 2 Definition of Done
+
+| # | Criterion | Status |
+|---|---|---|
+| D8 | Task documentation written and committed | This document and four companions |
+| D11 | Committed on `main` per the branching model | `task-02` |
+| D12 | Backlog created and populated | `docs/backlog.md` |
+
+**Outcome:** 15 user stories worth 64 points, each with Given/When/Then criteria tagged by the kind
+of test that would prove it; a prioritised backlog with 15 deferred enhancements; a 15-task board
+with a WIP limit of 1, per-task exit criteria and a five-entry risk register; a twelve-point
+Definition of Done used by every later task; and six diagrams covering the lifecycle, tool chain,
+branching, pipeline sequence, state machine and environment.
