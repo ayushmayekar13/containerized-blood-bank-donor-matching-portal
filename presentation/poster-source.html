@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Containerized Blood Bank Donor Matching Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4 portrait; margin: 0; }
+  :root{
+    --ink:#14181f; --ink2:#3c4552; --ink3:#6b7684;
+    --red:#b3122b; --red-d:#7d0c1e; --red-l:#fdeef0;
+    --line:#d9dee5; --panel:#f6f8fa; --ok:#0f7b4f;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:#fff;}
+  body{
+    width:210mm; height:297mm; overflow:hidden;
+    font-family:'Inter',system-ui,sans-serif; color:var(--ink);
+    display:flex; flex-direction:column;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- header ---------- */
+  header{
+    background:linear-gradient(100deg,var(--red-d) 0%,var(--red) 62%,#cf2440 100%);
+    color:#fff; padding:5.4mm 8mm 4.6mm;
+    position:relative; overflow:hidden; flex:0 0 auto;
+  }
+  header:after{
+    content:''; position:absolute; right:-12mm; top:-18mm;
+    width:58mm; height:58mm; border-radius:50%;
+    background:rgba(255,255,255,.07);
+  }
+  .kicker{
+    font-size:7.2pt; font-weight:700; letter-spacing:.17em; text-transform:uppercase;
+    color:rgba(255,255,255,.76); margin-bottom:2.2mm;
+  }
+  h1{font-size:22.5pt; font-weight:900; line-height:1.03; letter-spacing:-.022em;}
+  h1 em{font-style:normal; color:#ffd2d9;}
+      .sub{
+    margin-top:2.2mm; font-size:9pt; font-weight:500; color:rgba(255,255,255,.9);
+    line-height:1.4; max-width:150mm;
+  }
+  .byline{
+    margin-top:3.2mm; padding-top:2.6mm; border-top:1px solid rgba(255,255,255,.26);
+    display:flex; gap:7mm; align-items:baseline; flex-wrap:wrap;
+  }
+  .byline b{font-size:10.4pt; font-weight:800; letter-spacing:-.01em;}
+  .byline span{font-size:8.1pt; font-weight:500; color:rgba(255,255,255,.82);}
+  .byline span i{font-style:normal; color:rgba(255,255,255,.55); font-weight:400;}
+
+  /* ---------- body grid ---------- */
+  main{
+    flex:1 1 auto; padding:4.4mm 8mm 0;
+    display:grid; grid-template-columns:1fr 1fr; gap:3.3mm 5.2mm;
+    align-content:start;
+  }
+  .full{grid-column:1 / -1;}
+
+  h2{
+    font-size:8.2pt; font-weight:800; letter-spacing:.11em; text-transform:uppercase;
+    color:var(--red); margin-bottom:2mm;
+    display:flex; align-items:center; gap:2.2mm;
+  }
+  h2:after{content:''; flex:1; height:1px; background:var(--line);}
+
+  p{font-size:8.1pt; line-height:1.42; color:var(--ink2);}
+  p strong{color:var(--ink); font-weight:700;}
+
+  /* ---------- pipeline ---------- */
+  .pipe{
+    display:flex; align-items:stretch; gap:0;
+    border:1px solid var(--line); border-radius:1.6mm; overflow:hidden; background:#fff;
+  }
+  .pstage{
+    flex:1; padding:2.1mm 1mm 1.9mm; text-align:center;
+    border-right:1px solid var(--line); position:relative;
+  }
+  .pstage:last-child{border-right:0;}
+  .pstage .n{
+    font-family:'JetBrains Mono',monospace; font-size:6.4pt; font-weight:600;
+    color:var(--ink3); display:block; margin-bottom:1mm;
+  }
+  .pstage .t{font-size:7.1pt; font-weight:700; line-height:1.2; color:var(--ink);}
+  .pstage.gate{background:var(--red-l);}
+  .pstage.gate .t{color:var(--red-d);}
+  .pstage.gate:before{
+    content:'GATE'; position:absolute; top:.6mm; right:.9mm;
+    font-size:4.6pt; font-weight:800; letter-spacing:.08em; color:var(--red);
+  }
+  .pipe-foot{
+    margin-top:1.8mm; font-size:7.1pt; color:var(--ink3); font-weight:500;
+    display:flex; justify-content:space-between;
+  }
+  .pipe-foot b{color:var(--ok); font-weight:700;}
+
+  /* ---------- flow diagram ---------- */
+  .flow{display:flex; flex-direction:column; gap:1.5mm;}
+  .frow{display:flex; align-items:center; gap:1.7mm;}
+  .box{
+    flex:1; border:1px solid var(--line); border-radius:1.3mm; background:#fff;
+    padding:1.6mm 2.2mm;
+  }
+  .box .bt{font-size:7.4pt; font-weight:700; color:var(--ink); line-height:1.15;}
+  .box .bd{font-size:6.5pt; color:var(--ink3); margin-top:.5mm; line-height:1.25;}
+  .box.hl{background:var(--red-l); border-color:#f2c3cb;}
+  .box.hl .bt{color:var(--red-d);}
+  .arr{
+    font-size:9pt; color:var(--red); font-weight:700; flex:0 0 auto;
+  }
+  .down{
+    text-align:center; font-size:8pt; color:var(--line); line-height:.6; margin:-.4mm 0;
+  }
+
+  /* ---------- stack list ---------- */
+  .stack{display:flex; flex-direction:column; gap:1.05mm;}
+  .srow{display:flex; gap:2.4mm; align-items:baseline; font-size:7.6pt; line-height:1.26;}
+  .srow .lbl{
+    flex:0 0 20mm; font-weight:700; color:var(--red-d); font-size:7.1pt;
+    text-transform:uppercase; letter-spacing:.03em;
+  }
+  .srow .val{color:var(--ink2);}
+  .srow .val b{color:var(--ink); font-weight:600;}
+
+  /* ---------- metrics ---------- */
+  .metrics{display:grid; grid-template-columns:repeat(5,1fr); gap:2.4mm;}
+  .m{
+    border:1px solid var(--line); border-top:2.2pt solid var(--red);
+    border-radius:1.3mm; padding:2mm 1.6mm; text-align:center; background:var(--panel);
+  }
+  .m .v{
+    font-size:14.5pt; font-weight:900; line-height:1; color:var(--red-d);
+    letter-spacing:-.03em;
+  }
+  .m .v sup{font-size:8pt; font-weight:700;}
+  .m .k{
+    font-size:6.3pt; font-weight:700; color:var(--ink3); margin-top:1.3mm;
+    text-transform:uppercase; letter-spacing:.055em; line-height:1.25;
+  }
+
+  /* ---------- tasks ---------- */
+  .tasks{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:.75mm 3mm;
+  }
+  .tk{display:flex; gap:1.9mm; align-items:baseline; font-size:7.1pt; line-height:1.32;}
+  .tk .tn{
+    flex:0 0 4.6mm; height:4.6mm; border-radius:50%; background:var(--red);
+    color:#fff; font-size:5.6pt; font-weight:800; display:flex;
+    align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .tk .tt{color:var(--ink2); padding-top:.3mm;}
+  .tk .tt b{color:var(--ink); font-weight:600;}
+
+  /* ---------- evidence ---------- */
+  .ev{display:flex; flex-direction:column; gap:1.15mm;}
+  .evr{display:flex; gap:2mm; font-size:7.25pt; line-height:1.27; align-items:baseline;}
+  .evr .tick{color:var(--ok); font-weight:800; flex:0 0 auto; font-size:7.5pt;}
+  .evr .txt{color:var(--ink2);}
+  .evr .txt b{color:var(--ink); font-weight:650;}
+  code{
+    font-family:'JetBrains Mono',monospace; font-size:6.7pt;
+    background:var(--panel); padding:.2mm .8mm; border-radius:.6mm; color:var(--red-d);
+  }
+
+  /* ---------- footer ---------- */
+  footer{
+    flex:0 0 auto; margin-top:auto; padding:2.6mm 8mm 2.8mm;
+    border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:7pt; color:var(--ink3);
+  }
+  footer b{color:var(--ink); font-weight:700;}
+  .chips{display:flex; gap:1.6mm;}
+  .chip{
+    border:1px solid var(--line); border-radius:4mm; padding:.8mm 2.3mm;
+    font-size:6.4pt; font-weight:600; color:var(--ink2); background:var(--panel);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">DevOps Laboratory &middot; BE Computer Engineering &middot; AY 2026&ndash;27</div>
+  <h1>Containerized Blood Bank<br><em>Donor Matching Portal</em></h1>
+  <div class="sub">
+    A clinical donor&ndash;recipient matching service carried through a complete DevOps lifecycle:
+    from problem definition and agile planning to a Jenkins pipeline that takes a commit to a
+    running, health-verified container &mdash; and an Ansible layer that can roll it back.
+  </div>
+  <div class="byline">
+    <b>AYUSH MAYEKAR</b>
+    <span><i>Roll No.</i> 23102A0018</span>
+    <span><i>Division</i> BE CMPN &ndash; A</span>
+    <span><i>Tasks</i> 15 / 15 complete</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- PIPELINE -->
+  <section class="full">
+    <h2>The delivery pipeline &mdash; nine stages, pipeline-as-code</h2>
+    <div class="pipe">
+      <div class="pstage"><span class="n">01</span><span class="t">Checkout</span></div>
+      <div class="pstage"><span class="n">02</span><span class="t">Build</span></div>
+      <div class="pstage"><span class="n">03</span><span class="t">Unit Test</span></div>
+      <div class="pstage"><span class="n">04</span><span class="t">Package</span></div>
+      <div class="pstage"><span class="n">05</span><span class="t">Deploy<br>Tomcat</span></div>
+      <div class="pstage"><span class="n">06</span><span class="t">Health<br>Check</span></div>
+      <div class="pstage gate"><span class="n">07</span><span class="t">UI Test<br>Selenium</span></div>
+      <div class="pstage"><span class="n">08</span><span class="t">Promote<br>to Registry</span></div>
+      <div class="pstage"><span class="n">09</span><span class="t">Post-deploy<br>Verify</span></div>
+    </div>
+    <div class="pipe-foot">
+      <span>Declarative <code>Jenkinsfile</code> &middot; parameterised port, image, profile &middot; SCM-polled</span>
+      <span><b>101 s</b> commit &rarr; verified container</span>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section>
+    <h2>Architecture</h2>
+    <div class="flow">
+      <div class="frow">
+        <div class="box"><div class="bt">Git (local)</div><div class="bd">48 commits &middot; 19 tags &middot; feature branches</div></div>
+        <div class="arr">&rarr;</div>
+        <div class="box hl"><div class="bt">Jenkins LTS</div><div class="bd">freestyle job + declarative pipeline</div></div>
+      </div>
+      <div class="down">&#9662;</div>
+      <div class="frow">
+        <div class="box"><div class="bt">Maven 3.10 &rarr; <code>bloodbank.war</code></div><div class="bd">Java 21 &middot; Spring Boot 3.3.5 &middot; WAR packaging</div></div>
+      </div>
+      <div class="down">&#9662;</div>
+      <div class="frow">
+        <div class="box"><div class="bt">Multi-stage Docker image</div><div class="bd">build layer discarded &rarr; Tomcat 10.1 runtime, non-root uid 999</div></div>
+      </div>
+      <div class="down">&#9662;</div>
+      <div class="frow">
+        <div class="box hl"><div class="bt">Private registry <code>:5001</code></div><div class="bd">immutable build-number tags &mdash; the rollback source</div></div>
+        <div class="arr">&rarr;</div>
+        <div class="box"><div class="bt">Ansible</div><div class="bd">3 roles &middot; idempotent &middot; rollback</div></div>
+      </div>
+      <div class="down">&#9662;</div>
+      <div class="frow">
+        <div class="box"><div class="bt">Running container <code>:9090</code></div><div class="bd">H2 file DB on a named volume &middot; <code>/actuator/health</code></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK -->
+  <section>
+    <h2>Toolchain &amp; application</h2>
+    <div class="stack">
+      <div class="srow"><span class="lbl">Language</span><span class="val"><b>Java 21</b> (Temurin), Maven 3.10</span></div>
+      <div class="srow"><span class="lbl">Framework</span><span class="val"><b>Spring Boot 3.3.5</b> &mdash; MVC, Thymeleaf, Data JPA, Security</span></div>
+      <div class="srow"><span class="lbl">Database</span><span class="val"><b>H2 2.x</b> in file mode, persisted on a Docker named volume</span></div>
+      <div class="srow"><span class="lbl">Runtime</span><span class="val"><b>Tomcat 10.1</b> &mdash; the WAR is a real servlet deployment</span></div>
+      <div class="srow"><span class="lbl">CI / CD</span><span class="val"><b>Jenkins LTS 2.568.2</b> &mdash; freestyle job + <code>Jenkinsfile</code></span></div>
+      <div class="srow"><span class="lbl">Testing</span><span class="val"><b>JUnit 5</b> (Surefire) + <b>Selenium 4</b> (Failsafe, headless Chrome)</span></div>
+      <div class="srow"><span class="lbl">Containers</span><span class="val"><b>Docker 28.1.1</b>, multi-stage build, <code>registry:2</code></span></div>
+      <div class="srow"><span class="lbl">Config mgmt</span><span class="val"><b>Ansible 2.21.5</b> &mdash; <code>community.docker</code>, 3 roles</span></div>
+      <div class="srow"><span class="lbl">Automation</span><span class="val"><b>12 shell scripts</b> &mdash; one-command end-to-end demo</span></div>
+    </div>
+    <p style="margin-top:2mm">
+      <strong>Domain logic.</strong> ABO/Rh compatibility is derived from antigens rather than hard-coded,
+      donor eligibility is computed from a 90-day interval against an injected <code>Clock</code>,
+      and the request workflow <code>NEW &rarr; MATCHED &rarr; FULFILLED | REJECTED</code> is enforced
+      with role checks before transition legality.
+    </p>
+  </section>
+
+  <!-- METRICS -->
+  <section class="full">
+    <h2>Verified results &mdash; every figure from a real run</h2>
+    <div class="metrics">
+      <div class="m"><div class="v">195</div><div class="k">Automated tests<br>179 unit + 16 UI</div></div>
+      <div class="m"><div class="v">64<sup>/64</sup></div><div class="k">Compatibility<br>pairs proven</div></div>
+      <div class="m"><div class="v">101<sup>s</sup></div><div class="k">Commit to<br>live container</div></div>
+      <div class="m"><div class="v">0</div><div class="k">Ansible changes<br>on re-run</div></div>
+      <div class="m"><div class="v">12</div><div class="k">Defects found<br>and fixed</div></div>
+    </div>
+  </section>
+
+  <!-- TASKS -->
+  <section class="full">
+    <h2>Fifteen lifecycle tasks &mdash; one tagged commit each</h2>
+    <div class="tasks">
+      <div class="tk"><span class="tn">1</span><span class="tt"><b>Problem definition</b> &amp; MVP scope freeze</span></div>
+      <div class="tk"><span class="tn">6</span><span class="tt"><b>MVP complete</b> + merge-conflict drill</span></div>
+      <div class="tk"><span class="tn">11</span><span class="tt"><b>Dockerfile</b> &amp; container lifecycle</span></div>
+      <div class="tk"><span class="tn">2</span><span class="tt"><b>Agile backlog</b>, Kanban, Definition of Done</span></div>
+      <div class="tk"><span class="tn">7</span><span class="tt"><b>Jenkins CI</b> job, artefact archived</span></div>
+      <div class="tk"><span class="tn">12</span><span class="tt"><b>CD to registry</b>, versioned image</span></div>
+      <div class="tk"><span class="tn">3</span><span class="tt"><b>SRS</b>, architecture &amp; data model</span></div>
+      <div class="tk"><span class="tn">8</span><span class="tt"><b>Pipeline-as-code</b> &amp; Tomcat deploy</span></div>
+      <div class="tk"><span class="tn">13</span><span class="tt"><b>Ansible</b> inventory &amp; playbooks</span></div>
+      <div class="tk"><span class="tn">4</span><span class="tt"><b>Git workflow</b>, repo &amp; branch policy</span></div>
+      <div class="tk"><span class="tn">9</span><span class="tt"><b>Selenium</b> journeys &amp; test plan</span></div>
+      <div class="tk"><span class="tn">14</span><span class="tt"><b>Idempotency</b>, health check, rollback</span></div>
+      <div class="tk"><span class="tn">5</span><span class="tt"><b>Feature branch</b> &rarr; reviewed merge</span></div>
+      <div class="tk"><span class="tn">10</span><span class="tt"><b>Quality gate</b> &mdash; a red build blocks deploy</span></div>
+      <div class="tk"><span class="tn">15</span><span class="tt"><b>Release v1.3.0</b>, report &amp; viva guide</span></div>
+    </div>
+  </section>
+
+  <!-- EVIDENCE -->
+  <section class="full">
+    <h2>What the project actually proves</h2>
+    <div class="ev" style="display:grid; grid-template-columns:1fr 1fr; gap:.9mm 5.2mm;">
+      <div class="evr"><span class="tick">&#10003;</span><span class="txt"><b>The quality gate is real.</b> A deliberately removed authorisation check passed all 179 unit tests; Selenium caught it, the build went red, and Promote was never entered.</span></div>
+      <div class="evr"><span class="tick">&#10003;</span><span class="txt"><b>Idempotency is measured, not claimed.</b> A second <code>ansible-playbook site.yml</code> reports <code>changed=0</code> &mdash; and the check names the offending task if it ever does not.</span></div>
+      <div class="evr"><span class="tick">&#10003;</span><span class="txt"><b>Rollback works under a minute.</b> Image tag 17 &rarr; 15 pulled from the private registry, container replaced, data intact on the volume, verified from the Docker API rather than from the app&rsquo;s own claim.</span></div>
+      <div class="evr"><span class="tick">&#10003;</span><span class="txt"><b>The image is hardened.</b> The build stage is discarded, every stock Tomcat webapp removed, and the JVM runs as uid 999 as PID 1 after the entrypoint drops privileges.</span></div>
+      <div class="evr"><span class="tick">&#10003;</span><span class="txt"><b>Health is behavioural.</b> Nine assertions &mdash; create a request, match it, fulfil it &mdash; not just an HTTP 200 from <code>/actuator/health</code>.</span></div>
+      <div class="evr"><span class="tick">&#10003;</span><span class="txt"><b>One command reproduces everything.</b> <code>scripts/demo-all.sh</code> runs nine asserting steps commit-to-container in 151 s.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span><b>Release v1.3.0</b> &nbsp;&middot;&nbsp; 48 commits, 19 tags, 15 task reports &nbsp;&middot;&nbsp; University of Mumbai</span>
+  <span class="chips">
+    <span class="chip">Git</span><span class="chip">Maven</span><span class="chip">Jenkins</span>
+    <span class="chip">Selenium</span><span class="chip">Docker</span><span class="chip">Ansible</span>
+  </span>
+</footer>
+
+</body>
+</html>
